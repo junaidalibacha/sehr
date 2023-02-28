@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/index.dart';
@@ -37,21 +38,19 @@ class CustomerBottomNavView extends StatelessWidget {
                 return false;
               },
               child: Scaffold(
-                drawer: const Drawer(),
+                // drawer: const Drawer(),
                 appBar: profileType == ProfileType.customer
-                    ? viewModel.index == 2
-                        ? null
-                        : _buildAppBar()
-                    : _buildAppBar(),
+                    ? (viewModel.index == 2 ? null : _buildAppBar(context))
+                    : _buildAppBar(context),
                 body: profileType == ProfileType.customer
                     ? viewModel.customerPages[viewModel.index]
                     : viewModel.businessPages[viewModel.index],
 
                 // bottomNavigationBar: ,
                 bottomNavigationBar: profileType == ProfileType.customer
-                    ? viewModel.index == 2
+                    ? (viewModel.index == 2
                         ? null
-                        : _buildBottomNavigation(profileType)
+                        : _buildBottomNavigation(profileType))
                     : _buildBottomNavigation(profileType),
               ),
             );
@@ -122,10 +121,21 @@ class CustomerBottomNavView extends StatelessWidget {
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
+      elevation: 0,
       backgroundColor: ColorManager.primary,
       leadingWidth: getProportionateScreenWidth(30),
+      leading: IconButton(
+        onPressed: () {
+          if (ZoomDrawer.of(context)!.isOpen()) {
+            ZoomDrawer.of(context)!.close();
+          } else {
+            ZoomDrawer.of(context)!.open();
+          }
+        },
+        icon: const Icon(Icons.menu),
+      ),
       title: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -71,7 +71,7 @@ class UplaodProfilePhotoView extends StatelessWidget {
                       ),
                       child: AppButtonWidget(
                         ontap: () => Get.toNamed(Routes.setLocationRoute),
-                        text: 'Skip',
+                        text: viewModel.image == null ? 'Skip' : 'Next',
                       ),
                     ),
                     buildVerticleSpace(50),

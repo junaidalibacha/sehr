@@ -92,4 +92,20 @@ class HomeViewModel extends ChangeNotifier {
       ),
     ];
   }
+
+  // String? filterValue;
+  Set<String> selectedFilters = {};
+  List<String> filterList = ['Filter 1', 'Filter 2', 'Filter 3'];
+
+  void selectFilter(String value) {
+    // filterList.add(value);
+    if (selectedFilters.contains(value)) {
+      selectedFilters.remove(value);
+    } else {
+      selectedFilters.add(value);
+    }
+    notifyListeners();
+  }
+
+//  final filteredData = data.where((item) => selectedFilters.contains(item.filter)).toList();
 }

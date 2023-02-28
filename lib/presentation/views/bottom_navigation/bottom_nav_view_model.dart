@@ -1,6 +1,5 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/business_views/progress/business_progress_veiw.dart';
 import 'package:sehr/presentation/views/business_views/recent_orders/recent_orders_view.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/requested_orders_view.dart';
 import 'package:sehr/presentation/views/business_views/total_sales/total_sales_view.dart';
@@ -44,7 +43,7 @@ class CustomerBottomNavViewModel extends ChangeNotifier {
     const RecentOrdersView(): AppIcons.recentIcon,
     const TotalSalesView(): AppIcons.progress2Icon,
     const RequestedOrdersView(): AppIcons.requestIcon,
-    const BusinessProgresView(): AppIcons.progressIcon,
+    const ProgressView(): AppIcons.progressIcon,
   };
 
   List<Widget> get _businessPages =>

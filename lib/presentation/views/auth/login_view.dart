@@ -57,7 +57,7 @@ class LoginView extends StatelessWidget {
                     children: [
                       SocialButtonWidget(
                         onTap: () {
-                          viewModel.facebookSignIn();
+                          // viewModel.facebookSignIn();
                         },
                         icon: AppIcons.facebookIcon,
                         text: 'facebook',
@@ -70,7 +70,7 @@ class LoginView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  buildVerticleSpace(20),
+                  buildVerticleSpace(10),
                   TextButton(
                     onPressed: () {},
                     child: kTextBentonSansMed(
@@ -90,6 +90,17 @@ class LoginView extends StatelessWidget {
                         Get.toNamed(Routes.signUpRoute);
                       },
                       text: 'Login',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.signUpRoute);
+                    },
+                    child: kTextBentonSansMed(
+                      'Need an account?',
+                      color: ColorManager.primary,
+                      fontSize: getProportionateScreenHeight(12),
+                      textDecoration: TextDecoration.underline,
                     ),
                   ),
                 ],

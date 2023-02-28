@@ -41,6 +41,10 @@ class AppImages {
   static const String menu = '$imagesPath/menu.png';
   static const String qrBackground = '$imagesPath/qr_background.png';
   static const String restourant = '$imagesPath/restaurant.png';
+  static const String easypaisa = '$imagesPath/easypaisa.png';
+  static const String visa = '$imagesPath/visa.png';
+  static const String jazzCash = '$imagesPath/jazz_cash.png';
+  static const String paid = '$imagesPath/paid.png';
   // static const String onboarding1 = '$imagesPath/onboarding_logo1.svg';
   // static const String onboarding2 = '$imagesPath/onboarding_logo2.svg';
   // static const String onboarding3 = '$imagesPath/onboarding_logo3.svg';

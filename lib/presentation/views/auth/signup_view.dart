@@ -29,7 +29,7 @@ class SignUpView extends StatelessWidget {
                   children: [
                     buildVerticleSpace(120),
                     const LogoWidget(),
-                    buildVerticleSpace(32),
+                    buildVerticleSpace(30),
                     kTextBentonSansBold(
                       'Sign Up',
                       fontSize: getProportionateScreenHeight(20),
@@ -68,7 +68,7 @@ class SignUpView extends StatelessWidget {
                     ),
                     buildVerticleSpace(20),
                     _buildKeepMeSignIn(viewModel),
-                    buildVerticleSpace(78),
+                    buildVerticleSpace(70),
                     Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: getProportionateScreenWidth(75),
@@ -91,7 +91,7 @@ class SignUpView extends StatelessWidget {
                         textDecoration: TextDecoration.underline,
                       ),
                     ),
-                    buildVerticleSpace(20),
+                    // buildVerticleSpace(20),
                   ],
                 ),
               ),
@@ -102,7 +102,7 @@ class SignUpView extends StatelessWidget {
     );
   }
 
-  Row _buildKeepMeSignIn(AuthViewModel viewModel) {
+  Widget _buildKeepMeSignIn(AuthViewModel viewModel) {
     return Row(
       children: [
         InkWell(

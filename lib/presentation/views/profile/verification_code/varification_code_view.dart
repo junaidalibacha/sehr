@@ -16,6 +16,7 @@ class VerificationCodeView extends StatelessWidget {
       create: (context) => ProfileViewModel(),
       child: SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomInset: true,
           body: Stack(
             children: [
               Image.asset(

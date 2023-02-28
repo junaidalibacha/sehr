@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => AuthViewModel()),
-        // ChangeNotifierProvider(create: (ctx) => ShopDataModel()),
+        // ChangeNotifierProvider(create: (ctx) => RecentOrdersViewModel()),
       ],
       child: GetMaterialApp(
         builder: (context, child) {

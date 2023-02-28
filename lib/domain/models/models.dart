@@ -56,3 +56,33 @@ class CompleteOrdersModel {
     this.isFavourite = false,
   });
 }
+
+class RecentOrdersModel {
+  final String customerName;
+  final String shopName;
+  final double price;
+  bool isCompleted;
+
+  RecentOrdersModel({
+    required this.customerName,
+    required this.shopName,
+    required this.price,
+    this.isCompleted = false,
+  });
+}
+
+class RequestedOrdersModel {
+  final String customerName;
+  final String shopName;
+  final double price;
+  bool isAccept;
+  bool isReject;
+
+  RequestedOrdersModel({
+    required this.customerName,
+    required this.shopName,
+    required this.price,
+    this.isAccept = false,
+    this.isReject = false,
+  });
+}

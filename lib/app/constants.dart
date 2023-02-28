@@ -12,6 +12,8 @@ const kZero = 0;
 
 enum ProfileType { customer, business, non }
 
+enum PaymentType { easyPaisa, visa, jazzCash }
+
 enum Gender { male, female }
 
 Text kTextBentonSansReg(

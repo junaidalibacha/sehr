@@ -4,6 +4,7 @@ import 'package:sehr/presentation/views/profile/profile_view_model.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../auth/auth_view_model.dart';
+import '../../bottom_navigation/drawer/custom_drawer.dart';
 
 class ProfileCompleteView extends StatelessWidget {
   const ProfileCompleteView({super.key});
@@ -83,7 +84,8 @@ class ProfileCompleteView extends StatelessWidget {
                       ),
                       child: AppButtonWidget(
                         ontap: () {
-                          Get.toNamed(Routes.customerBottomNavRoute);
+                          // Get.toNamed(Routes.customerBottomNavRoute);
+                          Get.to(const DrawerView());
                           // print();
                         },
                         text: 'Next',

@@ -122,7 +122,7 @@ class CompleteOrdersWidget extends StatelessWidget {
             ),
             buildVerticleSpace(8),
             kTextBentonSansReg(
-              '\$${items[index].price}',
+              'RS ${items[index].price}',
               color: ColorManager.primary,
               fontSize: getProportionateScreenHeight(19),
               letterSpacing: getProportionateScreenWidth(0.5),

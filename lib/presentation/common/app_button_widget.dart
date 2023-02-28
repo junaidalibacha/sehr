@@ -8,21 +8,25 @@ class AppButtonWidget extends StatelessWidget {
     this.child,
     this.text = '',
     this.textSize,
+    this.textColor,
     this.letterSpacing,
     this.bgColor,
     this.height,
     this.width,
     this.borderRadius,
+    this.border = false,
   }) : super(key: key);
   final VoidCallback? ontap;
   final Widget? child;
   final String text;
   final double? textSize;
+  final Color? textColor;
   final double? letterSpacing;
   final Color? bgColor;
   final double? height;
   final double? width;
   final double? borderRadius;
+  final bool? border;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +48,12 @@ class AppButtonWidget extends StatelessWidget {
                   ColorManager.gradient2,
                 ])
               : null,
+          border: border == true
+              ? Border.all(
+                  color: ColorManager.grey,
+                  width: 2,
+                )
+              : null,
           borderRadius: BorderRadius.circular(
             borderRadius ?? getProportionateScreenHeight(15),
           ),
@@ -51,7 +61,7 @@ class AppButtonWidget extends StatelessWidget {
         child: child ??
             kTextBentonSansMed(
               text,
-              color: ColorManager.white,
+              color: textColor ?? ColorManager.white,
               fontSize: textSize,
               lineSpacing: letterSpacing,
             ),
