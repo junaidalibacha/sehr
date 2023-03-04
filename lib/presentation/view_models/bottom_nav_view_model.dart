@@ -1,13 +1,14 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/business_views/recent_orders/recent_orders_view.dart';
+import 'package:sehr/presentation/views/business_views/recent_orders/business_recent_orders_view.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/requested_orders_view.dart';
 import 'package:sehr/presentation/views/business_views/total_sales/total_sales_view.dart';
-import 'package:sehr/presentation/views/customer_views/cart/cart_view.dart';
 import 'package:sehr/presentation/views/customer_views/favourite/favourite_view.dart';
 import 'package:sehr/presentation/views/customer_views/home/home_view.dart';
 import 'package:sehr/presentation/views/customer_views/progress/customer_progress_view.dart';
 import 'package:sehr/presentation/views/customer_views/scanner/scanner_view.dart';
+
+import '../src/index.dart';
+import '../views/customer_views/recent_orders.dart/customer_recent_orders_view.dart';
 
 class CustomerBottomNavViewModel extends ChangeNotifier {
   int _index = 0;
@@ -27,7 +28,7 @@ class CustomerBottomNavViewModel extends ChangeNotifier {
     const ProgressView(): AppIcons.progressIcon,
     const ScannerView(): AppIcons.scannerIcon,
     const FavouriteView(): AppIcons.favouriteIcon,
-    const CartView(): AppIcons.cart1Icon,
+    CustomerRecentOrdersView(): AppIcons.cart1Icon,
   };
 
   List<Widget> get _customerPages =>
@@ -40,9 +41,9 @@ class CustomerBottomNavViewModel extends ChangeNotifier {
 
   // Business Bottom Navigation Items Data
   final Map<Widget, String> _businessBottomNavItems = {
-    const RecentOrdersView(): AppIcons.recentIcon,
+    BusinessRecentOrdersView(): AppIcons.recentIcon,
     const TotalSalesView(): AppIcons.progress2Icon,
-    const RequestedOrdersView(): AppIcons.requestIcon,
+    RequestedOrdersView(): AppIcons.requestIcon,
     const ProgressView(): AppIcons.progressIcon,
   };
 

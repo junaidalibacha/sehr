@@ -1,38 +1,39 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/domain/models/models.dart';
 
-class RecentOrdersViewModel extends ChangeNotifier {
-  final List<RecentOrdersModel> _recentOrders = [
-    RecentOrdersModel(
+import '../../../domain/models/models.dart';
+
+class BusinessRecentOrdersViewModel extends ChangeNotifier {
+  final List<BusinessRecentOrdersModel> _recentOrders = [
+    BusinessRecentOrdersModel(
       customerName: 'customer name',
       shopName: 'Waroenk kita',
       price: 35,
       isCompleted: true,
     ),
-    RecentOrdersModel(
+    BusinessRecentOrdersModel(
       customerName: 'customer name',
       shopName: 'Waroenk kita',
       price: 35,
       isCompleted: true,
     ),
-    RecentOrdersModel(
+    BusinessRecentOrdersModel(
       customerName: 'customer name',
       shopName: 'Waroenk kita',
       price: 35,
       isCompleted: false,
     ),
-    RecentOrdersModel(
+    BusinessRecentOrdersModel(
       customerName: 'customer name',
       shopName: 'Waroenk kita',
       price: 35,
       isCompleted: false,
     ),
-    RecentOrdersModel(
+    BusinessRecentOrdersModel(
       customerName: 'customer name',
       shopName: 'Waroenk kita',
       price: 35,
       isCompleted: false,
     ),
   ];
-  List<RecentOrdersModel> get recentOrders => [..._recentOrders];
+  List<BusinessRecentOrdersModel> get recentOrders => [..._recentOrders];
 }

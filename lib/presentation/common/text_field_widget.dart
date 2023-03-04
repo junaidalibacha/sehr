@@ -1,18 +1,19 @@
 import '../../app/index.dart';
-import '../index.dart';
+import '../src/index.dart';
 
 class TextFieldWidget extends StatelessWidget {
-  const TextFieldWidget({
-    Key? key,
-    this.controller,
-    this.keyboardType,
-    this.hintText,
-    this.prefixIcon,
-    this.sufixIcon,
-    this.obscureText = false,
-    this.fillColor,
-    this.blurRadius,
-  }) : super(key: key);
+  const TextFieldWidget(
+      {Key? key,
+      this.controller,
+      this.keyboardType,
+      this.hintText,
+      this.prefixIcon,
+      this.sufixIcon,
+      this.obscureText = false,
+      this.fillColor,
+      this.blurRadius,
+      this.validator})
+      : super(key: key);
 
   final TextEditingController? controller;
   final TextInputType? keyboardType;
@@ -22,10 +23,12 @@ class TextFieldWidget extends StatelessWidget {
   final bool obscureText;
   final Color? fillColor;
   final double? blurRadius;
+  final String? Function(String? value)? validator;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      // height: getProportionateScreenHeight(60),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(
           getProportionateScreenHeight(15),
@@ -61,7 +64,11 @@ class TextFieldWidget extends StatelessWidget {
                     top: getProportionateScreenWidth(16),
                     bottom: getProportionateScreenWidth(16),
                   ),
-                  child: prefixIcon,
+                  child: SizedBox(
+                    height: getProportionateScreenHeight(20),
+                    width: getProportionateScreenHeight(20),
+                    child: prefixIcon,
+                  ),
                 )
               : null,
           suffixIcon: sufixIcon != null
@@ -70,7 +77,11 @@ class TextFieldWidget extends StatelessWidget {
                     horizontal: getProportionateScreenWidth(20),
                     vertical: getProportionateScreenHeight(16),
                   ),
-                  child: sufixIcon,
+                  child: SizedBox(
+                    height: getProportionateScreenHeight(20),
+                    width: getProportionateScreenHeight(20),
+                    child: sufixIcon,
+                  ),
                 )
               : null,
           border: OutlineInputBorder(
@@ -80,12 +91,15 @@ class TextFieldWidget extends StatelessWidget {
             ),
           ),
           constraints: BoxConstraints(
-            maxHeight: getProportionateScreenHeight(60),
+            minHeight: getProportionateScreenHeight(60),
+            // maxHeight: getProportionateScreenHeight(60),
           ),
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: getProportionateScreenWidth(28),
-          ),
+          // contentPadding: EdgeInsets.symmetric(
+          //   horizontal: getProportionateScreenWidth(20),
+          //   vertical: getProportionateScreenHeight(16),
+          // ),
         ),
+        validator: validator,
       ),
     );
   }

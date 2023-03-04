@@ -1,11 +1,11 @@
 import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/views/profile/profile_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
-import '../../../common/app_button_widget.dart';
-import '../../../common/top_back_button_widget.dart';
-import '../../../routes/routes.dart';
-import '../../../src/index.dart';
+import '../../common/app_button_widget.dart';
+import '../../common/top_back_button_widget.dart';
+import '../../routes/routes.dart';
+import '../../src/index.dart';
 
 class VerificationCodeView extends StatelessWidget {
   const VerificationCodeView({super.key});

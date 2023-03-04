@@ -1,14 +1,14 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/views/auth/auth_view_model.dart';
-import 'package:sehr/presentation/views/profile/profile_view_model.dart';
+import 'package:sehr/presentation/view_models/auth_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
-import '../../../common/app_button_widget.dart';
-import '../../../common/top_back_button_widget.dart';
-import '../../../routes/routes.dart';
-import '../../../src/index.dart';
+import '../../common/app_button_widget.dart';
+import '../../common/top_back_button_widget.dart';
+import '../../routes/routes.dart';
+import '../../src/index.dart';
 
 class UplaodProfilePhotoView extends StatelessWidget {
   const UplaodProfilePhotoView({super.key});
@@ -70,7 +70,10 @@ class UplaodProfilePhotoView extends StatelessWidget {
                         horizontal: getProportionateScreenWidth(118),
                       ),
                       child: AppButtonWidget(
-                        ontap: () => Get.toNamed(Routes.setLocationRoute),
+                        ontap: () =>
+                            Get.toNamed(Routes.setLocationRoute, arguments: {
+                          'image': viewModel.image,
+                        }),
                         text: viewModel.image == null ? 'Skip' : 'Next',
                       ),
                     ),
@@ -116,10 +119,10 @@ class UplaodProfilePhotoView extends StatelessWidget {
           width: getProportionateScreenWidth(250),
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: Image.memory(
+              image: Image.file(
                 height: getProportionateScreenHeight(260),
                 width: getProportionateScreenWidth(250),
-                base64Decode(viewModel.image!),
+                File(viewModel.image!.path),
               ).image,
               fit: BoxFit.cover,
             ),

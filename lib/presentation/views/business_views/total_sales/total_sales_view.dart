@@ -1,7 +1,10 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/business_views/total_sales/total_sales_view_model.dart';
+import 'package:sehr/presentation/view_models/business_view_models/total_sales_view_model.dart';
+
+import '../../../routes/routes.dart';
+import '../../../src/index.dart';
 
 class TotalSalesView extends StatelessWidget {
   const TotalSalesView({super.key});

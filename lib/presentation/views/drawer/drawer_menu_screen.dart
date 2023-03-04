@@ -1,8 +1,11 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/bottom_navigation/drawer/blog_view/blog_view.dart';
-import 'package:sehr/presentation/views/bottom_navigation/drawer/membership_view/membership_view.dart';
-import 'package:sehr/presentation/views/bottom_navigation/drawer/reward_view/reward_view.dart';
+import 'package:sehr/presentation/views/drawer/blog_view.dart';
+import 'package:sehr/presentation/views/drawer/membership_view.dart';
+import 'package:sehr/presentation/views/drawer/reward_view.dart';
+
+import '../../routes/routes.dart';
+import '../../src/index.dart';
 
 class DrawerMenuScreenView extends StatelessWidget {
   DrawerMenuScreenView({super.key});

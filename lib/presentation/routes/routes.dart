@@ -5,12 +5,15 @@ import 'package:sehr/presentation/views/business_views/payment/payment_view.dart
 import 'package:sehr/presentation/views/customer_views/scanner/scanner_view.dart';
 import 'package:sehr/presentation/views/profile/add_bio/add_business_bio_view.dart';
 import 'package:sehr/presentation/views/profile/add_bio/add_customer_bio_view.dart';
-import 'package:sehr/presentation/views/profile/profile_complete/profile_complete_view.dart';
-import 'package:sehr/presentation/views/profile/set_loaction/set_location_view.dart';
-import 'package:sehr/presentation/views/profile/upload_photo/upload_profile_photo_view.dart';
-import 'package:sehr/presentation/views/profile/verification_code/varification_code_view.dart';
+import 'package:sehr/presentation/views/profile/profile_complete_view.dart';
+import 'package:sehr/presentation/views/profile/set_location_view.dart';
+import 'package:sehr/presentation/views/profile/upload_profile_photo_view.dart';
+import 'package:sehr/presentation/views/profile/varification_code_view.dart';
 
-import '../views/auth/auth.dart';
+import '../src/index.dart';
+import '../views/auth/login_view.dart';
+import '../views/auth/profile_selection_view.dart';
+import '../views/auth/signup_view.dart';
 import '../views/splash/splash_view.dart';
 
 class Routes {
@@ -59,7 +62,13 @@ class RoutesGenerator {
         return MaterialPageRoute(
             builder: (_) => const UplaodProfilePhotoView());
       case Routes.setLocationRoute:
-        return MaterialPageRoute(builder: (_) => const SetLocationView());
+        Map<String, dynamic> arguments =
+            routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => SetLocationView(
+            imageFile: arguments['image'],
+          ),
+        );
       case Routes.verificationCodeRoute:
         return MaterialPageRoute(builder: (_) => const VerificationCodeView());
       case Routes.profileCompleteRoute:

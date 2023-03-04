@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
 
 import '../../common/logo_widget.dart';
+import '../../routes/routes.dart';
+import '../../src/index.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});

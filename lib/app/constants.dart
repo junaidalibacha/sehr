@@ -16,6 +16,16 @@ enum PaymentType { easyPaisa, visa, jazzCash }
 
 enum Gender { male, female }
 
+enum Status {
+  notLoggedIn,
+  notRegistered,
+  loggedIn,
+  registered,
+  authenticating,
+  registering,
+  loggedOut,
+}
+
 Text kTextBentonSansReg(
   String text, {
   TextAlign? textAlign,

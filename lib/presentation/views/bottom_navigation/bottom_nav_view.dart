@@ -3,8 +3,10 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/auth/auth.dart';
-import 'package:sehr/presentation/views/bottom_navigation/bottom_nav_view_model.dart';
+import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
+
+import '../../src/index.dart';
+import '../../view_models/auth_view_model.dart';
 
 class CustomerBottomNavView extends StatelessWidget {
   const CustomerBottomNavView({super.key});

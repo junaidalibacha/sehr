@@ -1,6 +1,7 @@
 import 'package:sehr/presentation/index.dart';
 
 import '../../app/index.dart';
+import 'index.dart';
 
 class TextStyleManager {
   static TextStyle _getTextStyle(String fontFamily, Color textColor,

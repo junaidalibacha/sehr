@@ -2,11 +2,11 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/drop_down_widget.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/auth/auth.dart';
-import 'package:sehr/presentation/views/profile/profile_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../../common/top_back_button_widget.dart';
+import '../../../src/index.dart';
 
 class AddBusinessBioView extends StatelessWidget {
   const AddBusinessBioView({super.key});
@@ -49,17 +49,20 @@ class AddBusinessBioView extends StatelessWidget {
                           child: Column(
                             children: [
                               TextFieldWidget(
-                                controller: viewModel.businessTextController,
+                                controller:
+                                    viewModel.businessNameTextController,
                                 hintText: 'Business / Company',
                               ),
                               buildVerticleSpace(20),
                               TextFieldWidget(
-                                controller: viewModel.businessTextController,
+                                controller:
+                                    viewModel.businessNameTextController,
                                 hintText: 'Owner Name',
                               ),
                               buildVerticleSpace(20),
                               TextFieldWidget(
-                                controller: viewModel.businessTextController,
+                                controller:
+                                    viewModel.businessNameTextController,
                                 hintText: 'Mobile Number',
                               ),
                               buildVerticleSpace(20),
@@ -96,25 +99,21 @@ class AddBusinessBioView extends StatelessWidget {
                                 onChange: (value) =>
                                     viewModel.setBusinessGrade(value!),
                               ),
+                              buildVerticleSpace(100),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: getProportionateScreenWidth(118),
+                                ),
+                                child: AppButtonWidget(
+                                  ontap: () {
+                                    viewModel.addBioDataToPref();
+                                    // Get.toNamed(Routes.photoSelectionRoute);
+                                    // print(value.selectedProfileType);
+                                  },
+                                  text: 'Next',
+                                ),
+                              ),
                             ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    buildVerticleSpace(100),
-                    ChangeNotifierProvider(
-                      create: (context) => AuthViewModel(),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(118),
-                        ),
-                        child: Consumer<AuthViewModel>(
-                          builder: (context, value, child) => AppButtonWidget(
-                            ontap: () {
-                              Get.toNamed(Routes.photoSelectionRoute);
-                              // print(value.selectedProfileType);
-                            },
-                            text: 'Next',
                           ),
                         ),
                       ),

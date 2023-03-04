@@ -1,6 +1,5 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/views/business_views/payment/payment_view_model.dart';
-import 'package:sehr/presentation/views/business_views/payment/payment_widget.dart';
+import 'package:sehr/presentation/view_models/business_view_models/payment_view_model.dart';
 
 import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
@@ -42,18 +41,6 @@ class PaymentView extends StatelessWidget {
                     child: Column(
                       children: [
                         _buildPaymentCard(),
-                        // buildVerticleSpace(20),
-                        // _buildPaymentCard(
-                        //   image: AppImages.visa,
-                        //   text: '2121 6352 8465 ****',
-                        //   isSelect: false,
-                        // ),
-                        // buildVerticleSpace(20),
-                        // _buildPaymentCard(
-                        //   image: AppImages.jazzCash,
-                        //   text: '2121 6352 8465 ****',
-                        //   isSelect: false,
-                        // ),
                       ],
                     ),
                   ),
@@ -66,13 +53,7 @@ class PaymentView extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentCard(
-      //   {
-      //   // required String image,
-      //   // required String text,
-      //   // required bool isSelect,
-      // }
-      ) {
+  Widget _buildPaymentCard() {
     return Consumer<PayementViewModel>(
       builder: (context, viewModel, child) => ListView.separated(
         shrinkWrap: true,
@@ -91,6 +72,52 @@ class PaymentView extends StatelessWidget {
       ),
     );
   }
+}
 
-  // List<String> paymentImages
+class PaymentWidget<T> extends StatelessWidget {
+  final T value;
+  final T? groupValue;
+  final String label;
+  final String text;
+  final ValueChanged<T?> onChanged;
+
+  const PaymentWidget({
+    super.key,
+    required this.value,
+    required this.groupValue,
+    required this.label,
+    required this.text,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSelected = value == groupValue;
+    return InkWell(
+      onTap: () => onChanged(value),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: getProportionateScreenWidth(20),
+        ),
+        height: getProportionateScreenHeight(73),
+        decoration: BoxDecoration(
+          color: isSelected ? ColorManager.white : ColorManager.lightGrey,
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenHeight(22),
+          ),
+        ),
+        child: Row(
+          children: [
+            Image.asset(
+              label,
+              height: getProportionateScreenHeight(23),
+              width: getProportionateScreenWidth(110),
+            ),
+            const Spacer(),
+            kTextBentonSansReg(text),
+          ],
+        ),
+      ),
+    );
+  }
 }

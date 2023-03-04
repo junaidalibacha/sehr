@@ -1,10 +1,11 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/logo_widget.dart';
-import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/auth/auth.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/text_field_widget.dart';
+import '../../src/index.dart';
+import '../../view_models/auth_view_model.dart';
+import 'login_view.dart';
 
 class SignUpView extends StatelessWidget {
   const SignUpView({super.key});
@@ -22,77 +23,99 @@ class SignUpView extends StatelessWidget {
                 horizontal: getProportionateScreenWidth(34),
               ),
               child: Center(
-                child: Column(
-                  // mainAxisSize: MainAxisSize.min,
-                  // mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    buildVerticleSpace(120),
-                    const LogoWidget(),
-                    buildVerticleSpace(30),
-                    kTextBentonSansBold(
-                      'Sign Up',
-                      fontSize: getProportionateScreenHeight(20),
-                    ),
-                    buildVerticleSpace(40),
-                    TextFieldWidget(
-                      controller: viewModel.userNameController,
-                      keyboardType: TextInputType.name,
-                      hintText: 'username',
-                      prefixIcon: Image.asset(
-                        AppIcons.profileIcon,
+                child: Form(
+                  key: viewModel.signUpFormKey,
+                  child: Column(
+                    // mainAxisSize: MainAxisSize.min,
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      buildVerticleSpace(120),
+                      const LogoWidget(),
+                      buildVerticleSpace(30),
+                      kTextBentonSansBold(
+                        'Sign Up',
+                        fontSize: getProportionateScreenHeight(20),
                       ),
-                    ),
-                    buildVerticleSpace(12),
-                    TextFieldWidget(
-                      controller: viewModel.emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      hintText: 'Email',
-                      prefixIcon: Image.asset(
-                        AppIcons.emailIcon,
-                      ),
-                    ),
-                    buildVerticleSpace(12),
-                    TextFieldWidget(
-                      controller: viewModel.passwordController,
-                      keyboardType: TextInputType.visiblePassword,
-                      hintText: 'Password',
-                      obscureText: viewModel.showPassword,
-                      prefixIcon: Image.asset(
-                        AppIcons.passwordIcon,
-                      ),
-                      sufixIcon: InkWell(
-                        onTap: () => viewModel.showPass(),
-                        child: Image.asset(AppIcons.showIcon),
-                      ),
-                    ),
-                    buildVerticleSpace(20),
-                    _buildKeepMeSignIn(viewModel),
-                    buildVerticleSpace(70),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: getProportionateScreenWidth(75),
-                      ),
-                      child: AppButtonWidget(
-                        ontap: () {
-                          Get.toNamed(Routes.profileSelectionRoute);
+                      buildVerticleSpace(40),
+                      TextFieldWidget(
+                        controller: viewModel.userNameController,
+                        keyboardType: TextInputType.name,
+                        hintText: 'username',
+                        prefixIcon: Image.asset(
+                          AppIcons.profileIcon,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'User name is required';
+                          }
+                          return null;
                         },
-                        text: 'Create Account',
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Get.back();
-                      },
-                      child: kTextBentonSansMed(
-                        'Already have an account?',
-                        color: ColorManager.primary,
-                        fontSize: getProportionateScreenHeight(12),
-                        textDecoration: TextDecoration.underline,
+                      buildVerticleSpace(12),
+                      TextFieldWidget(
+                        controller: viewModel.emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        hintText: 'Email',
+                        prefixIcon: Image.asset(
+                          AppIcons.emailIcon,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email is required';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    // buildVerticleSpace(20),
-                  ],
+                      buildVerticleSpace(12),
+                      TextFieldWidget(
+                        controller: viewModel.passwordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        hintText: 'Password',
+                        obscureText: viewModel.showPassword,
+                        prefixIcon: Image.asset(
+                          AppIcons.passwordIcon,
+                        ),
+                        sufixIcon: InkWell(
+                          onTap: () => viewModel.showPass(),
+                          child: Image.asset(AppIcons.showIcon),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password is required';
+                          }
+                          return null;
+                        },
+                      ),
+                      buildVerticleSpace(20),
+                      _buildKeepMeSignIn(viewModel),
+                      buildVerticleSpace(70),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(75),
+                        ),
+                        child: AppButtonWidget(
+                          ontap: () {
+                            viewModel.setSignUpDataToPrefs();
+                            // viewModel.signUp();
+                          },
+                          text: 'Create Account',
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: kTextBentonSansMed(
+                          'Already have an account?',
+                          color: ColorManager.primary,
+                          fontSize: getProportionateScreenHeight(12),
+                          textDecoration: TextDecoration.underline,
+                        ),
+                      ),
+                      // buildVerticleSpace(20),
+                    ],
+                  ),
                 ),
               ),
             ),

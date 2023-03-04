@@ -1,10 +1,11 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/profile/profile_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
-import '../../../common/app_button_widget.dart';
-import '../../auth/auth_view_model.dart';
-import '../../bottom_navigation/drawer/custom_drawer.dart';
+import '../../common/app_button_widget.dart';
+import '../../src/index.dart';
+import '../../view_models/auth_view_model.dart';
+import '../drawer/custom_drawer.dart';
 
 class ProfileCompleteView extends StatelessWidget {
   const ProfileCompleteView({super.key});

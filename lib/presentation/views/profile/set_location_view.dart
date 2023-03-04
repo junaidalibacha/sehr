@@ -1,15 +1,20 @@
+import 'dart:io';
+
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
-import 'package:sehr/presentation/views/profile/profile_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
-import '../../../common/app_button_widget.dart';
-import '../../../common/drop_down_widget.dart';
-import '../../../common/top_back_button_widget.dart';
-import '../../../routes/routes.dart';
-import '../../../src/index.dart';
+import '../../common/app_button_widget.dart';
+import '../../common/drop_down_widget.dart';
+import '../../common/top_back_button_widget.dart';
+import '../../src/index.dart';
 
 class SetLocationView extends StatelessWidget {
-  const SetLocationView({super.key});
+  final File imageFile;
+  const SetLocationView({
+    super.key,
+    required this.imageFile,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -203,11 +208,15 @@ class SetLocationView extends StatelessWidget {
                     padding: EdgeInsets.symmetric(
                       horizontal: getProportionateScreenWidth(118),
                     ),
-                    child: AppButtonWidget(
-                      ontap: () {
-                        Get.toNamed(Routes.verificationCodeRoute);
-                      },
-                      text: 'Next',
+                    child: Consumer<ProfileViewModel>(
+                      builder: (context, value, child) => AppButtonWidget(
+                        ontap: () {
+                          // Get.toNamed(Routes.verificationCodeRoute);
+
+                          value.registerData();
+                        },
+                        text: 'Next',
+                      ),
                     ),
                   ),
                   buildVerticleSpace(50),

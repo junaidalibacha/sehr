@@ -1,13 +1,14 @@
 import 'package:sehr/app/index.dart';
+import 'package:sehr/presentation/common/custom_card_widget.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/business_views/requested_order/request_orders_view_model.dart';
+import 'package:sehr/presentation/view_models/business_view_models/request_orders_view_model.dart';
 
-import '../../../../domain/models/models.dart';
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
+import '../../../src/index.dart';
 
 class RequestedOrdersView extends StatelessWidget {
-  const RequestedOrdersView({super.key});
+  RequestedOrdersView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,115 +33,68 @@ class RequestedOrdersView extends StatelessWidget {
                 horizontal: getProportionateScreenWidth(23),
               ),
               child: Consumer<RequestedOrdersViewModel>(
-                builder: (context, viewModel, child) => RecentOrdersWidget(
-                  items: viewModel.requestedOrders,
+                builder: (context, viewModel, child) => ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: viewModel.requestedOrders.length,
+                  separatorBuilder: (context, index) => buildVerticleSpace(18),
+                  padding: EdgeInsets.only(
+                    bottom: getProportionateScreenHeight(60),
+                  ),
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => CustomListTileWidget(
+                    leading: Image.asset(AppImages.menu),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        kTextBentonSansMed(
+                          viewModel.requestedOrders[index].customerName,
+                          fontSize: getProportionateScreenHeight(15),
+                        ),
+                        kTextBentonSansReg(
+                          viewModel.requestedOrders[index].shopName,
+                          color: ColorManager.textGrey.withOpacity(0.8),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                        kTextBentonSansMed(
+                          'RS ${viewModel.requestedOrders[index].price}',
+                          color: ColorManager.primary,
+                          fontSize: getProportionateScreenHeight(19),
+                        ),
+                      ],
+                    ),
+                    trailing: Column(
+                      children: [
+                        AppButtonWidget(
+                          ontap: () {
+                            _buildOrderDetails(context);
+                          },
+                          height: getProportionateScreenHeight(29),
+                          width: getProportionateScreenWidth(80),
+                          text: 'Accept',
+                          textSize: getProportionateScreenHeight(12),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                        const Spacer(),
+                        AppButtonWidget(
+                          bgColor: Colors.transparent,
+                          border: true,
+                          ontap: () {},
+                          height: getProportionateScreenHeight(29),
+                          width: getProportionateScreenWidth(80),
+                          text: 'Reject',
+                          textColor: ColorManager.error.withOpacity(0.6),
+                          textSize: getProportionateScreenHeight(12),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class RecentOrdersWidget extends StatelessWidget {
-  RecentOrdersWidget({
-    Key? key,
-    // required this.name,
-    // required this.category,
-    // required this.distance,
-    // required this.onFavourite,
-    // required this.onDetail,
-    // required this.isFavourite,
-    required this.items,
-  }) : super(key: key);
-  // final String name;
-  // final String category;
-  // final String distance;
-  // final bool isFavourite;
-  // final void Function() onFavourite;
-  // final void Function() onDetail;
-  final List<RequestedOrdersModel> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      itemCount: items.length,
-      separatorBuilder: (context, index) => buildVerticleSpace(18),
-      padding: EdgeInsets.only(
-        bottom: getProportionateScreenHeight(60),
-      ),
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) => ListTile(
-        tileColor: ColorManager.white,
-        // selectedTileColor: ColorManager.white,
-        // selected: items[index].isCompleted,
-        contentPadding: EdgeInsets.only(
-          left: getProportionateScreenWidth(14),
-          right: getProportionateScreenHeight(20),
-          top: getProportionateScreenHeight(18),
-          bottom: getProportionateScreenHeight(10),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenHeight(22),
-          ),
-        ),
-        leading: Image.asset(
-          AppImages.menu,
-          height: getProportionateScreenHeight(56.5),
-          width: getProportionateScreenHeight(56.5),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            kTextBentonSansMed(
-              items[index].customerName,
-              fontSize: getProportionateScreenHeight(15),
-            ),
-            buildVerticleSpace(4),
-            kTextBentonSansReg(
-              items[index].shopName,
-              color: ColorManager.textGrey.withOpacity(0.8),
-              letterSpacing: getProportionateScreenWidth(0.5),
-            ),
-            buildVerticleSpace(8),
-            kTextBentonSansMed(
-              'RS ${items[index].price}',
-              color: ColorManager.primary,
-              fontSize: getProportionateScreenHeight(19),
-            ),
-          ],
-        ),
-        trailing: Column(
-          children: [
-            AppButtonWidget(
-              ontap: () {
-                _buildOrderDetails(context);
-              },
-              height: getProportionateScreenHeight(29),
-              width: getProportionateScreenWidth(80),
-              text: 'Accept',
-              textSize: getProportionateScreenHeight(12),
-              letterSpacing: getProportionateScreenWidth(0.5),
-            ),
-            // buildVerticleSpace(10),
-            const Spacer(),
-            AppButtonWidget(
-              bgColor: Colors.transparent,
-              border: true,
-              ontap: () {},
-              height: getProportionateScreenHeight(29),
-              width: getProportionateScreenWidth(80),
-              text: 'Reject',
-              textColor: ColorManager.error.withOpacity(0.6),
-              textSize: getProportionateScreenHeight(12),
-              letterSpacing: getProportionateScreenWidth(0.5),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -150,19 +104,19 @@ class RecentOrdersWidget extends StatelessWidget {
       context: context,
       barrierColor: ColorManager.transparent,
       builder: (context) => AlertDialog(
+        // backgroundColor: ColorManager.white,
+        // elevation: 5,
         contentPadding: EdgeInsets.symmetric(
           horizontal: getProportionateScreenWidth(17),
           vertical: getProportionateScreenHeight(16),
         ),
         insetPadding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(15),
-          vertical: getProportionateScreenHeight(80),
+          horizontal: getProportionateScreenWidth(10),
+          vertical: getProportionateScreenHeight(kToolbarHeight + 8),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
         ),
-        backgroundColor: ColorManager.white,
-        elevation: 5,
         content: SizedBox(
           height: SizeConfig.screenHeight,
           width: SizeConfig.screenWidth,
@@ -261,6 +215,110 @@ class RecentOrdersWidget extends StatelessWidget {
     OrderInfoModel('Total Amount :', '3500/-'),
   ];
 }
+
+// class RecentOrdersWidget extends StatelessWidget {
+//   const RecentOrdersWidget({
+//     Key? key,
+//     // required this.name,
+//     // required this.category,
+//     // required this.distance,
+//     // required this.onFavourite,
+//     // required this.onDetail,
+//     // required this.isFavourite,
+//     required this.items,
+//   }) : super(key: key);
+//   // final String name;
+//   // final String category;
+//   // final String distance;
+//   // final bool isFavourite;
+//   // final void Function() onFavourite;
+//   // final void Function() onDetail;
+//   final List<RequestedOrdersModel> items;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.separated(
+//       shrinkWrap: true,
+//       itemCount: items.length,
+//       separatorBuilder: (context, index) => buildVerticleSpace(18),
+//       padding: EdgeInsets.only(
+//         bottom: getProportionateScreenHeight(60),
+//       ),
+//       physics: const NeverScrollableScrollPhysics(),
+//       itemBuilder: (context, index) => ListTile(
+//         tileColor: ColorManager.white,
+//         // selectedTileColor: ColorManager.white,
+//         // selected: items[index].isCompleted,
+//         contentPadding: EdgeInsets.only(
+//           left: getProportionateScreenWidth(14),
+//           right: getProportionateScreenHeight(20),
+//           top: getProportionateScreenHeight(18),
+//           bottom: getProportionateScreenHeight(10),
+//         ),
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(
+//             getProportionateScreenHeight(22),
+//           ),
+//         ),
+//         leading: Image.asset(
+//           AppImages.menu,
+//           height: getProportionateScreenHeight(56.5),
+//           width: getProportionateScreenHeight(56.5),
+//         ),
+
+//         title: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             kTextBentonSansMed(
+//               items[index].customerName,
+//               fontSize: getProportionateScreenHeight(15),
+//             ),
+//             buildVerticleSpace(4),
+//             kTextBentonSansReg(
+//               items[index].shopName,
+//               color: ColorManager.textGrey.withOpacity(0.8),
+//               letterSpacing: getProportionateScreenWidth(0.5),
+//             ),
+//             buildVerticleSpace(8),
+//             kTextBentonSansMed(
+//               'RS ${items[index].price}',
+//               color: ColorManager.primary,
+//               fontSize: getProportionateScreenHeight(19),
+//             ),
+//           ],
+//         ),
+
+//         trailing: Column(
+//           children: [
+//             AppButtonWidget(
+//               ontap: () {
+//                 _buildOrderDetails(context);
+//               },
+//               height: getProportionateScreenHeight(29),
+//               width: getProportionateScreenWidth(80),
+//               text: 'Accept',
+//               textSize: getProportionateScreenHeight(12),
+//               letterSpacing: getProportionateScreenWidth(0.5),
+//             ),
+//             // buildVerticleSpace(10),
+//             const Spacer(),
+//             AppButtonWidget(
+//               bgColor: Colors.transparent,
+//               border: true,
+//               ontap: () {},
+//               height: getProportionateScreenHeight(29),
+//               width: getProportionateScreenWidth(80),
+//               text: 'Reject',
+//               textColor: ColorManager.error.withOpacity(0.6),
+//               textSize: getProportionateScreenHeight(12),
+//               letterSpacing: getProportionateScreenWidth(0.5),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class OrderInfoModel {
   String title;

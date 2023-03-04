@@ -1,8 +1,10 @@
 import 'package:sehr/app/index.dart';
 
-import '../../../common/shop_tile_widget.dart';
+import '../../../common/app_button_widget.dart';
+import '../../../common/custom_card_widget.dart';
 import '../../../src/index.dart';
-import '../home/home_view_model.dart';
+import '../../../view_models/customer_view_models/home_view_model.dart';
+import '../shop/shop_details_view.dart';
 
 class FavouriteView extends StatelessWidget {
   const FavouriteView({super.key});
@@ -47,14 +49,73 @@ class FavouriteView extends StatelessWidget {
                   horizontal: getProportionateScreenWidth(24),
                 ),
                 child: Consumer<HomeViewModel>(
-                  builder: (context, viewModel, child) => ShopTileWidget(
-                    // name: viewModel.shops[index].shopName,
-                    // category: viewModel.shops[index].shopCategory,
-                    // distance: '8km away',
-                    // onFavourite: () => viewModel.toggleFav(index),
-                    // onDetail: () {},
-                    // isFavourite: viewModel.shops[index].isFavourite,
-                    items: viewModel.favItems,
+                  builder: (context, viewModel, child) => ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: viewModel.favItems.length,
+                    separatorBuilder: (context, index) =>
+                        buildVerticleSpace(10),
+                    padding: EdgeInsets.only(
+                      bottom: getProportionateScreenHeight(100),
+                    ),
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => CustomListTileWidget(
+                      leading: Image.asset(viewModel.favItems[index].shopImage),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          kTextBentonSansMed(
+                            viewModel.favItems[index].shopName,
+                            fontSize: getProportionateScreenHeight(15),
+                          ),
+                          // buildVerticleSpace(3),
+                          kTextBentonSansReg(
+                            viewModel.favItems[index].shopCategory,
+                            color: ColorManager.textGrey.withOpacity(0.8),
+                            letterSpacing: getProportionateScreenWidth(0.5),
+                          ),
+                          // buildVerticleSpace(3),
+                          kTextBentonSansReg(
+                            '8km away',
+                            color: ColorManager.textGrey.withOpacity(0.8),
+                            fontSize: getProportionateScreenHeight(10),
+                            letterSpacing: getProportionateScreenWidth(0.5),
+                          ),
+                        ],
+                      ),
+                      trailing: Column(
+                        children: [
+                          InkWell(
+                            // onTap: () => viewModel.toggleFav(index),
+                            splashColor: ColorManager.transparent,
+                            borderRadius: BorderRadius.circular(40),
+                            child: Icon(
+                              Icons.favorite_rounded,
+                              size: getProportionateScreenHeight(20),
+                              color: ColorManager.error,
+                            ),
+                          ),
+                          const Spacer(),
+                          AppButtonWidget(
+                            ontap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: ColorManager.transparent,
+                                builder: (ctx) => const ShopDetailsView(),
+                              );
+                            },
+                            height: getProportionateScreenHeight(26),
+                            width: getProportionateScreenWidth(72),
+                            borderRadius: getProportionateScreenHeight(18),
+                            text: 'Detail',
+                            textSize: getProportionateScreenHeight(12),
+                            letterSpacing: getProportionateScreenWidth(0.5),
+                          ),
+                          buildVerticleSpace(5),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

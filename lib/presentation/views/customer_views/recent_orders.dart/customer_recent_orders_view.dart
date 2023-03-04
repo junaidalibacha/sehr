@@ -1,18 +1,19 @@
 import 'package:sehr/app/index.dart';
+import 'package:sehr/presentation/common/custom_card_widget.dart';
 import 'package:sehr/presentation/common/custom_chip_widget.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/customer_views/cart/cart_view_model.dart';
+import 'package:sehr/presentation/view_models/customer_view_models/customer_recent_orders_view_model.dart';
 
-import '../../../../domain/models/models.dart';
 import '../../../common/app_button_widget.dart';
+import '../../../src/index.dart';
 
-class CartView extends StatelessWidget {
-  const CartView({super.key});
+class CustomerRecentOrdersView extends StatelessWidget {
+  CustomerRecentOrdersView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => CompleteOrdersViewModel(),
+      create: (context) => CustomerRecentOrdersViewModel(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -50,115 +51,77 @@ class CartView extends StatelessWidget {
               padding: EdgeInsets.symmetric(
                 horizontal: getProportionateScreenWidth(24),
               ),
-              child: Consumer<CompleteOrdersViewModel>(
-                builder: (context, viewModel, child) =>
-                    CompleteOrdersWidget(items: viewModel.orders),
+              child: Consumer<CustomerRecentOrdersViewModel>(
+                builder: (context, viewModel, child) => ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: viewModel.orders.length,
+                  separatorBuilder: (context, index) => buildVerticleSpace(10),
+                  padding: EdgeInsets.only(
+                    bottom: getProportionateScreenHeight(100),
+                  ),
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => CustomListTileWidget(
+                    leading: Image.asset(AppImages.menu),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        kTextBentonSansMed(
+                          viewModel.orders[index].itemName,
+                          fontSize: getProportionateScreenHeight(15),
+                        ),
+                        // buildVerticleSpace(4),
+                        kTextBentonSansReg(
+                          viewModel.orders[index].shopName,
+                          color: ColorManager.textGrey.withOpacity(0.8),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                        // buildVerticleSpace(8),
+                        kTextBentonSansReg(
+                          'RS ${viewModel.orders[index].price}',
+                          color: ColorManager.primary,
+                          fontSize: getProportionateScreenHeight(19),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                      ],
+                    ),
+                    trailing: Column(
+                      children: [
+                        AppButtonWidget(
+                          ontap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (ctx) => Container(
+                                height: SizeConfig.screenHeight,
+                                width: SizeConfig.screenWidth,
+                                color: ColorManager.ambar,
+                              ),
+                            );
+                          },
+                          height: getProportionateScreenHeight(29),
+                          width: getProportionateScreenWidth(85),
+                          text: 'Buy Again',
+                          textSize: getProportionateScreenHeight(12),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                        // buildVerticleSpace(11),
+                        const Spacer(),
+                        InkWell(
+                          onTap: () => _buildOrderDetails(context),
+                          child: kTextBentonSansReg(
+                            'Detail',
+                            color: ColorManager.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class CompleteOrdersWidget extends StatelessWidget {
-  CompleteOrdersWidget({
-    Key? key,
-    // required this.name,
-    // required this.category,
-    // required this.distance,
-    // required this.onFavourite,
-    // required this.onDetail,
-    // required this.isFavourite,
-    required this.items,
-  }) : super(key: key);
-  // final String name;
-  // final String category;
-  // final String distance;
-  // final bool isFavourite;
-  // final void Function() onFavourite;
-  // final void Function() onDetail;
-  final List<CompleteOrdersModel> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      itemCount: items.length,
-      separatorBuilder: (context, index) => buildVerticleSpace(10),
-      padding: EdgeInsets.only(
-        bottom: getProportionateScreenHeight(100),
-      ),
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) => ListTile(
-        tileColor: ColorManager.white,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(12),
-          vertical: getProportionateScreenHeight(10),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenHeight(22),
-          ),
-        ),
-        leading: Image.asset(
-          AppImages.menu,
-          height: getProportionateScreenHeight(56.5),
-          width: getProportionateScreenHeight(56.5),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            kTextBentonSansMed(
-              items[index].itemName,
-              fontSize: getProportionateScreenHeight(15),
-            ),
-            buildVerticleSpace(4),
-            kTextBentonSansReg(
-              items[index].shopName,
-              color: ColorManager.textGrey.withOpacity(0.8),
-              letterSpacing: getProportionateScreenWidth(0.5),
-            ),
-            buildVerticleSpace(8),
-            kTextBentonSansReg(
-              'RS ${items[index].price}',
-              color: ColorManager.primary,
-              fontSize: getProportionateScreenHeight(19),
-              letterSpacing: getProportionateScreenWidth(0.5),
-            ),
-          ],
-        ),
-        trailing: Column(
-          children: [
-            AppButtonWidget(
-              ontap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (ctx) => Container(
-                    height: SizeConfig.screenHeight,
-                    width: SizeConfig.screenWidth,
-                    color: ColorManager.ambar,
-                  ),
-                );
-              },
-              height: getProportionateScreenHeight(29),
-              width: getProportionateScreenWidth(85),
-              text: 'Buy Again',
-              textSize: getProportionateScreenHeight(12),
-              letterSpacing: getProportionateScreenWidth(0.5),
-            ),
-            buildVerticleSpace(11),
-            InkWell(
-              onTap: () => _buildOrderDetails(context),
-              child: kTextBentonSansReg(
-                'Detail',
-                color: ColorManager.blue,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -173,8 +136,8 @@ class CompleteOrdersWidget extends StatelessWidget {
           vertical: getProportionateScreenHeight(16),
         ),
         insetPadding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(15),
-          vertical: getProportionateScreenHeight(80),
+          horizontal: getProportionateScreenWidth(10),
+          vertical: getProportionateScreenHeight(kToolbarHeight + 8),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
@@ -208,8 +171,9 @@ class CompleteOrdersWidget extends StatelessWidget {
               ),
               buildVerticleSpace(30),
               CustomChipWidget(
-                  width: getProportionateScreenWidth(108),
-                  text: 'Pervious shop'),
+                width: getProportionateScreenWidth(108),
+                text: 'Pervious shop',
+              ),
               buildVerticleSpace(20),
               kTextBentonSansMed(
                 'Shop Name',

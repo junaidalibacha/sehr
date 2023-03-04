@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sehr/presentation/index.dart';
 
-import '../../../../../app/constants.dart';
-import '../../../../common/top_back_button_widget.dart';
+import '../../../app/constants.dart';
+import '../../common/top_back_button_widget.dart';
+import '../../src/index.dart';
 
 class BlogView extends StatelessWidget {
   const BlogView({super.key});

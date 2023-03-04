@@ -2,11 +2,12 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/radio_button_widget.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/profile/profile_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../../common/drop_down_widget.dart';
 import '../../../common/top_back_button_widget.dart';
+import '../../../src/index.dart';
 
 class AddCustomerBioView extends StatelessWidget {
   const AddCustomerBioView({super.key});
@@ -133,7 +134,8 @@ class AddCustomerBioView extends StatelessWidget {
                         ),
                         child: AppButtonWidget(
                           ontap: () {
-                            Get.toNamed(Routes.photoSelectionRoute);
+                            // Get.toNamed(Routes.photoSelectionRoute);
+                            viewModel.addBioDataToPref();
                           },
                           text: 'Next',
                         ),

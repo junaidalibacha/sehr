@@ -1,5 +1,6 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
+
+import '../../src/index.dart';
 
 class PayementViewModel extends ChangeNotifier {
   PaymentType? paymentType;

@@ -1,55 +1,58 @@
-import 'package:sehr/app/index.dart';
+// Register Model
 
-class AuthDataModel {
-  final String id;
-  final String name;
-  final String email;
-  final String imgUrl;
+// class AuthDataModel {
+//   final String id;
+//   final String name;
+//   final String email;
+//   final String imgUrl;
 
-  AuthDataModel({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.imgUrl,
-  });
+//   AuthDataModel({
+//     required this.id,
+//     required this.name,
+//     required this.email,
+//     required this.imgUrl,
+//   });
 
-  // factory AuthDataModel.fromJson(Map<String, dynamic> jsonData) {
-  //   return AuthDataModel(
-  //     id: jsonData['id'] ?? '',
-  //     name: jsonData['name'] ?? '',
-  //     email: jsonData['email'] ?? '',
-  //     imgUrl: jsonData['imgUrl'] ?? '',
-  //   );
-  // }
-}
+//   // factory AuthDataModel.fromJson(Map<String, dynamic> jsonData) {
+//   //   return AuthDataModel(
+//   //     id: jsonData['id'] ?? '',
+//   //     name: jsonData['name'] ?? '',
+//   //     email: jsonData['email'] ?? '',
+//   //     imgUrl: jsonData['imgUrl'] ?? '',
+//   //   );
+//   // }
+// }
+
+import '../../app/index.dart';
 
 class ShopDataModel extends ChangeNotifier {
+  final String shopImage;
   final String shopName;
   final String shopCategory;
   final String shopDescription;
   bool isFavourite;
 
   ShopDataModel({
+    required this.shopImage,
     required this.shopName,
     required this.shopCategory,
     required this.shopDescription,
     this.isFavourite = false,
   });
 
-  // void toggleFav() {
-  //   isFavourite = !isFavourite;
-  //   notifyListeners();
-  // }
-
+//   // void toggleFav() {
+//   //   isFavourite = !isFavourite;
+//   //   notifyListeners();
+//   // }
 }
 
-class CompleteOrdersModel {
+class CustomerRecentOrdersModel {
   final String itemName;
   final String shopName;
   final double price;
   bool isFavourite;
 
-  CompleteOrdersModel({
+  CustomerRecentOrdersModel({
     required this.itemName,
     required this.shopName,
     required this.price,
@@ -57,13 +60,13 @@ class CompleteOrdersModel {
   });
 }
 
-class RecentOrdersModel {
+class BusinessRecentOrdersModel {
   final String customerName;
   final String shopName;
   final double price;
   bool isCompleted;
 
-  RecentOrdersModel({
+  BusinessRecentOrdersModel({
     required this.customerName,
     required this.shopName,
     required this.price,

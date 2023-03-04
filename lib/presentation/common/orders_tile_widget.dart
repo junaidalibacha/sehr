@@ -1,7 +1,7 @@
 import '../../app/index.dart';
 import '../../domain/models/models.dart';
 import '../src/index.dart';
-import '../views/customer_views/home/home_view_model.dart';
+import '../view_models/customer_view_models/home_view_model.dart';
 import '../views/customer_views/shop/shop_details_view.dart';
 import 'app_button_widget.dart';
 

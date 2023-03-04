@@ -1,8 +1,9 @@
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:sehr/presentation/index.dart';
 
-import '../../../../app/index.dart';
-import '../bottom_nav_view.dart';
+import '../../../app/index.dart';
+import '../../src/index.dart';
+import '../bottom_navigation/bottom_nav_view.dart';
 import 'drawer_menu_screen.dart';
 
 class DrawerView extends StatelessWidget {

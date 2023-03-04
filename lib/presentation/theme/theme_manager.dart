@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sehr/presentation/index.dart';
+
+import '../src/index.dart';
+import 'components/index.dart';
 
 ThemeData getAppTheme(BuildContext context) {
   return ThemeData(

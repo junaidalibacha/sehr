@@ -1,9 +1,13 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
+import 'package:sehr/domain/services/http_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../domain/models/api_response_model.dart';
+import '../routes/routes.dart';
 
 class ProfileViewModel extends ChangeNotifier {
   // Customer Bio Data
@@ -45,7 +49,7 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   // Business Bio Data
-  final businessTextController = TextEditingController();
+  final businessNameTextController = TextEditingController();
   final ownerNameTextController = TextEditingController();
   final mobileNoTextController = TextEditingController();
 
@@ -74,6 +78,37 @@ class ProfileViewModel extends ChangeNotifier {
     _selectedBusinessGrade = grade;
     notifyListeners();
   }
+
+  // void addBioDataToPref(){
+
+  // }
+  void addBioDataToPref() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('profileType') == 'customer') {
+      prefs.setString('fullName', nameTextController.text.trim());
+      prefs.setString('cnicNo', cnicNoTextController.text.trim());
+      prefs.setString('dob', dobTextController.text.trim());
+      prefs.setString('education', _selectedEducation!);
+      prefs.setString('mobileNo', mobileNoTextController.text.trim());
+      if (_selectedGender == Gender.male) {
+        prefs.setString('gender', 'male');
+      } else {
+        prefs.setString('gender', 'female');
+      }
+    } else {
+      prefs.setString('businessName', businessNameTextController.text.trim());
+      prefs.setString('ownerName', ownerNameTextController.text.trim());
+      prefs.setString('category', _selectedBusinessCategory!);
+      prefs.setString('grad', _selectedBusinessGrade!);
+    }
+    // print(prefs.getString('gender'));
+    Get.toNamed(Routes.photoSelectionRoute);
+  }
+
+  // void addPhotoToPrefs() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.setString('photoUrl', _image);
+  // }
 
   final List<String> _cityOptions = ['City1', 'City2', 'City3'];
   List<String> get cityOptions => _cityOptions;
@@ -136,8 +171,8 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   // Upload Profile Photo
-  String? _image;
-  String? get image => _image;
+  File? _image;
+  File? get image => _image;
 
   Future<void> setImageFrom(ImageSource source) async {
     final imagePicker = ImagePicker();
@@ -147,25 +182,25 @@ class ProfileViewModel extends ChangeNotifier {
     );
 
     if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      final base64Image = base64Encode(bytes);
+      // final bytes = await pickedFile.readAsBytes();
+      // final base64Image = base64Encode(bytes);
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('image', base64Image);
+      // final prefs = await SharedPreferences.getInstance();
+      // await prefs.set('image', pickedFile);
 
-      _image = base64Image;
+      _image = File(pickedFile.path);
       notifyListeners();
     }
   }
 
-  Future<void> getImageFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final image = prefs.getString('image');
-    if (image != null) {
-      _image = image;
-      notifyListeners();
-    }
-  }
+  // Future<void> getImageFromPrefs() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final image = prefs.getString('image');
+  //   if (image != null) {
+  //     _image = image;
+  //     notifyListeners();
+  //   }
+  // }
 
   String? _profileType;
   String? get profileType => _profileType;
@@ -188,4 +223,56 @@ class ProfileViewModel extends ChangeNotifier {
   final addressTextController = TextEditingController();
   final cityTextController = TextEditingController();
   final provinceTextController = TextEditingController();
+
+  ApiResponseModel _apiResponse = ApiResponseModel();
+
+  void registerData() async {
+    // if (loginFormKey.currentState!.validate()) {
+    //   loginFormKey.currentState!.save();
+    // try {
+    //   print(userNameController.text.toString());
+    //   print(passwordController.text.toString());
+    //   var response = await post(
+    //     Uri.parse("http://3.133.0.29/api/auth/login"),
+    //     body: {
+    // 'username': userNameController.text.toString(),
+    // 'password': passwordController.text.toString(),
+    //     },
+    //   );
+
+    //   if (response.statusCode == 201) {
+    //     print('Successfull');
+    //   } else if (response.statusCode == 500) {
+    //     print('500 error accured');
+    //   } else if (response.statusCode == 401) {
+    //     print('500 error accured');
+    //   } else {
+    //     print('error accured');
+    //   }
+    // } catch (e) {
+    //   print(e);
+    // }
+    final prefs = await SharedPreferences.getInstance();
+    _apiResponse = await registerUser(
+      'name',
+      'name',
+      // nameTextController.text.trim(),
+
+      prefs.getString('username')!,
+      prefs.getString('email')!,
+      mobileNoTextController.text.trim(),
+      prefs.getString('password')!,
+      prefs.getString('password')!,
+      prefs.getString('gender')!,
+      // dobTextController.text.trim(),
+      '03444444444',
+      prefs.getString('profileType')!,
+      // profileImage,
+    );
+    if ((_apiResponse.ApiError) == null) {
+      print('Success');
+    } else {
+      print('Error');
+    }
+  }
 }

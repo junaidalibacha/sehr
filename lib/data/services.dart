@@ -1,9 +1,7 @@
+// import '../domain/models/login_model.dart';
 
-// Future<AuthDataModel?> facebookSignIn() async {
-//   AuthDataModel result;
-//   try {
-
-//   } catch (e) {}
+// Future<LoginModel?> login() async {
+//   LoginModel result;
+//   try {} catch (e) {}
 //   return null;
 // }
-

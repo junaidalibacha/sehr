@@ -1,9 +1,11 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/auth/auth_view_model.dart';
+import 'package:sehr/presentation/view_models/auth_view_model.dart';
 
 import '../../common/top_back_button_widget.dart';
+import '../../routes/routes.dart';
+import '../../src/index.dart';
 
 class ProfileSelectionView extends StatelessWidget {
   const ProfileSelectionView({super.key});

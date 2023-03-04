@@ -6,7 +6,8 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/index.dart';
 
-import '../../bottom_navigation/bottom_nav_view_model.dart';
+import '../../../src/index.dart';
+import '../../../view_models/bottom_nav_view_model.dart';
 
 class ScannerView extends StatefulWidget {
   static String routeName = "/qrscan";

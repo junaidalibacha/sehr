@@ -2,11 +2,13 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/logo_widget.dart';
 import 'package:sehr/presentation/index.dart';
 // import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/views/auth/auth_view_model.dart';
+import 'package:sehr/presentation/view_models/auth_view_model.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/social_button_widget.dart';
 import '../../common/text_field_widget.dart';
+import '../../routes/routes.dart';
+import '../../src/index.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -24,86 +26,113 @@ class LoginView extends StatelessWidget {
               padding: EdgeInsets.symmetric(
                 horizontal: getProportionateScreenWidth(34),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  buildVerticleSpace(120),
-                  const LogoWidget(),
-                  buildVerticleSpace(32),
-                  kTextBentonSansBold(
-                    'Login To Your Account',
-                    fontSize: getProportionateScreenHeight(20),
-                  ),
-                  buildVerticleSpace(40),
-                  TextFieldWidget(
-                    controller: viewModel.emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    hintText: 'Email',
-                  ),
-                  buildVerticleSpace(12),
-                  TextFieldWidget(
-                    controller: viewModel.passwordController,
-                    keyboardType: TextInputType.visiblePassword,
-                    hintText: 'Password',
-                  ),
-                  buildVerticleSpace(20),
-                  kTextBentonSansMed(
-                    'Or Continue With',
-                    fontSize: getProportionateScreenHeight(12),
-                  ),
-                  buildVerticleSpace(20),
-                  Row(
-                    children: [
-                      SocialButtonWidget(
-                        onTap: () {
-                          // viewModel.facebookSignIn();
-                        },
-                        icon: AppIcons.facebookIcon,
-                        text: 'facebook',
+              child: Form(
+                key: viewModel.loginFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buildVerticleSpace(120),
+                    const LogoWidget(),
+                    buildVerticleSpace(32),
+                    kTextBentonSansBold(
+                      'Login To Your Account',
+                      fontSize: getProportionateScreenHeight(20),
+                    ),
+                    buildVerticleSpace(40),
+                    TextFieldWidget(
+                      controller: viewModel.userNameController,
+                      keyboardType: TextInputType.emailAddress,
+                      hintText: 'Email',
+                      prefixIcon: Image.asset(
+                        AppIcons.emailIcon,
                       ),
-                      const Spacer(),
-                      SocialButtonWidget(
-                        onTap: () {},
-                        icon: AppIcons.googleIcon,
-                        text: 'Google',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'User name is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    buildVerticleSpace(12),
+                    TextFieldWidget(
+                      controller: viewModel.passwordController,
+                      keyboardType: TextInputType.visiblePassword,
+                      hintText: 'Password',
+                      obscureText: viewModel.showPassword,
+                      prefixIcon: Image.asset(
+                        AppIcons.passwordIcon,
                       ),
-                    ],
-                  ),
-                  buildVerticleSpace(10),
-                  TextButton(
-                    onPressed: () {},
-                    child: kTextBentonSansMed(
-                      'Forgot Your Password?',
-                      color: ColorManager.primary,
+                      sufixIcon: InkWell(
+                        onTap: () => viewModel.showPass(),
+                        child: Image.asset(AppIcons.showIcon),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    buildVerticleSpace(20),
+                    kTextBentonSansMed(
+                      'Or Continue With',
                       fontSize: getProportionateScreenHeight(12),
-                      textDecoration: TextDecoration.underline,
                     ),
-                  ),
-                  buildVerticleSpace(20),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(90),
+                    buildVerticleSpace(20),
+                    Row(
+                      children: [
+                        SocialButtonWidget(
+                          onTap: () {
+                            // viewModel.facebookSignIn();
+                          },
+                          icon: AppIcons.facebookIcon,
+                          text: 'facebook',
+                        ),
+                        const Spacer(),
+                        SocialButtonWidget(
+                          onTap: () {},
+                          icon: AppIcons.googleIcon,
+                          text: 'Google',
+                        ),
+                      ],
                     ),
-                    child: AppButtonWidget(
-                      ontap: () {
+                    buildVerticleSpace(10),
+                    TextButton(
+                      onPressed: () {},
+                      child: kTextBentonSansMed(
+                        'Forgot Your Password?',
+                        color: ColorManager.primary,
+                        fontSize: getProportionateScreenHeight(12),
+                        textDecoration: TextDecoration.underline,
+                      ),
+                    ),
+                    buildVerticleSpace(20),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: getProportionateScreenWidth(90),
+                      ),
+                      child: AppButtonWidget(
+                        ontap: () {
+                          // Get.toNamed(Routes.signUpRoute);
+                          viewModel.login();
+                        },
+                        text: 'Login',
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
                         Get.toNamed(Routes.signUpRoute);
                       },
-                      text: 'Login',
+                      child: kTextBentonSansMed(
+                        'Need an account?',
+                        color: ColorManager.primary,
+                        fontSize: getProportionateScreenHeight(12),
+                        textDecoration: TextDecoration.underline,
+                      ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Get.toNamed(Routes.signUpRoute);
-                    },
-                    child: kTextBentonSansMed(
-                      'Need an account?',
-                      color: ColorManager.primary,
-                      fontSize: getProportionateScreenHeight(12),
-                      textDecoration: TextDecoration.underline,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

@@ -1,6 +1,8 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/index.dart';
 
+import '../src/index.dart';
+
 class LogoWidget extends StatelessWidget {
   const LogoWidget({
     Key? key,

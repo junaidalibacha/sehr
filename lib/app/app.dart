@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:sehr/presentation/views/auth/auth_view_model.dart';
+import 'package:sehr/presentation/view_models/auth_view_model.dart';
 
-import '../presentation/index.dart';
+import '../presentation/routes/routes.dart';
+import '../presentation/src/index.dart';
 import 'index.dart';
 
 class MyApp extends StatelessWidget {
