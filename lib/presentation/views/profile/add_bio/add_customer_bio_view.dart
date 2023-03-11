@@ -1,7 +1,6 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/radio_button_widget.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../../common/app_button_widget.dart';
@@ -56,17 +55,43 @@ class AddCustomerBioView extends StatelessWidget {
                           horizontal: getProportionateScreenWidth(23),
                         ),
                         child: Form(
+                          key: viewModel.customerFormKey,
                           child: Column(
                             children: [
                               TextFieldWidget(
-                                controller: viewModel.nameTextController,
-                                hintText: 'Full Name',
+                                controller: viewModel.firstNameTextController,
+                                hintText: 'First Name',
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Name is required';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              buildVerticleSpace(20),
+                              TextFieldWidget(
+                                controller: viewModel.lastNameTextController,
+                                hintText: 'Last Name',
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Name is required';
+                                  }
+                                  return null;
+                                },
                               ),
                               buildVerticleSpace(20),
                               TextFieldWidget(
                                 controller: viewModel.cnicNoTextController,
                                 keyboardType: TextInputType.number,
                                 hintText: 'Cnic No',
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'CNIC is required';
+                                  } else if (value.length < 13) {
+                                    return 'Invalid cnic number';
+                                  }
+                                  return null;
+                                },
                               ),
                               buildVerticleSpace(20),
                               DropDownWidget(
@@ -91,8 +116,17 @@ class AddCustomerBioView extends StatelessWidget {
                                 sufixIcon: _buildCalenderWidget(context),
                               ),
                               buildVerticleSpace(20),
-                              const TextFieldWidget(
+                              TextFieldWidget(
+                                controller: viewModel.userMobNoTextController,
                                 hintText: 'Mobile Number',
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Mobile number is required';
+                                  } else if (value.length < 11) {
+                                    return 'Invalid mobile number';
+                                  }
+                                  return null;
+                                },
                               ),
                             ],
                           ),
@@ -135,7 +169,7 @@ class AddCustomerBioView extends StatelessWidget {
                         child: AppButtonWidget(
                           ontap: () {
                             // Get.toNamed(Routes.photoSelectionRoute);
-                            viewModel.addBioDataToPref();
+                            viewModel.addBioData(context);
                           },
                           text: 'Next',
                         ),

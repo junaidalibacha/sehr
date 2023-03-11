@@ -2,21 +2,25 @@ import '../../app/index.dart';
 import '../src/index.dart';
 
 class TextFieldWidget extends StatelessWidget {
-  const TextFieldWidget(
-      {Key? key,
-      this.controller,
-      this.keyboardType,
-      this.hintText,
-      this.prefixIcon,
-      this.sufixIcon,
-      this.obscureText = false,
-      this.fillColor,
-      this.blurRadius,
-      this.validator})
-      : super(key: key);
+  const TextFieldWidget({
+    Key? key,
+    this.controller,
+    this.keyboardType,
+    this.focusNode,
+    this.hintText,
+    this.prefixIcon,
+    this.sufixIcon,
+    this.obscureText = false,
+    this.fillColor,
+    this.blurRadius,
+    this.onChange,
+    this.onFieldSubmit,
+    this.validator,
+  }) : super(key: key);
 
   final TextEditingController? controller;
   final TextInputType? keyboardType;
+  final FocusNode? focusNode;
   final String? hintText;
   final Widget? prefixIcon;
   final Widget? sufixIcon;
@@ -24,6 +28,8 @@ class TextFieldWidget extends StatelessWidget {
   final Color? fillColor;
   final double? blurRadius;
   final String? Function(String? value)? validator;
+  final void Function(String? value)? onChange;
+  final void Function(String? value)? onFieldSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +49,8 @@ class TextFieldWidget extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
+        focusNode: focusNode,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         style: TextStyleManager.regularTextStyle(
           fontSize: getProportionateScreenHeight(14),
           letterSpacing: getProportionateScreenHeight(0.5),
@@ -92,14 +100,11 @@ class TextFieldWidget extends StatelessWidget {
           ),
           constraints: BoxConstraints(
             minHeight: getProportionateScreenHeight(60),
-            // maxHeight: getProportionateScreenHeight(60),
           ),
-          // contentPadding: EdgeInsets.symmetric(
-          //   horizontal: getProportionateScreenWidth(20),
-          //   vertical: getProportionateScreenHeight(16),
-          // ),
         ),
         validator: validator,
+        onChanged: onChange,
+        onFieldSubmitted: onFieldSubmit,
       ),
     );
   }

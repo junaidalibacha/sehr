@@ -1,6 +1,5 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
 
 import '../../common/top_back_button_widget.dart';
@@ -76,7 +75,7 @@ class ProfileSelectionView extends StatelessWidget {
                                     ? Routes.addCustomerBioRoute
                                     : Routes.addBusinessBioRoute,
                               );
-                        print(viewModel.selectedProfileType);
+                        // print(viewModel.selectedProfileType);
                       },
                       text: 'Next',
                     ),

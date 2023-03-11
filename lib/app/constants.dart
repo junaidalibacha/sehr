@@ -17,13 +17,16 @@ enum PaymentType { easyPaisa, visa, jazzCash }
 enum Gender { male, female }
 
 enum Status {
-  notLoggedIn,
-  notRegistered,
-  loggedIn,
-  registered,
-  authenticating,
-  registering,
-  loggedOut,
+  // notLoggedIn,
+  // notRegistered,
+  // loggedIn,
+  // registered,
+  // authenticating,
+  // registering,
+  // loggedOut,
+  loading,
+  completed,
+  error,
 }
 
 Text kTextBentonSansReg(
@@ -50,15 +53,17 @@ Text kTextBentonSansReg(
   );
 }
 
-Text kTextBentonSansMed(String text,
-    {TextAlign? textAlign,
-    Color? color,
-    double? fontSize,
-    double? lineSpacing,
-    double? height,
-    TextOverflow? overFlow,
-    int? maxLines,
-    TextDecoration? textDecoration}) {
+Text kTextBentonSansMed(
+  String text, {
+  TextAlign? textAlign,
+  Color? color,
+  double? fontSize,
+  double? lineSpacing,
+  double? height,
+  TextOverflow? overFlow,
+  int? maxLines,
+  TextDecoration? textDecoration,
+}) {
   return Text(
     text,
     style: TextStyleManager.mediumTextStyle(

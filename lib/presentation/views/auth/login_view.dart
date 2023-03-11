@@ -1,6 +1,6 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/logo_widget.dart';
-import 'package:sehr/presentation/index.dart';
+import 'package:sehr/presentation/utils/utils.dart';
 // import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
 
@@ -42,24 +42,33 @@ class LoginView extends StatelessWidget {
                     buildVerticleSpace(40),
                     TextFieldWidget(
                       controller: viewModel.userNameController,
+                      focusNode: viewModel.userNameFocusNode,
                       keyboardType: TextInputType.emailAddress,
                       hintText: 'Email',
                       prefixIcon: Image.asset(
                         AppIcons.emailIcon,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'User name is required';
-                        }
-                        return null;
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'User name is required';
+                      //   }
+                      //   return null;
+                      // },
+                      onFieldSubmit: (value) {
+                        Utils.fieldFocusChange(
+                          context,
+                          viewModel.userNameFocusNode,
+                          viewModel.passwordFocusNode,
+                        );
                       },
                     ),
                     buildVerticleSpace(12),
                     TextFieldWidget(
                       controller: viewModel.passwordController,
+                      focusNode: viewModel.passwordFocusNode,
                       keyboardType: TextInputType.visiblePassword,
                       hintText: 'Password',
-                      obscureText: viewModel.showPassword,
+                      obscureText: viewModel.obscureText,
                       prefixIcon: Image.asset(
                         AppIcons.passwordIcon,
                       ),
@@ -67,12 +76,12 @@ class LoginView extends StatelessWidget {
                         onTap: () => viewModel.showPass(),
                         child: Image.asset(AppIcons.showIcon),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password is required';
-                        }
-                        return null;
-                      },
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Password is required';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                     buildVerticleSpace(20),
                     kTextBentonSansMed(
@@ -115,9 +124,30 @@ class LoginView extends StatelessWidget {
                       child: AppButtonWidget(
                         ontap: () {
                           // Get.toNamed(Routes.signUpRoute);
-                          viewModel.login();
+                          // if (viewModel.userNameController.text.isEmpty &&
+                          //     viewModel.passwordController.text.isEmpty) {
+                          //   Utils.flushBarErrorMessage(
+                          //       context, 'Please Enter Your Email & Pasword');
+                          // } else if (viewModel
+                          //     .userNameController.text.isEmpty) {
+                          //   Utils.flushBarErrorMessage(
+                          //       context, 'Email is empty');
+                          // } else if (viewModel
+                          //     .passwordController.text.isEmpty) {
+                          //   Utils.flushBarErrorMessage(
+                          //       context, 'Password is empty');
+                          // } else if (viewModel.passwordController.text.length <
+                          //     8) {
+                          //   Utils.flushBarErrorMessage(
+                          //       context, 'Password must be 8 charactors');
+                          // } else {
+                          viewModel.loginApi(context);
+                          // }
                         },
                         text: 'Login',
+                        child: viewModel.isLoading
+                            ? const CircularProgressIndicator()
+                            : null,
                       ),
                     ),
                     TextButton(

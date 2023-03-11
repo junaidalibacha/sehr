@@ -2,7 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
 
 import '../../src/index.dart';
@@ -25,7 +24,7 @@ class CustomerBottomNavView extends StatelessWidget {
       create: (context) => CustomerBottomNavViewModel(),
       child: SafeArea(
         child: Consumer<CustomerBottomNavViewModel>(
-          builder: (context, viewModel, child) {
+          builder: (ctx, viewModel, child) {
             return WillPopScope(
               onWillPop: () async {
                 if (profileType == ProfileType.customer) {
@@ -130,10 +129,18 @@ class CustomerBottomNavView extends StatelessWidget {
       leadingWidth: getProportionateScreenWidth(30),
       leading: IconButton(
         onPressed: () {
-          if (ZoomDrawer.of(context)!.isOpen()) {
-            ZoomDrawer.of(context)!.close();
-          } else {
-            ZoomDrawer.of(context)!.open();
+          // if (ZoomDrawer.of(context)!.isOpen()) {
+          //   ZoomDrawer.of(context)!.close();
+          // } else {
+          //   ZoomDrawer.of(context)!.open();
+          // }
+          final zoomDrawer = ZoomDrawer.of(context);
+          if (zoomDrawer != null) {
+            if (zoomDrawer.isOpen()) {
+              zoomDrawer.close();
+            } else {
+              zoomDrawer.open();
+            }
           }
         },
         icon: const Icon(Icons.menu),

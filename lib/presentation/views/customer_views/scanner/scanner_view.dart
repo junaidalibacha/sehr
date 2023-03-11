@@ -4,7 +4,6 @@ import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
-import 'package:sehr/presentation/index.dart';
 
 import '../../../src/index.dart';
 import '../../../view_models/bottom_nav_view_model.dart';

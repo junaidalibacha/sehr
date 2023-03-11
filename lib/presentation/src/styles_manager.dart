@@ -1,5 +1,3 @@
-import 'package:sehr/presentation/index.dart';
-
 import '../../app/index.dart';
 import 'index.dart';
 

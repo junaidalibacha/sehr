@@ -1,5 +1,4 @@
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-import 'package:sehr/presentation/index.dart';
 
 import '../../../app/index.dart';
 import '../../src/index.dart';
@@ -13,7 +12,6 @@ class DrawerView extends StatelessWidget {
   Widget build(BuildContext context) {
     // final drawerController = ZoomDrawerController();
     return ZoomDrawer(
-      //  controller: drawerController,
       menuScreenWidth: SizeConfig.screenWidth,
       mainScreen: const CustomerBottomNavView(),
       menuScreen: DrawerMenuScreenView(),

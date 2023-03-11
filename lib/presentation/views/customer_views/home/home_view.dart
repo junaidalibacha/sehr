@@ -1,5 +1,4 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/customer_view_models/home_view_model.dart';
 
 import '../../../common/app_button_widget.dart';

@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:sehr/app/index.dart';
 
 import '../../common/logo_widget.dart';
-import '../../routes/routes.dart';
 import '../../src/index.dart';
+import '../../view_models/splash_services.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -14,26 +12,27 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> {
-  late Timer _timer;
+  final SplashServices _splashServices = SplashServices();
+  // late Timer _timer;
 
-  void _splashScreenDelay() {
-    _timer = Timer(const Duration(seconds: 3), _goNext);
-  }
+  // void _splashScreenDelay() {
+  //   _timer = Timer(const Duration(seconds: 3), _goNext);
+  // }
 
-  void _goNext() {
-    Navigator.pushReplacementNamed(context, Routes.loginRoute);
-  }
+  // void _goNext() {
+  //   Navigator.pushReplacementNamed(context, Routes.loginRoute);
+  // }
 
   @override
   void initState() {
-    _splashScreenDelay();
-
+    // _splashScreenDelay();
+    _splashServices.checkAuthentication();
     super.initState();
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    // _timer.cancel();
     super.dispose();
   }
 

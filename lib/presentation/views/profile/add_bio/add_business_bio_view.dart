@@ -1,7 +1,6 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/drop_down_widget.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../../common/app_button_widget.dart';
@@ -106,7 +105,7 @@ class AddBusinessBioView extends StatelessWidget {
                                 ),
                                 child: AppButtonWidget(
                                   ontap: () {
-                                    viewModel.addBioDataToPref();
+                                    viewModel.addBioData(context);
                                     // Get.toNamed(Routes.photoSelectionRoute);
                                     // print(value.selectedProfileType);
                                   },

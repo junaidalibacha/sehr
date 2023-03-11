@@ -213,7 +213,7 @@ class SetLocationView extends StatelessWidget {
                         ontap: () {
                           // Get.toNamed(Routes.verificationCodeRoute);
 
-                          value.registerData();
+                          value.registerMultiPartApi(context);
                         },
                         text: 'Next',
                       ),

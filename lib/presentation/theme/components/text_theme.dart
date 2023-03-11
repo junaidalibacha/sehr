@@ -4,8 +4,8 @@ import '../../src/index.dart';
 
 TextTheme getTextTheme(BuildContext context) {
   return TextTheme(
-    bodyText1: TextStyleManager.regularTextStyle(),
-    bodyText2: TextStyleManager.regularTextStyle(
+    bodyLarge: TextStyleManager.regularTextStyle(),
+    bodyMedium: TextStyleManager.regularTextStyle(
       fontSize: 14,
     ).apply(
       color: ColorManager.black,

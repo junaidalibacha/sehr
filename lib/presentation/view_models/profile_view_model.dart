@@ -1,19 +1,30 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/domain/services/http_services.dart';
+import 'package:sehr/presentation/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
-import '../../domain/models/api_response_model.dart';
+import '../../domain/repository/app_urls.dart';
+import '../../domain/repository/auth_repository.dart';
 import '../routes/routes.dart';
 
 class ProfileViewModel extends ChangeNotifier {
+  final _customerFormKey = GlobalKey<FormState>();
+  final _businessFormKey = GlobalKey<FormState>();
+  GlobalKey<FormState> get customerFormKey => _customerFormKey;
+  GlobalKey<FormState> get businessFormKey => _businessFormKey;
+
   // Customer Bio Data
-  final nameTextController = TextEditingController();
+  final firstNameTextController = TextEditingController();
+  final lastNameTextController = TextEditingController();
   final cnicNoTextController = TextEditingController();
   final dobTextController = TextEditingController();
+  final userMobNoTextController = TextEditingController();
 
   DateTime? _selectedDate;
   DateTime? get selectedDate => _selectedDate;
@@ -51,7 +62,7 @@ class ProfileViewModel extends ChangeNotifier {
   // Business Bio Data
   final businessNameTextController = TextEditingController();
   final ownerNameTextController = TextEditingController();
-  final mobileNoTextController = TextEditingController();
+  final shopMobileNoTextController = TextEditingController();
 
   final List<String> _businessOptions = [
     'Cloth House',
@@ -79,17 +90,26 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void addBioDataToPref(){
+//! void addBioDataToPref(){
+  void addBioData(BuildContext context) async {
+    if (!_customerFormKey.currentState!.validate()) {
+      return;
+    } else if (_selectedEducation == null) {
+      Utils.flushBarErrorMessage(context, 'Please select education');
+    } else {
+      _saveBioToPrefsAndGoNext();
+    }
+  }
 
-  // }
-  void addBioDataToPref() async {
+  void _saveBioToPrefsAndGoNext() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getString('profileType') == 'customer') {
-      prefs.setString('fullName', nameTextController.text.trim());
+    if (prefs.getString('profileType') == 'user') {
+      prefs.setString('firstName', firstNameTextController.text.trim());
+      prefs.setString('lastName', lastNameTextController.text.trim());
       prefs.setString('cnicNo', cnicNoTextController.text.trim());
-      prefs.setString('dob', dobTextController.text.trim());
       prefs.setString('education', _selectedEducation!);
-      prefs.setString('mobileNo', mobileNoTextController.text.trim());
+      prefs.setString('dob', _selectedDate!.toIso8601String());
+      prefs.setString('mobileNo', userMobNoTextController.text.trim());
       if (_selectedGender == Gender.male) {
         prefs.setString('gender', 'male');
       } else {
@@ -173,34 +193,39 @@ class ProfileViewModel extends ChangeNotifier {
   // Upload Profile Photo
   File? _image;
   File? get image => _image;
+  String? _imageString;
+  String? get imageString => _imageString;
 
   Future<void> setImageFrom(ImageSource source) async {
     final imagePicker = ImagePicker();
     final pickedFile = await imagePicker.pickImage(
       source: source,
+      imageQuality: 80,
       preferredCameraDevice: CameraDevice.front,
     );
 
     if (pickedFile != null) {
-      // final bytes = await pickedFile.readAsBytes();
-      // final base64Image = base64Encode(bytes);
+      final bytes = await pickedFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
 
-      // final prefs = await SharedPreferences.getInstance();
-      // await prefs.set('image', pickedFile);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('image', base64Image);
 
       _image = File(pickedFile.path);
+      _imageString = base64Image;
+      print(_image);
       notifyListeners();
     }
   }
 
-  // Future<void> getImageFromPrefs() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final image = prefs.getString('image');
-  //   if (image != null) {
-  //     _image = image;
-  //     notifyListeners();
-  //   }
-  // }
+  Future<void> getImageFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final image = prefs.getString('image');
+    if (image != null) {
+      _imageString = image;
+      notifyListeners();
+    }
+  }
 
   String? _profileType;
   String? get profileType => _profileType;
@@ -224,55 +249,177 @@ class ProfileViewModel extends ChangeNotifier {
   final cityTextController = TextEditingController();
   final provinceTextController = TextEditingController();
 
-  ApiResponseModel _apiResponse = ApiResponseModel();
+  // final ApiResponseModel _apiResponse = ApiResponseModel();
 
-  void registerData() async {
-    // if (loginFormKey.currentState!.validate()) {
-    //   loginFormKey.currentState!.save();
-    // try {
-    //   print(userNameController.text.toString());
-    //   print(passwordController.text.toString());
-    //   var response = await post(
-    //     Uri.parse("http://3.133.0.29/api/auth/login"),
-    //     body: {
-    // 'username': userNameController.text.toString(),
-    // 'password': passwordController.text.toString(),
-    //     },
-    //   );
+  // void registerData() async {
+  //   // if (loginFormKey.currentState!.validate()) {
+  //   //   loginFormKey.currentState!.save();
+  //   // try {
+  //   //   print(userNameController.text.toString());
+  //   //   print(passwordController.text.toString());
+  //   //   var response = await post(
+  //   //     Uri.parse("http://3.133.0.29/api/auth/login"),
+  //   //     body: {
+  //   // 'username': userNameController.text.toString(),
+  //   // 'password': passwordController.text.toString(),
+  //   //     },
+  //   //   );
 
-    //   if (response.statusCode == 201) {
-    //     print('Successfull');
-    //   } else if (response.statusCode == 500) {
-    //     print('500 error accured');
-    //   } else if (response.statusCode == 401) {
-    //     print('500 error accured');
-    //   } else {
-    //     print('error accured');
-    //   }
-    // } catch (e) {
-    //   print(e);
-    // }
+  //   //   if (response.statusCode == 201) {
+  //   //     print('Successfull');
+  //   //   } else if (response.statusCode == 500) {
+  //   //     print('500 error accured');
+  //   //   } else if (response.statusCode == 401) {
+  //   //     print('500 error accured');
+  //   //   } else {
+  //   //     print('error accured');
+  //   //   }
+  //   // } catch (e) {
+  //   //   print(e);
+  //   // }
+  //   final prefs = await SharedPreferences.getInstance();
+  //   _apiResponse = await registerUser(
+  //     'name',
+  //     'name',
+  //     // nameTextController.text.trim(),
+
+  //     prefs.getString('username')!,
+  //     prefs.getString('email')!,
+  //     shopMobileNoTextController.text.trim(),
+  //     prefs.getString('password')!,
+  //     prefs.getString('password')!,
+  //     prefs.getString('gender')!,
+  //     // dobTextController.text.trim(),
+  //     '03444444444',
+  //     prefs.getString('profileType')!,
+  //     // profileImage,
+  //   );
+  //   if ((_apiResponse.ApiError) == null) {
+  //     print('Success');
+  //   } else {
+  //     print('Error');
+  //   }
+  // }
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  void setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  final _authRepo = AuthRepository();
+
+  // Future<void> registerApi(BuildContext context) async {
+  //   // Map<String, String> headers = {
+  //   //   'accept': '*/*',
+  //   //   'Content-Type': 'multipart/form-data',
+  //   // };
+  //   // var formData = FormData({
+  //   //   'image': [await MultipartFile.fromFile()]
+  //   // });
+  //   // if (!_customerFormKey.currentState!.validate()) {
+  //   //   return;
+  //   // } else if (_selectedEducation == null) {
+  //   //   Utils.flushBarErrorMessage(context, 'Please select education');
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   Map<String, dynamic> registerData = {
+  //     'firstName': prefs.getString('firstName')!,
+  //     'lastName': prefs.getString('lastName')!,
+  //     'username': prefs.getString('username')!,
+  //     'email': prefs.getString('email')!,
+  //     'mobile': prefs.getString('mobileNo')!,
+  //     'password': prefs.getString('password')!,
+  //     're_password': prefs.getString('password')!,
+  //     'gender': prefs.getString('gender')!,
+  //     'dob': prefs.getString('dob')!,
+  //     'role': prefs.getString('profileType')!,
+  //     // 'profileImage': ,
+  //   };
+  //   print(registerData);
+  //   setLoading(true);
+  //   _authRepo.signUpApi(registerData).then((value) {
+  //     setLoading(false);
+
+  //     // final userPreference = Provider.of<UserViewModel>(context, listen: false);
+  //     // userPreference.saveUser(UserModel(token: value['token'].toString()));
+
+  //     Utils.flushBarErrorMessage(context, 'Register Successfully');
+  //     // Navigator.pushNamed(context, RoutesName.home);
+  //     if (kDebugMode) {
+  //       print(value.toString());
+  //     }
+  //   }).onError((error, stackTrace) {
+  //     setLoading(false);
+  //     Utils.flushBarErrorMessage(context, error.toString());
+  //     if (kDebugMode) {
+  //       print(error.toString());
+  //     }
+  //   });
+  // }
+
+  // void uploadImage() async {
+  //   http.ByteStream stream = http.ByteStream(_image!.openRead());
+
+  //   stream.cast();
+
+  //   int lenght = await _image!.length();
+
+  //   Uri url = Uri.parse('http://3.133.0.29/api/user/register');
+
+  //   http.MultipartRequest request = http.MultipartRequest('POST', url);
+
+  //   request.fields['firstName'] = 'firstName';
+
+  //   http.MultipartFile multiPartFile =
+  //       http.MultipartFile('profileImage', stream, lenght);
+  //   request.files.add(multiPartFile);
+  // }
+
+  Future<void> registerMultiPartApi(BuildContext context) async {
+    var imageFile;
     final prefs = await SharedPreferences.getInstance();
-    _apiResponse = await registerUser(
-      'name',
-      'name',
-      // nameTextController.text.trim(),
-
-      prefs.getString('username')!,
-      prefs.getString('email')!,
-      mobileNoTextController.text.trim(),
-      prefs.getString('password')!,
-      prefs.getString('password')!,
-      prefs.getString('gender')!,
-      // dobTextController.text.trim(),
-      '03444444444',
-      prefs.getString('profileType')!,
-      // profileImage,
-    );
-    if ((_apiResponse.ApiError) == null) {
-      print('Success');
-    } else {
-      print('Error');
+    String? selectedImage = prefs.getString('image');
+    if (selectedImage != null) {
+      Uint8List imageBytes = base64Decode(selectedImage);
+      imageFile = imageFile.readAsBytes(imageBytes);
     }
+    print(_image);
+    http.ByteStream stream = http.ByteStream(imageFile!.openRead());
+    stream.cast();
+
+    int length = await _image!.length();
+
+    http.MultipartRequest request =
+        http.MultipartRequest('POST', Uri.parse(AppUrls.registerEndPoint));
+    request.fields['firstName'] = prefs.getString('firstName')!;
+    request.fields['lastName'] = prefs.getString('lastName')!;
+    request.fields['username'] = prefs.getString('username')!;
+    request.fields['email'] = prefs.getString('email')!;
+    request.fields['mobile'] = prefs.getString('mobileNo')!;
+    request.fields['password'] = prefs.getString('password')!;
+    request.fields['re_password'] = prefs.getString('password')!;
+    request.fields['gender'] = prefs.getString('gender')!;
+    request.fields['dob'] = prefs.getString('dob')!;
+    request.fields['role'] = prefs.getString('profileType')!;
+
+    http.MultipartFile multipartFile =
+        http.MultipartFile('profileImage', stream, length);
+    request.files.add(multipartFile);
+    _authRepo.signUpMultiPartApi(request).then((value) {
+      Utils.flushBarErrorMessage(context, 'Register Successfully');
+      // Navigator.pushNamed(context, RoutesName.home);
+      if (kDebugMode) {
+        print(value.toString());
+      }
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      Utils.flushBarErrorMessage(context, error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
+    });
   }
 }
+// }

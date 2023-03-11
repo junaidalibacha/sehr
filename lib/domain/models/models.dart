@@ -1,27 +1,3 @@
-// Register Model
-
-// class AuthDataModel {
-//   final String id;
-//   final String name;
-//   final String email;
-//   final String imgUrl;
-
-//   AuthDataModel({
-//     required this.id,
-//     required this.name,
-//     required this.email,
-//     required this.imgUrl,
-//   });
-
-//   // factory AuthDataModel.fromJson(Map<String, dynamic> jsonData) {
-//   //   return AuthDataModel(
-//   //     id: jsonData['id'] ?? '',
-//   //     name: jsonData['name'] ?? '',
-//   //     email: jsonData['email'] ?? '',
-//   //     imgUrl: jsonData['imgUrl'] ?? '',
-//   //   );
-//   // }
-// }
 
 import '../../app/index.dart';
 

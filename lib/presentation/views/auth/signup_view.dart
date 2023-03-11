@@ -39,19 +39,18 @@ class SignUpView extends StatelessWidget {
                       ),
                       buildVerticleSpace(40),
                       TextFieldWidget(
-                        controller: viewModel.userNameController,
-                        keyboardType: TextInputType.name,
-                        hintText: 'username',
-                        prefixIcon: Image.asset(
-                          AppIcons.profileIcon,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'User name is required';
-                          }
-                          return null;
-                        },
-                      ),
+                          controller: viewModel.userNameController,
+                          keyboardType: TextInputType.name,
+                          hintText: 'username',
+                          prefixIcon: Image.asset(
+                            AppIcons.profileIcon,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'username is required';
+                            }
+                            return null;
+                          }),
                       buildVerticleSpace(12),
                       TextFieldWidget(
                         controller: viewModel.emailController,
@@ -64,6 +63,11 @@ class SignUpView extends StatelessWidget {
                           if (value == null || value.isEmpty) {
                             return 'Email is required';
                           }
+                          if (!RegExp(
+                                  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                              .hasMatch(value)) {
+                            return "Please enter a valid email address";
+                          }
                           return null;
                         },
                       ),
@@ -72,7 +76,7 @@ class SignUpView extends StatelessWidget {
                         controller: viewModel.passwordController,
                         keyboardType: TextInputType.visiblePassword,
                         hintText: 'Password',
-                        obscureText: viewModel.showPassword,
+                        obscureText: viewModel.obscureText,
                         prefixIcon: Image.asset(
                           AppIcons.passwordIcon,
                         ),
@@ -83,6 +87,8 @@ class SignUpView extends StatelessWidget {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Password is required';
+                          } else if (value.length < 8) {
+                            return 'Password should be 8 charators minimum';
                           }
                           return null;
                         },
@@ -96,7 +102,7 @@ class SignUpView extends StatelessWidget {
                         ),
                         child: AppButtonWidget(
                           ontap: () {
-                            viewModel.setSignUpDataToPrefs();
+                            viewModel.setSignUpDataToPrefs(context);
                             // viewModel.signUp();
                           },
                           text: 'Create Account',
@@ -157,5 +163,13 @@ class SignUpView extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+extension EmailValidator on String {
+  bool isValidEmail() {
+    return RegExp(
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+        .hasMatch(this);
   }
 }
