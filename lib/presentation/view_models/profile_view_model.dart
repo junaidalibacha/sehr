@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import '../../domain/repository/app_urls.dart';
 import '../../domain/repository/auth_repository.dart';
+import '../../domain/repository/education_repository.dart';
 import '../routes/routes.dart';
 
 class ProfileViewModel extends ChangeNotifier {
@@ -43,12 +44,7 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  final List<String> _educationOptions = [
-    'High School',
-    'Bachelor\'s Degree',
-    'Master\'s Degree',
-    'PhD',
-  ];
+  final List<String> _educationOptions = [];
   List<String> get educationOptions => _educationOptions;
 
   String? _selectedEducation;
@@ -90,7 +86,7 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-//! void addBioDataToPref(){
+//!  add BioData To Pref
   void addBioData(BuildContext context) async {
     if (!_customerFormKey.currentState!.validate()) {
       return;
@@ -419,6 +415,22 @@ class ProfileViewModel extends ChangeNotifier {
       if (kDebugMode) {
         print(error.toString());
       }
+    });
+  }
+
+//
+//! Get Education Data from API
+  final _educationRepo = EducationRepository();
+  Future<void> educationApi() async {
+    _educationRepo.getEducationApi().then((value) {
+      // print(value.toString());
+      for (int i = 0; i < value.length; i++) {
+        _educationOptions.add(value[i].title!);
+      }
+      print('Education Options===>$_educationOptions');
+      // notifyListeners();
+    }).onError((error, stackTrace) {
+      print("Error==>$error");
     });
   }
 }

@@ -8,8 +8,20 @@ import '../../../common/drop_down_widget.dart';
 import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
 
-class AddCustomerBioView extends StatelessWidget {
+class AddCustomerBioView extends StatefulWidget {
   const AddCustomerBioView({super.key});
+
+  @override
+  State<AddCustomerBioView> createState() => _AddCustomerBioViewState();
+}
+
+class _AddCustomerBioViewState extends State<AddCustomerBioView> {
+  final ProfileViewModel profileViewModel = ProfileViewModel();
+  @override
+  void initState() {
+    profileViewModel.educationApi();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

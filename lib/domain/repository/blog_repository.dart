@@ -11,9 +11,10 @@ class BlogsRepository {
   Future<BlogModel> getBlogData() async {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.get('accessToken');
+    print(token);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token'
+      'Authorization': 'Bearer $token',
     };
     try {
       dynamic response =
@@ -21,6 +22,7 @@ class BlogsRepository {
       print(response);
       return response = BlogModel.fromJson(response);
     } catch (e) {
+      print(e);
       rethrow;
     }
   }

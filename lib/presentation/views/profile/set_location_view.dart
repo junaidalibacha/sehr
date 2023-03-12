@@ -26,7 +26,7 @@ class SetLocationView extends StatelessWidget {
               AppImages.pattern2,
               color: ColorManager.primary.withOpacity(0.1),
             ),
-            ChangeNotifierProvider(
+            ChangeNotifierProvider<ProfileViewModel>(
               create: (context) => ProfileViewModel(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
