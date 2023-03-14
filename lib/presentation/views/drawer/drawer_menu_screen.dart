@@ -129,8 +129,8 @@ class DrawerMenuScreenView extends StatelessWidget {
                             ? Get.to(() => const RewardView())
                             : index == 1
                                 ? {
-                                    value.blogApi(),
-                                    // Get.to(() => const BlogView()),
+                                    // value.blogApi(),
+                                    Get.to(() => const BlogView()),
                                   }
                                 : index == 2
                                     ? {
