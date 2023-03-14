@@ -14,6 +14,13 @@ class DrawerMenuViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  DrawerMenuViewModel() {
+    callingBlog();
+  }
+  callingBlog() async {
+    await blogApi();
+  }
+
   Future<void> blogApi() async {
     setBlogData(ApiResponse.loading());
 
