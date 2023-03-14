@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/view_models/auth_view_model.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../common/app_button_widget.dart';
@@ -16,7 +15,7 @@ class UplaodProfilePhotoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileType =
-        Provider.of<AuthViewModel>(context, listen: false).selectedProfileType;
+        Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
     return ChangeNotifierProvider(
       create: (_) => ProfileViewModel(),
       child: SafeArea(
@@ -38,7 +37,7 @@ class UplaodProfilePhotoView extends StatelessWidget {
                         left: getProportionateScreenWidth(27),
                       ),
                       child: kTextBentonSansMed(
-                        profileType == ProfileType.customer
+                        profileType == UserRole.customer
                             ? 'Upload Your Profile\nPhoto'
                             : 'Upload Your Business\nProfile',
                         fontSize: getProportionateScreenHeight(25),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
@@ -10,16 +8,17 @@ import '../../common/top_back_button_widget.dart';
 import '../../src/index.dart';
 
 class SetLocationView extends StatelessWidget {
-  final File imageFile;
+  // final File imageFile;
   const SetLocationView({
     super.key,
-    required this.imageFile,
+    // required this.imageFile,
   });
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             Image.asset(
@@ -213,7 +212,8 @@ class SetLocationView extends StatelessWidget {
                         ontap: () {
                           // Get.toNamed(Routes.verificationCodeRoute);
 
-                          value.registerMultiPartApi(context);
+                          // value.registerMultiPartApi(context);
+                          value.registerApi(context);
                         },
                         text: 'Next',
                       ),

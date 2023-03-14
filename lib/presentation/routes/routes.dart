@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/views/bottom_navigation/bottom_nav_view.dart';
 import 'package:sehr/presentation/views/business_views/payment/payment_view.dart';
 import 'package:sehr/presentation/views/customer_views/scanner/scanner_view.dart';
-import 'package:sehr/presentation/views/profile/add_bio/add_business_bio_view.dart';
+import 'package:sehr/presentation/views/profile/add_bio/add_business_details_view.dart';
 import 'package:sehr/presentation/views/profile/add_bio/add_customer_bio_view.dart';
 import 'package:sehr/presentation/views/profile/profile_complete_view.dart';
 import 'package:sehr/presentation/views/profile/set_location_view.dart';
@@ -12,8 +11,8 @@ import 'package:sehr/presentation/views/profile/varification_code_view.dart';
 
 import '../src/index.dart';
 import '../views/auth/login_view.dart';
-import '../views/auth/profile_selection_view.dart';
 import '../views/auth/signup_view.dart';
+import '../views/profile/profile_selection_view.dart';
 import '../views/splash/splash_view.dart';
 
 class Routes {
@@ -57,17 +56,18 @@ class RoutesGenerator {
       case Routes.addCustomerBioRoute:
         return MaterialPageRoute(builder: (_) => const AddCustomerBioView());
       case Routes.addBusinessBioRoute:
-        return MaterialPageRoute(builder: (_) => const AddBusinessBioView());
+        return MaterialPageRoute(
+            builder: (_) => const AddBusinessDetailsView());
       case Routes.photoSelectionRoute:
         return MaterialPageRoute(
             builder: (_) => const UplaodProfilePhotoView());
       case Routes.setLocationRoute:
-        Map<String, dynamic> arguments =
-            routeSettings.arguments as Map<String, dynamic>;
+        // Map<String, dynamic> arguments =
+        //     routeSettings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => SetLocationView(
-            imageFile: arguments['image'],
-          ),
+          builder: (_) => const SetLocationView(
+              // imageFile: arguments['image'],
+              ),
         );
       case Routes.verificationCodeRoute:
         return MaterialPageRoute(builder: (_) => const VerificationCodeView());

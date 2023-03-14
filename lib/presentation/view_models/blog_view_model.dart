@@ -1,6 +1,8 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/data/response/api_response.dart';
 import 'package:sehr/domain/models/blog_model.dart';
+import 'package:sehr/presentation/routes/routes.dart';
+import 'package:sehr/presentation/views/drawer/blog_view.dart';
 
 import '../../domain/repository/blog_repository.dart';
 // import '../../domain/repository/education_repository.dart';
@@ -28,6 +30,7 @@ class DrawerMenuViewModel extends ChangeNotifier {
     _blogRepo.getBlogData().then((value) {
       setBlogData(ApiResponse.completed(value));
       // print(blogsList.status);
+      Get.to(() => const BlogView());
     }).onError((error, stackTrace) {
       setBlogData(ApiResponse.error(error.toString()));
       // print(blogsList.status);

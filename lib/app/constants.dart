@@ -10,7 +10,7 @@ const double kDesignWidth = 393.0;
 const kEmpty = "";
 const kZero = 0;
 
-enum ProfileType { customer, business, non }
+enum UserRole { customer, business, non }
 
 enum PaymentType { easyPaisa, visa, jazzCash }
 

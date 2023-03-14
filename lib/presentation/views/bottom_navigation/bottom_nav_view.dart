@@ -3,9 +3,9 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../src/index.dart';
-import '../../view_models/auth_view_model.dart';
 
 class CustomerBottomNavView extends StatelessWidget {
   const CustomerBottomNavView({super.key});
@@ -13,7 +13,7 @@ class CustomerBottomNavView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var profileType =
-        Provider.of<AuthViewModel>(context, listen: false).selectedProfileType;
+        Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: ColorManager.primary,
@@ -27,7 +27,7 @@ class CustomerBottomNavView extends StatelessWidget {
           builder: (ctx, viewModel, child) {
             return WillPopScope(
               onWillPop: () async {
-                if (profileType == ProfileType.customer) {
+                if (profileType == UserRole.customer) {
                   if (viewModel.index == 2) {
                     viewModel.pageChange(0);
                   } else {
@@ -40,15 +40,15 @@ class CustomerBottomNavView extends StatelessWidget {
               },
               child: Scaffold(
                 // drawer: const Drawer(),
-                appBar: profileType == ProfileType.customer
+                appBar: profileType == UserRole.customer
                     ? (viewModel.index == 2 ? null : _buildAppBar(context))
                     : _buildAppBar(context),
-                body: profileType == ProfileType.customer
+                body: profileType == UserRole.customer
                     ? viewModel.customerPages[viewModel.index]
                     : viewModel.businessPages[viewModel.index],
 
                 // bottomNavigationBar: ,
-                bottomNavigationBar: profileType == ProfileType.customer
+                bottomNavigationBar: profileType == UserRole.customer
                     ? (viewModel.index == 2
                         ? null
                         : _buildBottomNavigation(profileType))
@@ -87,14 +87,14 @@ class CustomerBottomNavView extends StatelessWidget {
         builder: (context, viweModel, child) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(
-            type == ProfileType.customer
+            type == UserRole.customer
                 ? viweModel.customerIcons.length
                 : viweModel.businessPages.length,
             (index) => InkWell(
               onTap: () {
                 viweModel.pageChange(index);
               },
-              child: type == ProfileType.customer
+              child: type == UserRole.customer
                   ? index == 2
                       ? Lottie.asset(
                           AppIcons.lottieIcon2,

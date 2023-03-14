@@ -7,8 +7,8 @@ import '../../../common/app_button_widget.dart';
 import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
 
-class AddBusinessBioView extends StatelessWidget {
-  const AddBusinessBioView({super.key});
+class AddBusinessDetailsView extends StatelessWidget {
+  const AddBusinessDetailsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +41,7 @@ class AddBusinessBioView extends StatelessWidget {
                     buildVerticleSpace(34),
                     Consumer<ProfileViewModel>(
                       builder: (context, viewModel, child) => Form(
+                        key: viewModel.businessFormKey,
                         child: Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: getProportionateScreenWidth(23),
@@ -51,18 +52,42 @@ class AddBusinessBioView extends StatelessWidget {
                                 controller:
                                     viewModel.businessNameTextController,
                                 hintText: 'Business / Company',
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Business/Company name is required';
+                                  } else if (value.length < 3) {
+                                    return 'Invalid Business/Company name';
+                                  }
+                                  return null;
+                                },
                               ),
                               buildVerticleSpace(20),
                               TextFieldWidget(
-                                controller:
-                                    viewModel.businessNameTextController,
+                                controller: viewModel.ownerNameTextController,
                                 hintText: 'Owner Name',
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Owner name is required';
+                                  } else if (value.length < 3) {
+                                    return 'Invalid Owner name';
+                                  }
+                                  return null;
+                                },
                               ),
                               buildVerticleSpace(20),
                               TextFieldWidget(
                                 controller:
-                                    viewModel.businessNameTextController,
+                                    viewModel.shopKeeperMobileNoTextController,
                                 hintText: 'Mobile Number',
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Mobile number is required';
+                                  } else if (value.length < 11) {
+                                    return 'Invalid mobile number';
+                                  }
+                                  return null;
+                                },
                               ),
                               buildVerticleSpace(20),
                               DropDownWidget(
@@ -101,11 +126,12 @@ class AddBusinessBioView extends StatelessWidget {
                               buildVerticleSpace(100),
                               Padding(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: getProportionateScreenWidth(118),
+                                  horizontal: getProportionateScreenWidth(95),
                                 ),
                                 child: AppButtonWidget(
                                   ontap: () {
-                                    viewModel.addBioData(context);
+                                    viewModel
+                                        .addBussinessDataAndGoNext(context);
                                     // Get.toNamed(Routes.photoSelectionRoute);
                                     // print(value.selectedProfileType);
                                   },

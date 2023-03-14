@@ -21,8 +21,6 @@ class AuthViewModel extends ChangeNotifier {
   final passwordController = TextEditingController();
   bool obscureText = true;
   bool keepAuthData = false;
-  ProfileType? _selectedProfileType;
-  ProfileType? get selectedProfileType => _selectedProfileType;
 
   void showPass() {
     obscureText = obscureText.toggle();
@@ -31,21 +29,6 @@ class AuthViewModel extends ChangeNotifier {
 
   void keepAuth() {
     keepAuthData = keepAuthData.toggle();
-    notifyListeners();
-  }
-
-  Future<void> selectProfileType(ProfileType type) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    _selectedProfileType = type;
-
-    if (_selectedProfileType == ProfileType.customer) {
-      prefs.setString('profileType', 'user');
-    }
-    if (_selectedProfileType == ProfileType.business) {
-      prefs.setString('profileType', 'shopKeeper');
-    } else {
-      null;
-    }
     notifyListeners();
   }
 

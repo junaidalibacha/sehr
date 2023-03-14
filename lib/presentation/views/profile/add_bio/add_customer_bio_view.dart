@@ -19,7 +19,7 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
   final ProfileViewModel profileViewModel = ProfileViewModel();
   @override
   void initState() {
-    profileViewModel.educationApi();
+    // profileViewModel.educationApi();
     super.initState();
   }
 
@@ -158,14 +158,14 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                         child: Row(
                           children: [
                             RadioButtonWidget(
-                              value: Gender.male,
+                              value: 'male',
                               groupValue: viewModel.selectedGender,
                               text: 'Male',
                               onChanged: (value) => viewModel.setGender(value),
                             ),
                             buildHorizontalSpace(44),
                             RadioButtonWidget(
-                              value: Gender.female,
+                              value: 'female',
                               groupValue: viewModel.selectedGender,
                               text: 'Female',
                               onChanged: (value) => viewModel.setGender(value),
@@ -181,7 +181,7 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                         child: AppButtonWidget(
                           ontap: () {
                             // Get.toNamed(Routes.photoSelectionRoute);
-                            viewModel.addBioData(context);
+                            viewModel.addUserBioAndGoNext(context);
                           },
                           text: 'Next',
                         ),

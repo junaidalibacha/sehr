@@ -15,6 +15,28 @@ import '../../domain/repository/education_repository.dart';
 import '../routes/routes.dart';
 
 class ProfileViewModel extends ChangeNotifier {
+//! Select User Role
+  String? _selectedUserRole;
+  String? get selectedUserRole => _selectedUserRole;
+
+  Future<void> selectUserRole(String userRole) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    _selectedUserRole = userRole;
+    prefs.setString('userRole', userRole);
+    // print(_selectedUserRole);
+    // print(prefs.getString('userRole'));
+    // if (_selectedUserRole == UserRole.customer) {
+    //   prefs.setString('userRole', 'user');
+    // }
+    // if (_selectedUserRole == UserRole.business) {
+    //   prefs.setString('userRole', 'shopKeeper');
+    // } else {
+    //   null;
+    // }
+    notifyListeners();
+  }
+
+//! Fill User Bio
   final _customerFormKey = GlobalKey<FormState>();
   final _businessFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> get customerFormKey => _customerFormKey;
@@ -36,15 +58,19 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Gender? _selectedGender;
-  Gender? get selectedGender => _selectedGender;
+  String? _selectedGender;
+  String? get selectedGender => _selectedGender;
 
-  void setGender(Gender? gender) {
+  void setGender(String? gender) {
     _selectedGender = gender;
     notifyListeners();
   }
 
-  final List<String> _educationOptions = [];
+  final List<String> _educationOptions = [
+    'Bachelor',
+    'Intermediate',
+    'Matric',
+  ];
   List<String> get educationOptions => _educationOptions;
 
   String? _selectedEducation;
@@ -58,7 +84,7 @@ class ProfileViewModel extends ChangeNotifier {
   // Business Bio Data
   final businessNameTextController = TextEditingController();
   final ownerNameTextController = TextEditingController();
-  final shopMobileNoTextController = TextEditingController();
+  final shopKeeperMobileNoTextController = TextEditingController();
 
   final List<String> _businessOptions = [
     'Cloth House',
@@ -86,40 +112,93 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-//!  add BioData To Pref
-  void addBioData(BuildContext context) async {
+//!  add Customer Bio Data
+  void addUserBioAndGoNext(BuildContext context) async {
     if (!_customerFormKey.currentState!.validate()) {
       return;
     } else if (_selectedEducation == null) {
       Utils.flushBarErrorMessage(context, 'Please select education');
     } else {
-      _saveBioToPrefsAndGoNext();
+      // _saveBioToPrefsAndGoNext();
+      _saveUserBioToPrefs();
+      Get.toNamed(Routes.photoSelectionRoute);
     }
   }
 
-  void _saveBioToPrefsAndGoNext() async {
+  void _saveUserBioToPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getString('profileType') == 'user') {
-      prefs.setString('firstName', firstNameTextController.text.trim());
-      prefs.setString('lastName', lastNameTextController.text.trim());
-      prefs.setString('cnicNo', cnicNoTextController.text.trim());
-      prefs.setString('education', _selectedEducation!);
-      prefs.setString('dob', _selectedDate!.toIso8601String());
-      prefs.setString('mobileNo', userMobNoTextController.text.trim());
-      if (_selectedGender == Gender.male) {
-        prefs.setString('gender', 'male');
-      } else {
-        prefs.setString('gender', 'female');
-      }
-    } else {
-      prefs.setString('businessName', businessNameTextController.text.trim());
-      prefs.setString('ownerName', ownerNameTextController.text.trim());
-      prefs.setString('category', _selectedBusinessCategory!);
-      prefs.setString('grad', _selectedBusinessGrade!);
-    }
+
+    prefs.setString('firstName', firstNameTextController.text.trim());
+    prefs.setString('lastName', lastNameTextController.text.trim());
+    prefs.setString('cnic', cnicNoTextController.text.trim());
+    prefs.setString('education', _selectedEducation!);
+    prefs.setString('dob', _selectedDate!.toIso8601String());
+    prefs.setString('mobileNo', userMobNoTextController.text.trim());
+    prefs.setString('gender', _selectedGender!);
+    // if (_selectedGender == Gender.male) {
+    //   prefs.setString('gender', 'male');
+    // } else {
+    //   prefs.setString('gender', 'female');
+    // }
+
     // print(prefs.getString('gender'));
-    Get.toNamed(Routes.photoSelectionRoute);
+    // Get.toNamed(Routes.photoSelectionRoute);
   }
+
+//!  add Bussiness Data
+  void addBussinessDataAndGoNext(BuildContext context) async {
+    if (!_businessFormKey.currentState!.validate()) {
+      return;
+    } else if (_selectedBusinessCategory == null &&
+        _selectedBusinessGrade == null) {
+      Utils.flushBarErrorMessage(context, 'Please select Category & Grade');
+    } else if (_selectedBusinessCategory == null) {
+      Utils.flushBarErrorMessage(context, 'Please select Category');
+    } else if (_selectedBusinessGrade == null) {
+      Utils.flushBarErrorMessage(context, 'Please select Grade');
+    } else {
+      // _saveBioToPrefsAndGoNext();
+      _saveBussinessDetailsToPrefs();
+      Get.toNamed(Routes.photoSelectionRoute);
+    }
+  }
+
+  void _saveBussinessDetailsToPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('businessName', businessNameTextController.text.trim());
+    prefs.setString('ownerName', ownerNameTextController.text.trim());
+    prefs.setString('mobileNo', shopKeeperMobileNoTextController.text.trim());
+    prefs.setString('category', _selectedBusinessCategory!);
+    prefs.setString('grade', _selectedBusinessGrade!);
+
+    // print(prefs.getString('gender'));
+    // Get.toNamed(Routes.photoSelectionRoute);
+  }
+
+  // void _saveBioToPrefsAndGoNext() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   if (prefs.getString('userRole') == 'user') {
+  //     prefs.setString('firstName', firstNameTextController.text.trim());
+  //     prefs.setString('lastName', lastNameTextController.text.trim());
+  //     prefs.setString('cnicNo', cnicNoTextController.text.trim());
+  //     prefs.setString('education', _selectedEducation!);
+  //     prefs.setString('dob', _selectedDate!.toIso8601String());
+  //     prefs.setString('mobileNo', userMobNoTextController.text.trim());
+  //     if (_selectedGender == Gender.male) {
+  //       prefs.setString('gender', 'male');
+  //     } else {
+  //       prefs.setString('gender', 'female');
+  //     }
+  //   } else {
+  //     prefs.setString('businessName', businessNameTextController.text.trim());
+  //     prefs.setString('ownerName', ownerNameTextController.text.trim());
+  //     prefs.setString('category', _selectedBusinessCategory!);
+  //     prefs.setString('grad', _selectedBusinessGrade!);
+  //   }
+  //   // print(prefs.getString('gender'));
+  //   Get.toNamed(Routes.photoSelectionRoute);
+  // }
 
   // void addPhotoToPrefs() async {
   //   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -223,17 +302,17 @@ class ProfileViewModel extends ChangeNotifier {
     }
   }
 
-  String? _profileType;
-  String? get profileType => _profileType;
-  Future<void> getProfileTypeFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final profile = prefs.getString('profileType');
-    if (profile != null) {
-      _profileType = profile;
-      notifyListeners();
-    }
-    print(profileType);
-  }
+  // String? _userRole;
+  // String? get userRole => _userRole;
+  // Future<void> getuserRoleFromPrefs() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final profile = prefs.getString('userRole');
+  //   if (profile != null) {
+  //     _userRole = profile;
+  //     notifyListeners();
+  //   }
+  //   print(userRole);
+  // }
 
   void cancelProfileImage() {
     _image = null;
@@ -287,7 +366,7 @@ class ProfileViewModel extends ChangeNotifier {
   //     prefs.getString('gender')!,
   //     // dobTextController.text.trim(),
   //     '03444444444',
-  //     prefs.getString('profileType')!,
+  //     prefs.getString('userRole')!,
   //     // profileImage,
   //   );
   //   if ((_apiResponse.ApiError) == null) {
@@ -306,54 +385,76 @@ class ProfileViewModel extends ChangeNotifier {
 
   final _authRepo = AuthRepository();
 
-  // Future<void> registerApi(BuildContext context) async {
-  //   // Map<String, String> headers = {
-  //   //   'accept': '*/*',
-  //   //   'Content-Type': 'multipart/form-data',
-  //   // };
-  //   // var formData = FormData({
-  //   //   'image': [await MultipartFile.fromFile()]
-  //   // });
-  //   // if (!_customerFormKey.currentState!.validate()) {
-  //   //   return;
-  //   // } else if (_selectedEducation == null) {
-  //   //   Utils.flushBarErrorMessage(context, 'Please select education');
-  //   final prefs = await SharedPreferences.getInstance();
+//! Register PostApi
+  Future<void> registerApi(BuildContext context) async {
+    // Map<String, String> headers = {
+    //   'accept': '*/*',
+    //   'Content-Type': 'multipart/form-data',
+    // };
+    // var formData = FormData({
+    //   'image': [await MultipartFile.fromFile()]
+    // });
+    // if (!_customerFormKey.currentState!.validate()) {
+    //   return;
+    // } else if (_selectedEducation == null) {
+    //   Utils.flushBarErrorMessage(context, 'Please select education');
+    final prefs = await SharedPreferences.getInstance();
 
-  //   Map<String, dynamic> registerData = {
-  //     'firstName': prefs.getString('firstName')!,
-  //     'lastName': prefs.getString('lastName')!,
-  //     'username': prefs.getString('username')!,
-  //     'email': prefs.getString('email')!,
-  //     'mobile': prefs.getString('mobileNo')!,
-  //     'password': prefs.getString('password')!,
-  //     're_password': prefs.getString('password')!,
-  //     'gender': prefs.getString('gender')!,
-  //     'dob': prefs.getString('dob')!,
-  //     'role': prefs.getString('profileType')!,
-  //     // 'profileImage': ,
-  //   };
-  //   print(registerData);
-  //   setLoading(true);
-  //   _authRepo.signUpApi(registerData).then((value) {
-  //     setLoading(false);
+    Map<String, dynamic> registerData = {
+      'firstName': prefs.getString('firstName')!,
+      'lastName': prefs.getString('lastName')!,
+      // 'username': prefs.getString('username')!,
+      'username': 'username11',
+      'email': prefs.getString('email')!,
+      'mobile': prefs.getString('mobileNo')!,
+      'password': prefs.getString('password')!,
+      're_password': prefs.getString('password')!,
+      'gender': prefs.getString('gender')!,
+      'dob': prefs.getString('dob')!,
+      'cnic': prefs.getString('cnic'),
+      'education': prefs.getString('education'),
+      'address': addressTextController.text.trim(),
+      'tehsil': _selectedTehsil,
+      'district': _selectedDistrict,
+      'division': _selectedDivision,
+      'province': _selectedProvince,
+      'city': _selectedCity,
+      'country': 'Pakistan',
+      'role': prefs.getString('userRole')!,
+      // 'profileImage': ,
+      // 'firstName': firstNameTextController.text.trim(),
+      // 'lastName': lastNameTextController.text.trim(),
+      // 'username': prefs.getString('username')!,
+      // 'email': prefs.getString('email')!,
+      // 'mobile': userMobNoTextController.text.trim(),
+      // 'password': prefs.getString('password')!,
+      // 're_password': prefs.getString('password')!,
+      // 'gender': _selectedGender,
+      // 'dob': _selectedDate,
+      // 'role': _selectedUserRole,
+      // // 'profileImage': ,
+    };
+    print(registerData);
+    setLoading(true);
+    _authRepo.registerApi(registerData).then((value) {
+      setLoading(false);
 
-  //     // final userPreference = Provider.of<UserViewModel>(context, listen: false);
-  //     // userPreference.saveUser(UserModel(token: value['token'].toString()));
+      // final userPreference = Provider.of<UserViewModel>(context, listen: false);
+      // userPreference.saveUser(UserModel(token: value['token'].toString()));
 
-  //     Utils.flushBarErrorMessage(context, 'Register Successfully');
-  //     // Navigator.pushNamed(context, RoutesName.home);
-  //     if (kDebugMode) {
-  //       print(value.toString());
-  //     }
-  //   }).onError((error, stackTrace) {
-  //     setLoading(false);
-  //     Utils.flushBarErrorMessage(context, error.toString());
-  //     if (kDebugMode) {
-  //       print(error.toString());
-  //     }
-  //   });
-  // }
+      Utils.flushBarErrorMessage(context, 'Register Successfully');
+      // Navigator.pushNamed(context, RoutesName.home);
+      if (kDebugMode) {
+        print(value.toString());
+      }
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      Utils.flushBarErrorMessage(context, error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
+    });
+  }
 
   // void uploadImage() async {
   //   http.ByteStream stream = http.ByteStream(_image!.openRead());
@@ -373,6 +474,7 @@ class ProfileViewModel extends ChangeNotifier {
   //   request.files.add(multiPartFile);
   // }
 
+//! Register MultiPartApi
   Future<void> registerMultiPartApi(BuildContext context) async {
     var imageFile;
     final prefs = await SharedPreferences.getInstance();
@@ -398,12 +500,12 @@ class ProfileViewModel extends ChangeNotifier {
     request.fields['re_password'] = prefs.getString('password')!;
     request.fields['gender'] = prefs.getString('gender')!;
     request.fields['dob'] = prefs.getString('dob')!;
-    request.fields['role'] = prefs.getString('profileType')!;
+    request.fields['role'] = prefs.getString('userRole')!;
 
     http.MultipartFile multipartFile =
         http.MultipartFile('profileImage', stream, length);
     request.files.add(multipartFile);
-    _authRepo.signUpMultiPartApi(request).then((value) {
+    _authRepo.registerMultiPartApi(request).then((value) {
       Utils.flushBarErrorMessage(context, 'Register Successfully');
       // Navigator.pushNamed(context, RoutesName.home);
       if (kDebugMode) {
@@ -419,7 +521,7 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
 //
-//! Get Education Data from API
+//! Get Education API
   final _educationRepo = EducationRepository();
   Future<void> educationApi() async {
     _educationRepo.getEducationApi().then((value) {

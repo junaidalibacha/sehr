@@ -44,6 +44,7 @@ class Utils {
           vertical: getProportionateScreenHeight(10),
         ),
         padding: EdgeInsets.all(getProportionateScreenHeight(10)),
+        borderRadius: BorderRadius.circular(getProportionateScreenHeight(6)),
         duration: const Duration(seconds: 3),
         message: message,
       )..show(context),

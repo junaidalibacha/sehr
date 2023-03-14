@@ -1,6 +1,6 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
-import 'package:sehr/presentation/view_models/auth_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../common/top_back_button_widget.dart';
 import '../../routes/routes.dart';
@@ -11,7 +11,7 @@ class ProfileSelectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<AuthViewModel>(context);
+    final viewModel = Provider.of<ProfileViewModel>(context);
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -47,18 +47,18 @@ class ProfileSelectionView extends StatelessWidget {
                   buildVerticleSpace(83),
                   _buildSelectionCard(
                     // ProfileType.customer,
-                    profileType: ProfileType.customer,
-                    value: ProfileType.customer,
-                    groupValue: viewModel.selectedProfileType,
-                    onChanged: (value) => viewModel.selectProfileType(value!),
+                    // profileType: UserRole.customer,
+                    value: 'user',
+                    groupValue: viewModel.selectedUserRole,
+                    onChanged: (value) => viewModel.selectUserRole(value!),
                   ),
                   buildVerticleSpace(38),
                   _buildSelectionCard(
                     // ProfileType.business,
-                    profileType: ProfileType.business,
-                    value: ProfileType.business,
-                    groupValue: viewModel.selectedProfileType,
-                    onChanged: (value) => viewModel.selectProfileType(value!),
+                    // profileType: UserRole.business,
+                    value: 'shopKeeper',
+                    groupValue: viewModel.selectedUserRole,
+                    onChanged: (value) => viewModel.selectUserRole(value!),
                   ),
                   buildVerticleSpace(78),
                   Padding(
@@ -67,11 +67,10 @@ class ProfileSelectionView extends StatelessWidget {
                     ),
                     child: AppButtonWidget(
                       ontap: () {
-                        viewModel.selectedProfileType == null
+                        viewModel.selectedUserRole == null
                             ? null
                             : Get.toNamed(
-                                viewModel.selectedProfileType ==
-                                        ProfileType.customer
+                                viewModel.selectedUserRole == 'user'
                                     ? Routes.addCustomerBioRoute
                                     : Routes.addBusinessBioRoute,
                               );
@@ -90,10 +89,10 @@ class ProfileSelectionView extends StatelessWidget {
   }
 
   Widget _buildSelectionCard({
-    required ProfileType profileType,
-    required ProfileType value,
-    ProfileType? groupValue,
-    required ValueChanged<ProfileType?> onChanged,
+    // required UserRole profileType,
+    required String value,
+    String? groupValue,
+    required ValueChanged<String?> onChanged,
   }) {
     bool isSelect = value == groupValue;
     return Padding(
@@ -142,16 +141,16 @@ class ProfileSelectionView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset(
-                    profileType == ProfileType.customer
+                    value == 'user'
                         ? AppIcons.customerIcon
                         : AppIcons.businessIcon,
                     height: getProportionateScreenHeight(50),
                     width: getProportionateScreenHeight(50),
                   ),
                   buildVerticleSpace(9),
-                  kTextBentonSansMed(profileType == ProfileType.customer
-                      ? 'Customer'
-                      : 'Business'),
+                  kTextBentonSansMed(
+                    value == 'user' ? 'Customer' : 'Business',
+                  ),
                 ],
               ),
               CircleAvatar(

@@ -95,7 +95,7 @@ class VerificationCodeView extends StatelessWidget {
                     child: Consumer<ProfileViewModel>(
                       builder: (context, value, child) => AppButtonWidget(
                         ontap: () {
-                          value.getProfileTypeFromPrefs();
+                          // value.getuserRoleFromPrefs();
                           Get.toNamed(Routes.profileCompleteRoute);
                         },
                         text: 'Next',
