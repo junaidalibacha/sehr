@@ -1,4 +1,3 @@
-
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
