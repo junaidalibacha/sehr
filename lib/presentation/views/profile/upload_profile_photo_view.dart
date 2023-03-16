@@ -6,7 +6,6 @@ import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/top_back_button_widget.dart';
-import '../../routes/routes.dart';
 import '../../src/index.dart';
 
 class UplaodProfilePhotoView extends StatelessWidget {
@@ -14,8 +13,8 @@ class UplaodProfilePhotoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileType =
-        Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
+    // final profileType =
+    //     Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
     return ChangeNotifierProvider(
       create: (_) => ProfileViewModel(),
       child: SafeArea(
@@ -37,9 +36,7 @@ class UplaodProfilePhotoView extends StatelessWidget {
                         left: getProportionateScreenWidth(27),
                       ),
                       child: kTextBentonSansMed(
-                        profileType == UserRole.customer
-                            ? 'Upload Your Profile\nPhoto'
-                            : 'Upload Your Business\nProfile',
+                        'Upload Your Profile\nPhoto',
                         fontSize: getProportionateScreenHeight(25),
                       ),
                     ),
@@ -69,11 +66,20 @@ class UplaodProfilePhotoView extends StatelessWidget {
                         horizontal: getProportionateScreenWidth(118),
                       ),
                       child: AppButtonWidget(
-                        ontap: () =>
-                            Get.toNamed(Routes.setLocationRoute, arguments: {
-                          'image': viewModel.image,
-                        }),
+                        ontap: () {
+                          //   Get.toNamed(Routes.setLocationRoute, arguments: {
+                          //   'image': viewModel.image,
+                          // });
+                          // viewModel.image == null
+                          //     ?
+                          // viewModel.registerApi(context);
+                          //     :
+                          viewModel.registerMultiPartApi(context);
+                        },
                         text: viewModel.image == null ? 'Skip' : 'Next',
+                        child: viewModel.isLoading
+                            ? const CircularProgressIndicator()
+                            : null,
                       ),
                     ),
                     buildVerticleSpace(50),

@@ -29,7 +29,7 @@ class DropDownWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(
         horizontal: getProportionateScreenWidth(9),
       ),
-      height: getProportionateScreenHeight(55),
+      height: getProportionateScreenHeight(60),
       width: SizeConfig.screenWidth,
       decoration: BoxDecoration(
         color: bgColor ?? ColorManager.white,
@@ -79,16 +79,6 @@ class DropDownWidget extends StatelessWidget {
                           color: ColorManager.textGrey.withOpacity(0.3)),
                       value: selectedOption,
                       items: dropdownMenuItems,
-                      // [
-                      //   DropdownMenuItem(
-                      //     child: Padding(
-                      // padding: EdgeInsets.symmetric(
-                      //   horizontal: getProportionateScreenWidth(23),
-                      //       ),
-                      //       child: kTextBentonSansReg('text'),
-                      //     ),
-                      //   ),
-                      // ],
                       onChanged: onChange,
                     ),
                   ),

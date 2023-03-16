@@ -17,8 +17,10 @@ class BlogsRepository {
       'Authorization': 'Bearer $token',
     };
     try {
-      dynamic response =
-          await _apiServices.getGetApiResponse(AppUrls.blogEndPoint, headers);
+      dynamic response = await _apiServices.getGetApiResponse(
+        AppUrls.blogEndPoint,
+        headers: headers,
+      );
       print(response);
       return response = BlogModel.fromJson(response);
     } catch (e) {

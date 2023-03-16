@@ -1,3 +1,4 @@
+
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
@@ -8,8 +9,8 @@ import '../../routes/routes.dart';
 import '../../src/index.dart';
 import '../../view_models/user_view_model.dart';
 
-class DrawerMenuScreenView extends StatelessWidget {
-  DrawerMenuScreenView({super.key});
+class DrawerMenuView extends StatelessWidget {
+  DrawerMenuView({super.key});
 
   @override
   Widget build(BuildContext context) {

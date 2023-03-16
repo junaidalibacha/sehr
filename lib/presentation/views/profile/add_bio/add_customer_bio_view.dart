@@ -16,10 +16,10 @@ class AddCustomerBioView extends StatefulWidget {
 }
 
 class _AddCustomerBioViewState extends State<AddCustomerBioView> {
-  final ProfileViewModel profileViewModel = ProfileViewModel();
+  ProfileViewModel profileViewModel = ProfileViewModel();
   @override
   void initState() {
-    // profileViewModel.educationApi();
+    profileViewModel.educationApi();
     super.initState();
   }
 
@@ -67,7 +67,7 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                           horizontal: getProportionateScreenWidth(23),
                         ),
                         child: Form(
-                          key: viewModel.customerFormKey,
+                          key: viewModel.customerBioFormKey,
                           child: Column(
                             children: [
                               TextFieldWidget(
@@ -127,19 +127,19 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                                 hintText: 'DOB',
                                 sufixIcon: _buildCalenderWidget(context),
                               ),
-                              buildVerticleSpace(20),
-                              TextFieldWidget(
-                                controller: viewModel.userMobNoTextController,
-                                hintText: 'Mobile Number',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Mobile number is required';
-                                  } else if (value.length < 11) {
-                                    return 'Invalid mobile number';
-                                  }
-                                  return null;
-                                },
-                              ),
+                              // buildVerticleSpace(20),
+                              // TextFieldWidget(
+                              //   controller: viewModel.userMobNoTextController,
+                              //   hintText: 'Mobile Number',
+                              //   validator: (value) {
+                              //     if (value == null || value.isEmpty) {
+                              //       return 'Mobile number is required';
+                              //     } else if (value.length < 11) {
+                              //       return 'Invalid mobile number';
+                              //     }
+                              //     return null;
+                              //   },
+                              // ),
                             ],
                           ),
                         ),

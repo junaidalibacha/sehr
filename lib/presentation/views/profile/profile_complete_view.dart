@@ -10,8 +10,8 @@ class ProfileCompleteView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileType =
-        Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
+    // final profileType =
+    //     Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
     return ChangeNotifierProvider(
       create: (context) => ProfileViewModel(),
       child: SafeArea(
@@ -68,9 +68,10 @@ class ProfileCompleteView extends StatelessWidget {
                         // value.getProfileTypeFromPrefs();
                         return kTextBentonSansMed(
                           // viewModel.profileType == 'business'
-                          profileType == UserRole.customer
-                              ? 'Your Profile Is Ready To Use'
-                              : 'Your Business Profile Is\nReady To Use',
+                          // profileType == UserRole.customer
+                          //     ?
+                          'Your Profile Is Ready To Use',
+                          // : 'Your Business Profile Is\nReady To Use',
                           fontSize: getProportionateScreenHeight(23),
                           textAlign: TextAlign.center,
                         );

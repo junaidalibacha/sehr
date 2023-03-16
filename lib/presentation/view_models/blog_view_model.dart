@@ -94,7 +94,7 @@ class DrawerMenuViewModel extends ChangeNotifier {
   Future<void> blogApi() async {
     setBlogData(ApiResponse.loading());
 
-    _blogRepo.getBlogData().then((value) {
+    await _blogRepo.getBlogData().then((value) {
       setBlogData(ApiResponse.completed(value));
     }).onError((error, stackTrace) {
       setBlogData(ApiResponse.error(error.toString()));
