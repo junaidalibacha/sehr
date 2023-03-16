@@ -1,4 +1,3 @@
-
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
@@ -73,13 +72,17 @@ class DrawerMenuView extends StatelessWidget {
                         ],
                       ),
                       buildVerticleSpace(5),
-                      kTextBentonSansReg('Check your profile',
-                          fontSize: getProportionateScreenHeight(15),
-                          color: ColorManager.primary),
-                      buildVerticleSpace(3),
-                      kTextBentonSansReg('Verify your Business',
-                          fontSize: getProportionateScreenHeight(12),
-                          color: ColorManager.blue),
+                      kTextBentonSansReg(
+                        'Check your profile',
+                        fontSize: getProportionateScreenHeight(15),
+                        color: ColorManager.primary,
+                      ),
+                      buildVerticleSpace(5),
+                      kTextBentonSansReg(
+                        'Verify your Business',
+                        fontSize: getProportionateScreenHeight(12),
+                        color: ColorManager.blue,
+                      ),
                       buildVerticleSpace(15),
                       DefaultTabController(
                         length: 2,
@@ -93,7 +96,58 @@ class DrawerMenuView extends StatelessWidget {
                             ),
                           ),
                           child: TabBar(
-                            onTap: (value) {},
+                            onTap: (value) {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    // contentPadding:
+                                    //     const EdgeInsets.symmetric(),
+                                    // insetPadding: EdgeInsets.symmetric(
+                                    //   horizontal:
+                                    //       getProportionateScreenWidth(20),
+                                    // ),
+                                    // title: const Text('Popup Dialog'),
+                                    content: SizedBox(
+                                      height: getProportionateScreenHeight(100),
+                                      child: Column(
+                                        children: [
+                                          kTextBentonSansMed(
+                                            'Please Register Your Business',
+                                            fontSize:
+                                                getProportionateScreenHeight(
+                                                    18),
+                                          ),
+                                          // buildVerticleSpace(50),
+                                          const Spacer(),
+                                          ActionChip(
+                                            backgroundColor: ColorManager
+                                                .primary
+                                                .withOpacity(0.7),
+                                            onPressed: () {
+                                              Get.toNamed(
+                                                  Routes.addBusinessBioRoute);
+                                            },
+                                            label: kTextBentonSansReg(
+                                              'Register',
+                                              color: ColorManager.white,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // actions: [
+                                    //   TextButton(
+                                    //     onPressed: () {
+                                    //       Navigator.of(context).pop();
+                                    //     },
+                                    //     child: const Text('Close'),
+                                    //   ),
+                                    // ],
+                                  );
+                                },
+                              );
+                            },
                             labelStyle: TextStyleManager.boldTextStyle(
                               fontSize: getProportionateScreenHeight(12),
                             ),
@@ -110,8 +164,8 @@ class DrawerMenuView extends StatelessWidget {
                               ),
                             ),
                             tabs: const [
-                              Tab(text: 'Business'),
                               Tab(text: 'Customer'),
+                              Tab(text: 'Business'),
                             ],
                           ),
                         ),
