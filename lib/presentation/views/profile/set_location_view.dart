@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
@@ -10,23 +8,24 @@ import '../../common/top_back_button_widget.dart';
 import '../../src/index.dart';
 
 class SetLocationView extends StatelessWidget {
-  final File imageFile;
+  // final File imageFile;
   const SetLocationView({
     super.key,
-    required this.imageFile,
+    // required this.imageFile,
   });
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             Image.asset(
               AppImages.pattern2,
               color: ColorManager.primary.withOpacity(0.1),
             ),
-            ChangeNotifierProvider(
+            ChangeNotifierProvider<ProfileViewModel>(
               create: (context) => ProfileViewModel(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,111 +89,127 @@ class SetLocationView extends StatelessWidget {
                               right: getProportionateScreenWidth(8),
                             ),
                             child: Consumer<ProfileViewModel>(
-                              builder: (context, viewModel, child) => Column(
-                                children: [
-                                  TextFieldWidget(
-                                    controller: viewModel.addressTextController,
-                                    hintText: 'Address',
-                                    fillColor: ColorManager.lightGrey,
-                                    blurRadius: getProportionateScreenHeight(3),
-                                  ),
-                                  buildVerticleSpace(12),
-                                  DropDownWidget(
-                                    bgColor: ColorManager.lightGrey,
-                                    dropdownColor: ColorManager.white,
-                                    blurRadius: getProportionateScreenHeight(3),
-                                    lableText: 'Tehsil',
-                                    hintText: 'Select Tehsil',
-                                    selectedOption: viewModel.selectedTehsil,
-                                    dropdownMenuItems: viewModel.tehsilOptions
-                                        .map<DropdownMenuItem<String>>(
-                                          (value) => DropdownMenuItem(
-                                            value: value,
-                                            child: kTextBentonSansReg(value),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChange: (value) =>
-                                        viewModel.setTehsil(value!),
-                                  ),
-                                  buildVerticleSpace(12),
-                                  DropDownWidget(
-                                    bgColor: ColorManager.lightGrey,
-                                    dropdownColor: ColorManager.white,
-                                    blurRadius: getProportionateScreenHeight(3),
-                                    lableText: 'District',
-                                    hintText: 'Select District',
-                                    selectedOption: viewModel.selectedDistrict,
-                                    dropdownMenuItems: viewModel.districtOptions
-                                        .map<DropdownMenuItem<String>>(
-                                          (value) => DropdownMenuItem(
-                                            value: value,
-                                            child: kTextBentonSansReg(value),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChange: (value) =>
-                                        viewModel.setDistrict(value!),
-                                  ),
-                                  buildVerticleSpace(12),
-                                  DropDownWidget(
-                                    bgColor: ColorManager.lightGrey,
-                                    dropdownColor: ColorManager.white,
-                                    blurRadius: getProportionateScreenHeight(3),
-                                    lableText: 'Division',
-                                    hintText: 'Select Division',
-                                    selectedOption: viewModel.selectedDivision,
-                                    dropdownMenuItems: viewModel.divisionOptions
-                                        .map<DropdownMenuItem<String>>(
-                                          (value) => DropdownMenuItem(
-                                            value: value,
-                                            child: kTextBentonSansReg(value),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChange: (value) =>
-                                        viewModel.setDivision(value!),
-                                  ),
-                                  buildVerticleSpace(12),
-                                  DropDownWidget(
-                                    bgColor: ColorManager.lightGrey,
-                                    dropdownColor: ColorManager.white,
-                                    blurRadius: getProportionateScreenHeight(3),
-                                    lableText: 'City',
-                                    hintText: 'Select Your City',
-                                    selectedOption: viewModel.selectedCity,
-                                    dropdownMenuItems: viewModel.cityOptions
-                                        .map<DropdownMenuItem<String>>(
-                                          (value) => DropdownMenuItem(
-                                            value: value,
-                                            child: kTextBentonSansReg(value),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChange: (value) =>
-                                        viewModel.setCity(value!),
-                                  ),
-                                  buildVerticleSpace(12),
-                                  DropDownWidget(
-                                    bgColor: ColorManager.lightGrey,
-                                    dropdownColor: ColorManager.white,
-                                    blurRadius: getProportionateScreenHeight(3),
-                                    lableText: 'Province',
-                                    hintText: 'Select Your Province',
-                                    selectedOption: viewModel.selectedProvince,
-                                    dropdownMenuItems: viewModel.provinceOptions
-                                        .map<DropdownMenuItem<String>>(
-                                          (value) => DropdownMenuItem(
-                                            value: value,
-                                            child: kTextBentonSansReg(value),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChange: (value) =>
-                                        viewModel.setProvince(value!),
-                                  ),
-                                  buildVerticleSpace(20),
-                                ],
+                              builder: (context, viewModel, child) => Form(
+                                key: viewModel.customerAddressFormKey,
+                                child: Column(
+                                  children: [
+                                    TextFieldWidget(
+                                      controller:
+                                          viewModel.addressTextController,
+                                      hintText: 'Address',
+                                      fillColor: ColorManager.lightGrey,
+                                      blurRadius:
+                                          getProportionateScreenHeight(3),
+                                    ),
+                                    buildVerticleSpace(12),
+                                    DropDownWidget(
+                                      bgColor: ColorManager.lightGrey,
+                                      dropdownColor: ColorManager.white,
+                                      blurRadius:
+                                          getProportionateScreenHeight(3),
+                                      lableText: 'Tehsil',
+                                      hintText: 'Select Tehsil',
+                                      selectedOption: viewModel.selectedTehsil,
+                                      dropdownMenuItems: viewModel.tehsilOptions
+                                          .map<DropdownMenuItem<String>>(
+                                            (value) => DropdownMenuItem(
+                                              value: value,
+                                              child: kTextBentonSansReg(value),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChange: (value) =>
+                                          viewModel.setTehsil(value!),
+                                    ),
+                                    buildVerticleSpace(12),
+                                    DropDownWidget(
+                                      bgColor: ColorManager.lightGrey,
+                                      dropdownColor: ColorManager.white,
+                                      blurRadius:
+                                          getProportionateScreenHeight(3),
+                                      lableText: 'District',
+                                      hintText: 'Select District',
+                                      selectedOption:
+                                          viewModel.selectedDistrict,
+                                      dropdownMenuItems: viewModel
+                                          .districtOptions
+                                          .map<DropdownMenuItem<String>>(
+                                            (value) => DropdownMenuItem(
+                                              value: value,
+                                              child: kTextBentonSansReg(value),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChange: (value) =>
+                                          viewModel.setDistrict(value!),
+                                    ),
+                                    buildVerticleSpace(12),
+                                    DropDownWidget(
+                                      bgColor: ColorManager.lightGrey,
+                                      dropdownColor: ColorManager.white,
+                                      blurRadius:
+                                          getProportionateScreenHeight(3),
+                                      lableText: 'Division',
+                                      hintText: 'Select Division',
+                                      selectedOption:
+                                          viewModel.selectedDivision,
+                                      dropdownMenuItems: viewModel
+                                          .divisionOptions
+                                          .map<DropdownMenuItem<String>>(
+                                            (value) => DropdownMenuItem(
+                                              value: value,
+                                              child: kTextBentonSansReg(value),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChange: (value) =>
+                                          viewModel.setDivision(value!),
+                                    ),
+                                    buildVerticleSpace(12),
+                                    DropDownWidget(
+                                      bgColor: ColorManager.lightGrey,
+                                      dropdownColor: ColorManager.white,
+                                      blurRadius:
+                                          getProportionateScreenHeight(3),
+                                      lableText: 'City',
+                                      hintText: 'Select Your City',
+                                      selectedOption: viewModel.selectedCity,
+                                      dropdownMenuItems: viewModel.cityOptions
+                                          .map<DropdownMenuItem<String>>(
+                                            (value) => DropdownMenuItem(
+                                              value: value,
+                                              child: kTextBentonSansReg(value),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChange: (value) =>
+                                          viewModel.setCity(value!),
+                                    ),
+                                    buildVerticleSpace(12),
+                                    DropDownWidget(
+                                      bgColor: ColorManager.lightGrey,
+                                      dropdownColor: ColorManager.white,
+                                      blurRadius:
+                                          getProportionateScreenHeight(3),
+                                      lableText: 'Province',
+                                      hintText: 'Select Your Province',
+                                      selectedOption:
+                                          viewModel.selectedProvince,
+                                      dropdownMenuItems: viewModel
+                                          .provinceOptions
+                                          .map<DropdownMenuItem<String>>(
+                                            (value) => DropdownMenuItem(
+                                              value: value,
+                                              child: kTextBentonSansReg(value),
+                                            ),
+                                          )
+                                          .toList(),
+                                      onChange: (value) =>
+                                          viewModel.setProvince(value!),
+                                    ),
+                                    buildVerticleSpace(20),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -213,7 +228,8 @@ class SetLocationView extends StatelessWidget {
                         ontap: () {
                           // Get.toNamed(Routes.verificationCodeRoute);
 
-                          value.registerMultiPartApi(context);
+                          // value.registerMultiPartApi(context);
+                          value.addUserAddressAndGoNext(context);
                         },
                         text: 'Next',
                       ),

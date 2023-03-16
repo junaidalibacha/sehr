@@ -8,8 +8,8 @@ import '../../routes/routes.dart';
 import '../../src/index.dart';
 import '../../view_models/user_view_model.dart';
 
-class DrawerMenuScreenView extends StatelessWidget {
-  DrawerMenuScreenView({super.key});
+class DrawerMenuView extends StatelessWidget {
+  DrawerMenuView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -126,15 +126,20 @@ class DrawerMenuScreenView extends StatelessWidget {
                     itemBuilder: (context, index) => InkWell(
                       onTap: () {
                         index == 0
-                            ? Get.to(const RewardView())
+                            ? Get.to(() => const RewardView())
                             : index == 1
                                 ? {
                                     // value.blogApi(),
-                                    Get.to(const BlogView()),
+                                    Get.to(() => const BlogView()),
                                   }
-                                : index == 3
-                                    ? Get.to(MemberShipView())
-                                    : const SizedBox();
+                                : index == 2
+                                    ? {
+                                        // value.educationApi(),
+                                        // Get.to(() => const BlogView()),
+                                      }
+                                    : index == 3
+                                        ? Get.to(() => MemberShipView())
+                                        : const SizedBox();
                       },
                       child: Row(
                         children: [

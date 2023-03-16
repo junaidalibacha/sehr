@@ -57,6 +57,11 @@ class TextFieldWidget extends StatelessWidget {
         ),
         obscureText: obscureText,
         decoration: InputDecoration(
+          errorStyle: TextStyleManager.regularTextStyle(
+            fontSize: getProportionateScreenHeight(8),
+            color: ColorManager.error,
+          ),
+          // errorText: null,
           filled: true,
           fillColor: fillColor ?? ColorManager.white,
           hintText: hintText,
@@ -79,25 +84,21 @@ class TextFieldWidget extends StatelessWidget {
                   ),
                 )
               : null,
-          suffixIcon: sufixIcon != null
-              ? Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: getProportionateScreenWidth(20),
-                    vertical: getProportionateScreenHeight(16),
-                  ),
-                  child: SizedBox(
-                    height: getProportionateScreenHeight(20),
-                    width: getProportionateScreenHeight(20),
-                    child: sufixIcon,
-                  ),
-                )
-              : null,
+          suffixIcon: sufixIcon,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(
               getProportionateScreenHeight(15),
             ),
           ),
+          // errorBorder: OutlineInputBorder(
+          //   borderSide: BorderSide(
+          //     color: ColorManager.error,
+          //   ),
+          //   borderRadius: BorderRadius.circular(
+          //     getProportionateScreenHeight(15),
+          //   ),
+          // ),
           constraints: BoxConstraints(
             minHeight: getProportionateScreenHeight(60),
           ),

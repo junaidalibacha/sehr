@@ -5,15 +5,14 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
 
 import '../../src/index.dart';
-import '../../view_models/auth_view_model.dart';
 
-class CustomerBottomNavView extends StatelessWidget {
-  const CustomerBottomNavView({super.key});
+class BottomNavigationView extends StatelessWidget {
+  const BottomNavigationView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var profileType =
-        Provider.of<AuthViewModel>(context, listen: false).selectedProfileType;
+    // var profileType =
+    //     Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: ColorManager.primary,
@@ -27,12 +26,8 @@ class CustomerBottomNavView extends StatelessWidget {
           builder: (ctx, viewModel, child) {
             return WillPopScope(
               onWillPop: () async {
-                if (profileType == ProfileType.customer) {
-                  if (viewModel.index == 2) {
-                    viewModel.pageChange(0);
-                  } else {
-                    Get.back();
-                  }
+                if (viewModel.index == 2) {
+                  viewModel.pageChange(0);
                 } else {
                   Get.back();
                 }
@@ -40,19 +35,15 @@ class CustomerBottomNavView extends StatelessWidget {
               },
               child: Scaffold(
                 // drawer: const Drawer(),
-                appBar: profileType == ProfileType.customer
-                    ? (viewModel.index == 2 ? null : _buildAppBar(context))
-                    : _buildAppBar(context),
-                body: profileType == ProfileType.customer
-                    ? viewModel.customerPages[viewModel.index]
-                    : viewModel.businessPages[viewModel.index],
+                appBar: viewModel.index == 2 ? null : _buildAppBar(context),
+
+                body: viewModel.customerPages[viewModel.index],
+                // : viewModel.businessPages[viewModel.index],
 
                 // bottomNavigationBar: ,
-                bottomNavigationBar: profileType == ProfileType.customer
-                    ? (viewModel.index == 2
-                        ? null
-                        : _buildBottomNavigation(profileType))
-                    : _buildBottomNavigation(profileType),
+                bottomNavigationBar:
+                    (viewModel.index == 2 ? null : _buildBottomNavigation()),
+                // : _buildBottomNavigation(profileType),
               ),
             );
           },
@@ -61,7 +52,7 @@ class CustomerBottomNavView extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNavigation(var type) {
+  Widget _buildBottomNavigation() {
     return Container(
       height: getProportionateScreenHeight(65),
       decoration: BoxDecoration(
@@ -87,34 +78,32 @@ class CustomerBottomNavView extends StatelessWidget {
         builder: (context, viweModel, child) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(
-            type == ProfileType.customer
-                ? viweModel.customerIcons.length
-                : viweModel.businessPages.length,
+            viweModel.customerIcons.length,
+            // : viweModel.businessPages.length,
             (index) => InkWell(
               onTap: () {
                 viweModel.pageChange(index);
               },
-              child: type == ProfileType.customer
-                  ? index == 2
-                      ? Lottie.asset(
-                          AppIcons.lottieIcon2,
-                          height: getProportionateScreenHeight(55),
-                          fit: BoxFit.contain,
-                        )
-                      : Image.asset(
-                          viweModel.customerIcons[index],
-                          height: getProportionateScreenHeight(25),
-                          color: viweModel.index == index
-                              ? ColorManager.primary
-                              : null,
-                        )
+              child: index == 2
+                  ? Lottie.asset(
+                      AppIcons.lottieIcon2,
+                      height: getProportionateScreenHeight(55),
+                      fit: BoxFit.contain,
+                    )
                   : Image.asset(
-                      viweModel.businessIcons[index],
+                      viweModel.customerIcons[index],
                       height: getProportionateScreenHeight(25),
                       color: viweModel.index == index
                           ? ColorManager.primary
                           : null,
                     ),
+              // : Image.asset(
+              //     viweModel.businessIcons[index],
+              //     height: getProportionateScreenHeight(25),
+              //     color: viweModel.index == index
+              //         ? ColorManager.primary
+              //         : null,
+              //   ),
             ),
           ),
         ),
@@ -129,19 +118,19 @@ class CustomerBottomNavView extends StatelessWidget {
       leadingWidth: getProportionateScreenWidth(30),
       leading: IconButton(
         onPressed: () {
-          // if (ZoomDrawer.of(context)!.isOpen()) {
-          //   ZoomDrawer.of(context)!.close();
-          // } else {
-          //   ZoomDrawer.of(context)!.open();
-          // }
-          final zoomDrawer = ZoomDrawer.of(context);
-          if (zoomDrawer != null) {
-            if (zoomDrawer.isOpen()) {
-              zoomDrawer.close();
-            } else {
-              zoomDrawer.open();
-            }
+          if (ZoomDrawer.of(context)!.isOpen()) {
+            ZoomDrawer.of(context)!.close();
+          } else {
+            ZoomDrawer.of(context)!.open();
           }
+          // final zoomDrawer = ZoomDrawer.of(context);
+          // if (zoomDrawer != null) {
+          //   if (zoomDrawer.isOpen()) {
+          //     zoomDrawer.close();
+          //   } else {
+          //     zoomDrawer.open();
+          //   }
+          // }
         },
         icon: const Icon(Icons.menu),
       ),

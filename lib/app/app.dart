@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
+import 'package:sehr/presentation/view_models/blog_view_model.dart';
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
 import 'package:sehr/presentation/view_models/user_view_model.dart';
 
 import '../presentation/routes/routes.dart';
@@ -29,8 +31,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => AuthViewModel()),
+        ChangeNotifierProvider(create: (ctx) => ProfileViewModel()),
         ChangeNotifierProvider(create: (ctx) => UserViewModel()),
-        // ChangeNotifierProvider(create: (ctx) => RecentOrdersViewModel()),
+        ChangeNotifierProvider(create: (ctx) => DrawerMenuViewModel()),
       ],
       child: GetMaterialApp(
         builder: (context, child) {

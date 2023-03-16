@@ -8,8 +8,20 @@ import '../../../common/drop_down_widget.dart';
 import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
 
-class AddCustomerBioView extends StatelessWidget {
+class AddCustomerBioView extends StatefulWidget {
   const AddCustomerBioView({super.key});
+
+  @override
+  State<AddCustomerBioView> createState() => _AddCustomerBioViewState();
+}
+
+class _AddCustomerBioViewState extends State<AddCustomerBioView> {
+  ProfileViewModel profileViewModel = ProfileViewModel();
+  @override
+  void initState() {
+    profileViewModel.educationApi();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +67,7 @@ class AddCustomerBioView extends StatelessWidget {
                           horizontal: getProportionateScreenWidth(23),
                         ),
                         child: Form(
-                          key: viewModel.customerFormKey,
+                          key: viewModel.customerBioFormKey,
                           child: Column(
                             children: [
                               TextFieldWidget(
@@ -115,19 +127,19 @@ class AddCustomerBioView extends StatelessWidget {
                                 hintText: 'DOB',
                                 sufixIcon: _buildCalenderWidget(context),
                               ),
-                              buildVerticleSpace(20),
-                              TextFieldWidget(
-                                controller: viewModel.userMobNoTextController,
-                                hintText: 'Mobile Number',
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Mobile number is required';
-                                  } else if (value.length < 11) {
-                                    return 'Invalid mobile number';
-                                  }
-                                  return null;
-                                },
-                              ),
+                              // buildVerticleSpace(20),
+                              // TextFieldWidget(
+                              //   controller: viewModel.userMobNoTextController,
+                              //   hintText: 'Mobile Number',
+                              //   validator: (value) {
+                              //     if (value == null || value.isEmpty) {
+                              //       return 'Mobile number is required';
+                              //     } else if (value.length < 11) {
+                              //       return 'Invalid mobile number';
+                              //     }
+                              //     return null;
+                              //   },
+                              // ),
                             ],
                           ),
                         ),
@@ -146,14 +158,14 @@ class AddCustomerBioView extends StatelessWidget {
                         child: Row(
                           children: [
                             RadioButtonWidget(
-                              value: Gender.male,
+                              value: 'male',
                               groupValue: viewModel.selectedGender,
                               text: 'Male',
                               onChanged: (value) => viewModel.setGender(value),
                             ),
                             buildHorizontalSpace(44),
                             RadioButtonWidget(
-                              value: Gender.female,
+                              value: 'female',
                               groupValue: viewModel.selectedGender,
                               text: 'Female',
                               onChanged: (value) => viewModel.setGender(value),
@@ -169,7 +181,7 @@ class AddCustomerBioView extends StatelessWidget {
                         child: AppButtonWidget(
                           ontap: () {
                             // Get.toNamed(Routes.photoSelectionRoute);
-                            viewModel.addBioData(context);
+                            viewModel.addUserBioAndGoNext(context);
                           },
                           text: 'Next',
                         ),

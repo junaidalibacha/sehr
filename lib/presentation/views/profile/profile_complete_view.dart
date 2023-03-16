@@ -1,10 +1,8 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../src/index.dart';
-import '../../view_models/auth_view_model.dart';
 import '../drawer/custom_drawer.dart';
 
 class ProfileCompleteView extends StatelessWidget {
@@ -12,8 +10,8 @@ class ProfileCompleteView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileType =
-        Provider.of<AuthViewModel>(context, listen: false).selectedProfileType;
+    // final profileType =
+    //     Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
     return ChangeNotifierProvider(
       create: (context) => ProfileViewModel(),
       child: SafeArea(
@@ -70,9 +68,10 @@ class ProfileCompleteView extends StatelessWidget {
                         // value.getProfileTypeFromPrefs();
                         return kTextBentonSansMed(
                           // viewModel.profileType == 'business'
-                          profileType == ProfileType.customer
-                              ? 'Your Profile Is Ready To Use'
-                              : 'Your Business Profile Is\nReady To Use',
+                          // profileType == UserRole.customer
+                          //     ?
+                          'Your Profile Is Ready To Use',
+                          // : 'Your Business Profile Is\nReady To Use',
                           fontSize: getProportionateScreenHeight(23),
                           textAlign: TextAlign.center,
                         );

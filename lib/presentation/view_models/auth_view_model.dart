@@ -13,41 +13,44 @@ import 'user_view_model.dart';
 class AuthViewModel extends ChangeNotifier {
   final loginFormKey = GlobalKey<FormState>();
   final signUpFormKey = GlobalKey<FormState>();
-  final userNameFocusNode = FocusNode();
-  final emailFocusNode = FocusNode();
-  final passwordFocusNode = FocusNode();
-  final userNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool obscureText = true;
+
+  final loginUserNameFocusNode = FocusNode();
+  final loginPasswordFocusNode = FocusNode();
+  final loginUserNameController = TextEditingController();
+  final loginPasswordController = TextEditingController();
+
+  final signupUserNameFocusNode = FocusNode();
+  final mobileFocusNode = FocusNode();
+  final signUpPasswordFocusNode = FocusNode();
+  final confirmPasswordFocusNode = FocusNode();
+  final signupUserNameController = TextEditingController();
+  final mobileNoTextController = TextEditingController();
+  final signupPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  bool loginPassObscureText = true;
+  bool signupPassObscureText = true;
+  bool confirmPassObscureText = true;
   bool keepAuthData = false;
-  ProfileType? _selectedProfileType;
-  ProfileType? get selectedProfileType => _selectedProfileType;
 
-  void showPass() {
-    obscureText = obscureText.toggle();
+  void showLoginPass() {
+    loginPassObscureText = !loginPassObscureText;
     notifyListeners();
   }
 
-  void keepAuth() {
-    keepAuthData = keepAuthData.toggle();
+  void showSignupPass() {
+    signupPassObscureText = !signupPassObscureText;
     notifyListeners();
   }
 
-  Future<void> selectProfileType(ProfileType type) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    _selectedProfileType = type;
-
-    if (_selectedProfileType == ProfileType.customer) {
-      prefs.setString('profileType', 'user');
-    }
-    if (_selectedProfileType == ProfileType.business) {
-      prefs.setString('profileType', 'shopKeeper');
-    } else {
-      null;
-    }
+  void showSignupConfirmPass() {
+    confirmPassObscureText = !confirmPassObscureText;
     notifyListeners();
   }
+
+  // void keepAuth() {
+  //   keepAuthData = keepAuthData.toggle();
+  //   notifyListeners();
+  // }
 
 //==> User Login Method
   bool _isLoading = false;
@@ -94,18 +97,19 @@ class AuthViewModel extends ChangeNotifier {
 
 //! ==> User Login Service
   Future<void> loginApi(BuildContext context) async {
-    if (userNameController.text.isEmpty && passwordController.text.isEmpty) {
+    if (loginUserNameController.text.isEmpty &&
+        loginPasswordController.text.isEmpty) {
       Utils.flushBarErrorMessage(context, 'Please Enter Your Email & Pasword');
-    } else if (userNameController.text.isEmpty) {
+    } else if (loginUserNameController.text.isEmpty) {
       Utils.flushBarErrorMessage(context, 'Email is empty');
-    } else if (passwordController.text.isEmpty) {
+    } else if (loginPasswordController.text.isEmpty) {
       Utils.flushBarErrorMessage(context, 'Password is empty');
-    } else if (passwordController.text.length < 8) {
+    } else if (loginPasswordController.text.length < 8) {
       Utils.flushBarErrorMessage(context, 'Password must be 8 charactors');
     } else {
       Map<String, dynamic> loginData = {
-        'username': userNameController.text.trim(),
-        'password': passwordController.text.trim(),
+        'username': loginUserNameController.text.trim(),
+        'password': loginPasswordController.text.trim(),
       };
       setLoading(true);
 
@@ -167,7 +171,7 @@ class AuthViewModel extends ChangeNotifier {
   //   // }
   // }
 
-//! ==> User Sign-Up Method
+//! ==> Set User Sign-Up data to prefs
   Future<void> setSignUpDataToPrefs(BuildContext context) async {
     // if (userNameController.text.isEmpty &&
     //     emailController.text.isEmpty &&
@@ -180,16 +184,17 @@ class AuthViewModel extends ChangeNotifier {
     if (!signUpFormKey.currentState!.validate()) {
       return;
     } else {
-      _saveAndGoNext();
+      _saveSignupDataAndGoNext();
     }
   }
 
-  void _saveAndGoNext() async {
+  void _saveSignupDataAndGoNext() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('username', userNameController.text.trim());
-    prefs.setString('email', emailController.text.trim());
-    prefs.setString('password', passwordController.text.trim());
-    prefs.setBool('keepAuthData', keepAuthData);
-    Get.toNamed(Routes.profileSelectionRoute);
+    prefs.setString('username', signupUserNameController.text.trim());
+    prefs.setString('mobileNo', mobileNoTextController.text.trim());
+    prefs.setString('password', signupPasswordController.text.trim());
+    prefs.setString('re_password', confirmPasswordController.text.trim());
+    // prefs.setBool('keepAuthData', keepAuthData);
+    Get.toNamed(Routes.addCustomerBioRoute);
   }
 }

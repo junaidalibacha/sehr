@@ -35,33 +35,47 @@ class BlogView extends StatelessWidget {
                             fontSize: getProportionateScreenHeight(31)),
                       ),
                       Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              const BlogCardWidget(
-                                titleText: 'Blog',
-                                description:
-                                    'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole . . . .',
-                              ),
-                              buildVerticleSpace(10),
-                              BlogCardWidget(
-                                titleText: 'Blog',
-                                child: Image.asset(
-                                  AppImages.restourant,
-                                  height: getProportionateScreenHeight(110),
-                                  width: SizeConfig.screenWidth,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              buildVerticleSpace(10),
-                              const BlogCardWidget(
-                                titleText: 'Blog',
-                                description:
-                                    'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole . . . .',
-                              ),
-                              buildVerticleSpace(100),
-                            ],
-                          ),
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              buildVerticleSpace(20),
+                          itemCount: viewModel.blogsList.data!.posts!.length,
+                          itemBuilder: (context, index) {
+                            print(
+                              'Post Lenght ===> ${viewModel.blogsList.data!.posts![index].image}',
+                            );
+                            var blogTitle =
+                                viewModel.blogsList.data!.posts![index].title;
+                            var blogContent =
+                                viewModel.blogsList.data!.posts![index].content;
+                            var blogDescription = viewModel
+                                .blogsList.data!.posts![index].description;
+                            var blogImage =
+                                viewModel.blogsList.data!.posts![index].image;
+                            var blogVideo =
+                                viewModel.blogsList.data!.posts![index].video;
+
+                            return BlogCardWidget(
+                              titleText: blogTitle!,
+                              description: blogDescription,
+                              child: blogImage != null
+                                  ? Container(
+                                      height: getProportionateScreenHeight(120),
+                                      width: SizeConfig.screenWidth,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          getProportionateScreenHeight(10),
+                                        ),
+                                        image: const DecorationImage(
+                                          image: NetworkImage(
+                                            'https://3.133.0.29/api/blog/posts/public/1678462528419-591397582.png',
+                                          ),
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
+                            );
+                          },
                         ),
                       ),
                     ],

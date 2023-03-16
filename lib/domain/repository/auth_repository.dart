@@ -17,7 +17,7 @@ class AuthRepository {
     }
   }
 
-  Future<dynamic> signUpApi(dynamic data) async {
+  Future<dynamic> registerApi(dynamic data) async {
     try {
       dynamic response =
           await _apiServices.getPostApiResponse(AppUrls.registerEndPoint, data);
@@ -27,7 +27,7 @@ class AuthRepository {
     }
   }
 
-  Future<dynamic> signUpMultiPartApi(MultipartRequest request) async {
+  Future<dynamic> registerMultiPartApi(MultipartRequest request) async {
     try {
       dynamic response = await _apiServices.getPostMultiPartResponse(request);
       return response;

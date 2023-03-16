@@ -3,7 +3,7 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import '../../../app/index.dart';
 import '../../src/index.dart';
 import '../bottom_navigation/bottom_nav_view.dart';
-import 'drawer_menu_screen.dart';
+import 'drawer_menu_view.dart';
 
 class DrawerView extends StatelessWidget {
   const DrawerView({super.key});
@@ -13,8 +13,8 @@ class DrawerView extends StatelessWidget {
     // final drawerController = ZoomDrawerController();
     return ZoomDrawer(
       menuScreenWidth: SizeConfig.screenWidth,
-      mainScreen: const CustomerBottomNavView(),
-      menuScreen: DrawerMenuScreenView(),
+      mainScreen: const BottomNavigationView(),
+      menuScreen: DrawerMenuView(),
       borderRadius: 24.0,
       //   showShadow: true,
       angle: 0.0,

@@ -4,4 +4,6 @@ class AppUrls {
   static const String loginEndPoint = '$_baseUrl/auth/login';
   static const String registerEndPoint = '$_baseUrl/user/register';
   static const String blogEndPoint = '$_baseUrl/blog/posts';
+  static const String educationEndPoint = '$_baseUrl/education';
+  static const String businessEndPoint = '$_baseUrl/education';
 }

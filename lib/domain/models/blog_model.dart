@@ -5,13 +5,16 @@ class BlogModel {
   BlogModel({this.total, this.posts});
 
   BlogModel.fromJson(Map<String, dynamic> json) {
+    // print(json);
     total = json['total'];
+    print(total);
     if (json['posts'] != null) {
       posts = <Posts>[];
       json['posts'].forEach((v) {
         posts!.add(Posts.fromJson(v));
       });
     }
+    print(posts![0].content);
   }
 
   Map<String, dynamic> toJson() {
