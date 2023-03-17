@@ -3,6 +3,8 @@
 <plist version="1.0">
 <dict>
 
+	<key>io.flutter.embedded_views_preview</key>
+	<string>YES</string>
 	<key>NSCameraUsageDescription</key>
 	<string>camera permission for getting user profile image.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

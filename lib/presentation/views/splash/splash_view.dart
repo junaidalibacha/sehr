@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:sehr/app/index.dart';
+import 'package:sehr/presentation/views/onboarding/onboarding_view.dart';
 
 import '../../common/logo_widget.dart';
 import '../../src/index.dart';
@@ -13,15 +16,16 @@ class SplashView extends StatefulWidget {
 
 class _SplashViewState extends State<SplashView> {
   final SplashServices _splashServices = SplashServices();
-  // late Timer _timer;
+  late Timer _timer;
 
-  // void _splashScreenDelay() {
-  //   _timer = Timer(const Duration(seconds: 3), _goNext);
-  // }
+  void _splashScreenDelay() {
+    _timer = Timer(const Duration(seconds: 3), _goNext);
+  }
 
-  // void _goNext() {
-  //   Navigator.pushReplacementNamed(context, Routes.loginRoute);
-  // }
+  void _goNext() {
+    Get.to(() => OnboardingScreen(
+        'https://youtu.be/ho9kEuiB-pg?list=PLvQ2RGpesg2YG2ES7hsZ-nVI36NvKLxFO'));
+  }
 
   @override
   void initState() {

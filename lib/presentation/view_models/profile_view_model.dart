@@ -73,6 +73,7 @@ class ProfileViewModel extends ChangeNotifier {
   Future<void> educationApi() async {
     await _educationRepo.getEducationApi().then((value) {
       print('Education Options===>$_educationOptions');
+      // EducationModel.fromJson(value);
       // notifyListeners();
     }).onError((error, stackTrace) {
       print("Error==> $error");
