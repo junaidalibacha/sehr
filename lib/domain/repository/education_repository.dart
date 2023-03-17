@@ -12,7 +12,7 @@ class EducationRepository {
         AppUrls.educationEndPoint,
         // headers: headers,
       );
-      print('Education API response' + response);
+      // print('Education API response' + response);
       return response;
     } catch (e) {
       // print('Education API error===>$e');

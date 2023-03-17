@@ -54,6 +54,8 @@ dependencies:
   flutter_facebook_auth: ^5.0.7
   fluttertoast: ^8.2.1
   another_flushbar: ^1.12.29
+  youtube_player_flutter: ^8.1.2
+  visibility_detector: ^0.4.0+2
   # dropdown_search: ^5.0.5
   # pin_code_fields: ^7.4.0
 
