@@ -118,6 +118,7 @@ class AuthViewModel extends ChangeNotifier {
         'password': loginPasswordController.text.trim(),
       };
       setLoading(true);
+      print("${loginData["username"]}  \n ${loginData["password"]}");
 
       _authRepo.loginApi(loginData).then((value) async {
         setLoading(false);
