@@ -1,3 +1,5 @@
+import 'package:sehr/presentation/view_models/profile_view_model.dart';
+
 import '../../app/index.dart';
 import '../../domain/models/models.dart';
 import '../src/index.dart';
@@ -94,7 +96,7 @@ class RecentOrdersBuilder extends StatelessWidget {
                     context: context,
                     isScrollControlled: true,
                     backgroundColor: ColorManager.transparent,
-                    builder: (ctx) => const ShopDetailsView(),
+                    builder: (ctx) => Text("data"),
                   );
                 },
                 height: getProportionateScreenHeight(26),

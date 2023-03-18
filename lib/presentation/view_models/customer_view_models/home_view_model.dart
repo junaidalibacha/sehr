@@ -1,9 +1,23 @@
 import 'package:sehr/app/index.dart';
+import 'package:sehr/data/network/network_api_services.dart';
 import 'package:sehr/domain/models/models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../domain/models/business_model.dart';
+import '../../../domain/repository/app_urls.dart';
+import '../../../domain/repository/business_repository.dart';
 import '../../src/index.dart';
 
 class HomeViewModel extends ChangeNotifier {
+  BusinessRepository model = BusinessRepository();
+  NetworkApiService _networkApiService = NetworkApiService();
+
+  List<BusinessModel>? business = [];
+
+  HomeViewModel() {
+    getShops();
+  }
+
   final List<ShopDataModel> _shops = [
     ShopDataModel(
       shopImage: AppImages.menu,
@@ -71,10 +85,6 @@ class HomeViewModel extends ChangeNotifier {
   ];
 
   List<ShopDataModel> get shops => [..._shops];
-  void toggleFav(int index) async {
-    shops[index].isFavourite = !shops[index].isFavourite;
-    notifyListeners();
-  }
 
   List<ShopDataModel> get favItems {
     // return _shops.where((element) => element.isFavourite).toList();
@@ -120,4 +130,79 @@ class HomeViewModel extends ChangeNotifier {
   }
 
 //  final filteredData = data.where((item) => selectedFilters.contains(item.filter)).toList();
+
+  ///    Get List of Shops
+
+  Future getShops() async {
+    business = await model.getBusiness();
+    print("Business length: ${business?.length}");
+    notifyListeners();
+  }
+
+  /// Toggle Favourite
+
+  void toggleFav(int index) async {
+    print("Toggle Favourite");
+    if (business![index].isFavourite!) {
+      /// delete Favourite api
+
+      await deleteFromFavourite(index);
+      business![index].isFavourite = false;
+    } else {
+      // Favourite post api
+      await addToFavourite(index);
+      business![index].isFavourite = true;
+    }
+
+    notifyListeners();
+  }
+
+  ///   Add Business To Favourite
+
+  Future addToFavourite(index) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var token = prefs.get('accessToken');
+    // print(token);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final body = {"businessId": business?[index].id};
+
+    try {
+      final response = await _networkApiService
+          .getPostApiResponse(AppUrls.addToFavourite, body, headers: headers);
+
+      print("Successfully Added To Favourite: ");
+    } catch (e) {
+      print("Error Occured: $e");
+      rethrow;
+    }
+  }
+
+  ///   Delete Business From Favourite
+
+  Future deleteFromFavourite(index) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var token = prefs.get('accessToken');
+    // print(token);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    try {
+      final response = await _networkApiService.getDeletetApiResponse(
+          AppUrls.addToFavourite + "/${business?[index].id}",
+          headers: headers);
+
+      print("Successfully Deleted From Favourite: ");
+    } catch (e) {
+      print("Error Occured: $e");
+      rethrow;
+    }
+  }
 }

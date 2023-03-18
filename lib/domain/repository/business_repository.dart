@@ -23,4 +23,33 @@ class BusinessRepository {
       rethrow;
     }
   }
+
+  // Get List Of Business Api Hitting Place
+
+  Future<List<BusinessModel>?> getBusiness() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<BusinessModel>? business = [];
+    var token = prefs.get('accessToken');
+    // print(token);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    try {
+      final response = await _apiServices
+          .getBusinessDetail(AppUrls.getBusinessEndPoint, headers: headers);
+
+      response.forEach((busines) {
+        print(">>>>objecct");
+        business.add(BusinessModel.fromJson(busines));
+      });
+
+      print("Business length: ${business.length}");
+
+      return business;
+    } catch (e) {
+      print("Error Occured: $e");
+      rethrow;
+    }
+  }
 }

@@ -23,12 +23,51 @@ class NetworkApiService extends BaseApiServices {
   }
 
   @override
+  Future getBusinessDetail(String url, {dynamic headers}) async {
+    dynamic responseJson;
+    try {
+      final response = await http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 10));
+
+      print("List of business with in 100KM radius response: ${response.body}");
+      return jsonDecode(response.body);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    } catch (e) {
+      print("error occured :$e");
+    }
+
+    return responseJson;
+  }
+
+  /// delete
+  ///
+  @override
+  Future getDeletetApiResponse(String url, {dynamic headers}) async {
+    dynamic responseJson;
+    try {
+      Response response = await delete(
+        Uri.parse(url),
+        headers: headers,
+      ).timeout(const Duration(seconds: 10));
+
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+
+    return responseJson;
+  }
+
+  @override
   Future getPostApiResponse(String url, dynamic data, {dynamic headers}) async {
+    print("called");
     dynamic responseJson;
     try {
       Response response = await post(
         Uri.parse(url),
-        body: data,
+        body: jsonEncode(data),
         headers: headers,
       ).timeout(const Duration(seconds: 10));
 
