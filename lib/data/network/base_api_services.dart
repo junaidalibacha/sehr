@@ -6,4 +6,5 @@ abstract class BaseApiServices {
   Future<dynamic> getPostApiResponse(String url, dynamic data);
 
   Future<dynamic> getPostMultiPartResponse(MultipartRequest request);
+  Future<dynamic> getBusinessDetail(String url, {dynamic headers});
 }

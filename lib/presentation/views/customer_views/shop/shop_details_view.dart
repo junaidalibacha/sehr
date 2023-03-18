@@ -1,10 +1,13 @@
 import '../../../../app/index.dart';
+import '../../../../domain/models/business_model.dart';
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
 
 class ShopDetailsView extends StatelessWidget {
-  const ShopDetailsView({
+  BusinessModel businessModel;
+  ShopDetailsView({
+    required this.businessModel,
     Key? key,
   }) : super(key: key);
 
@@ -71,7 +74,7 @@ class ShopDetailsView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         kTextBentonSansMed(
-                          'Wijie Bar and Resto',
+                          '${businessModel.businessName}',
                           fontSize: getProportionateScreenHeight(27),
                         ),
                         buildVerticleSpace(20),
@@ -83,7 +86,7 @@ class ShopDetailsView extends StatelessWidget {
                             ),
                             buildHorizontalSpace(13),
                             kTextBentonSansReg(
-                              '19 Km',
+                              '${businessModel.distance?.toStringAsFixed(2)} Km',
                               color: ColorManager.textGrey.withOpacity(0.2),
                             ),
                           ],

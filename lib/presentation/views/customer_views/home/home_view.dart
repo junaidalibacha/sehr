@@ -80,7 +80,7 @@ class HomeView extends StatelessWidget {
                   ),
                   child: ListView.separated(
                     shrinkWrap: true,
-                    itemCount: viewModel.shops.length,
+                    itemCount: viewModel.business!.length,
                     separatorBuilder: (context, index) =>
                         buildVerticleSpace(10),
                     padding: EdgeInsets.only(
@@ -88,24 +88,26 @@ class HomeView extends StatelessWidget {
                     ),
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => CustomListTileWidget(
-                      leading: Image.asset(viewModel.shops[index].shopImage),
+                      leading:
+                          Image.asset("${viewModel.shops[index].shopImage}"),
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           kTextBentonSansMed(
-                            viewModel.shops[index].shopName,
+                            "${viewModel.business?[index].businessName}",
                             fontSize: getProportionateScreenHeight(15),
+                            overFlow: TextOverflow.fade,
                           ),
                           // buildVerticleSpace(3),
                           kTextBentonSansReg(
-                            viewModel.shops[index].shopCategory,
+                            "${viewModel.business?[index].category?.title == null ? "Candy" : viewModel.business?[index].category?.title}",
                             color: ColorManager.textGrey.withOpacity(0.8),
                             letterSpacing: getProportionateScreenWidth(0.5),
                           ),
                           // buildVerticleSpace(3),
                           kTextBentonSansReg(
-                            '8km away',
+                            '${double.parse("${viewModel.business?[index].distance}").toStringAsFixed(2)}km away',
                             color: ColorManager.textGrey.withOpacity(0.8),
                             fontSize: getProportionateScreenHeight(10),
                             letterSpacing: getProportionateScreenWidth(0.5),
@@ -119,7 +121,7 @@ class HomeView extends StatelessWidget {
                             splashColor: ColorManager.transparent,
                             borderRadius: BorderRadius.circular(40),
                             child: Icon(
-                              viewModel.shops[index].isFavourite
+                              viewModel.business![index].isFavourite!
                                   ? Icons.favorite_rounded
                                   : Icons.favorite_border_rounded,
                               size: getProportionateScreenHeight(20),
@@ -135,7 +137,8 @@ class HomeView extends StatelessWidget {
                                 context: context,
                                 isScrollControlled: true,
                                 backgroundColor: ColorManager.transparent,
-                                builder: (ctx) => const ShopDetailsView(),
+                                builder: (ctx) => ShopDetailsView(
+                                    businessModel: viewModel.business![index]),
                               );
                             },
                             height: getProportionateScreenHeight(26),

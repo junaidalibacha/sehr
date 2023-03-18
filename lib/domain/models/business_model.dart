@@ -22,6 +22,8 @@ class BusinessModel {
   int? id;
   String? createdAt;
   String? updatedAt;
+  double? distance;
+  bool? isFavourite = false;
 
   BusinessModel({
     this.businessName,
@@ -47,6 +49,8 @@ class BusinessModel {
     this.id,
     this.createdAt,
     this.updatedAt,
+    this.distance,
+    this.isFavourite,
   });
 
   BusinessModel.fromJson(Map<String, dynamic> json) {
@@ -56,11 +60,13 @@ class BusinessModel {
     email = json['email'];
     logo = json['logo'];
     sehrCode = json['sehrCode'];
+    print("hereeeeeeeeeeeeeeeeeeeeeeeee");
     lat = json['lat'];
     lon = json['lon'];
     about = json['about'];
     address = json['address'];
     tehsil = json['tehsil'];
+    print("hereeeeeeeeeee");
     district = json['district'];
     division = json['division'];
     province = json['province'];
@@ -68,12 +74,17 @@ class BusinessModel {
     country = json['country'];
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     grade = json['grade'] != null ? Grade.fromJson(json['grade']) : null;
+    print("hhhhhhhhhhhhh");
     category =
         json['category'] != null ? Category.fromJson(json['category']) : null;
     verifiedAt = json['verifiedAt'];
     id = json['id'];
+    print("111111111111111111111111");
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    print("llllllllllllllllllllllllllllllllllllllllllllll");
+    distance = json['distance'];
+    print("object");
   }
 
   Map<String, dynamic> toJson() {
@@ -94,6 +105,7 @@ class BusinessModel {
     data['province'] = province;
     data['city'] = city;
     data['country'] = country;
+    data['distance'] = distance;
     if (user != null) {
       data['user'] = user!.toJson();
     }

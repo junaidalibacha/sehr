@@ -71,11 +71,17 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/data/response/api_response.dart';
 import 'package:sehr/domain/models/blog_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../data/network/network_api_services.dart';
+import '../../domain/repository/app_urls.dart';
 import '../../domain/repository/blog_repository.dart';
+
+User appUser = User();
 
 class DrawerMenuViewModel extends ChangeNotifier {
   final _blogRepo = BlogsRepository();
+  NetworkApiService _networkApiService = NetworkApiService();
 
   ApiResponse<BlogModel> blogsList = ApiResponse.loading();
 
@@ -86,6 +92,7 @@ class DrawerMenuViewModel extends ChangeNotifier {
 
   DrawerMenuViewModel() {
     callingBlog();
+    getAppUser();
   }
   callingBlog() async {
     await blogApi();
@@ -99,6 +106,31 @@ class DrawerMenuViewModel extends ChangeNotifier {
     }).onError((error, stackTrace) {
       setBlogData(ApiResponse.error(error.toString()));
     });
+  }
+
+  /// Get Current AppUser
+
+  Future getAppUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var token = prefs.get('accessToken');
+    // print(token);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    try {
+      final response = await _networkApiService
+          .getGetApiResponse(AppUrls.currentUser, headers: headers);
+
+      appUser = User.fromJson(response);
+
+      print("User Name: ${appUser.firstName}");
+    } catch (e) {
+      print("Error Occured: $e");
+      rethrow;
+    }
+    notifyListeners();
   }
 
   // ApiResponse<BlogModel> blogsList = ApiResponse.loading();
