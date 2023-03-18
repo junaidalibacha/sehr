@@ -10,7 +10,7 @@ import '../../src/index.dart';
 
 class HomeViewModel extends ChangeNotifier {
   BusinessRepository model = BusinessRepository();
-  NetworkApiService _networkApiService = NetworkApiService();
+  final NetworkApiService _networkApiService = NetworkApiService();
 
   List<BusinessModel>? business = [];
 
@@ -196,7 +196,7 @@ class HomeViewModel extends ChangeNotifier {
 
     try {
       final response = await _networkApiService.getDeletetApiResponse(
-          AppUrls.addToFavourite + "/${business?[index].id}",
+          "${AppUrls.addToFavourite}/${business?[index].id}",
           headers: headers);
 
       print("Successfully Deleted From Favourite: ");

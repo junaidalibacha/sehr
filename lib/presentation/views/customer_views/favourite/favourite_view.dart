@@ -4,7 +4,6 @@ import '../../../common/app_button_widget.dart';
 import '../../../common/custom_card_widget.dart';
 import '../../../src/index.dart';
 import '../../../view_models/customer_view_models/home_view_model.dart';
-import '../shop/shop_details_view.dart';
 
 class FavouriteView extends StatelessWidget {
   const FavouriteView({super.key});
