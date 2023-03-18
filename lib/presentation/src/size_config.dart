@@ -7,6 +7,7 @@ class SizeConfig {
   static late double screenHeight;
   static late double blockSizeHorizontal;
   static late double blockSizeVertical;
+  static late double viewInsectsBottom;
   // static late double defaultSize;
 
   void init(BuildContext context) async {
@@ -16,6 +17,7 @@ class SizeConfig {
     screenHeight = _mediaQueryData.size.height;
     blockSizeHorizontal = screenWidth / 100;
     blockSizeVertical = screenHeight / 100;
+    viewInsectsBottom = _mediaQueryData.viewInsets.bottom;
   }
 }
 

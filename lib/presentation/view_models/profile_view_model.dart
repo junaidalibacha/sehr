@@ -304,78 +304,56 @@ class ProfileViewModel extends ChangeNotifier {
 
   final _authRepo = AuthRepository();
 
-//! User Register PostApi
-  Future<void> registerApi(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
+// //! User Register PostApi
+//   Future<void> registerApi(BuildContext context) async {
+//     final prefs = await SharedPreferences.getInstance();
 
-    Map<String, dynamic> registerData = {
-      'firstName': prefs.getString('firstName')!,
-      'lastName': prefs.getString('lastName')!,
-      'username': prefs.getString('username')!,
-      // 'email': prefs.getString('email')!,
-      'email': '',
-      'mobile': prefs.getString('mobileNo')!,
-      'password': prefs.getString('password')!,
-      're_password': prefs.getString('password')!,
-      'gender': prefs.getString('gender')!,
-      'dob': prefs.getString('dob')!,
-      'cnic': prefs.getString('cnic'),
-      'education': prefs.getString('education'),
-      'address': prefs.getString('address'),
-      'tehsil': prefs.getString('tehsil'),
-      'district': prefs.getString('district'),
-      'division': prefs.getString('division'),
-      'province': prefs.getString('province'),
-      'city': prefs.getString('city'),
-      'country': 'Pakistan',
-      'role': 'user',
-    };
+//     Map<String, dynamic> registerData = {
+//       'firstName': prefs.getString('firstName')!,
+//       'lastName': prefs.getString('lastName')!,
+//       'username': prefs.getString('username')!,
+//       // 'email': prefs.getString('email')!,
+//       'email': '',
+//       'mobile': prefs.getString('mobileNo')!,
+//       'password': prefs.getString('password')!,
+//       're_password': prefs.getString('password')!,
+//       'gender': prefs.getString('gender')!,
+//       'dob': prefs.getString('dob')!,
+//       'cnic': prefs.getString('cnic'),
+//       'education': prefs.getString('education'),
+//       'address': prefs.getString('address'),
+//       'tehsil': prefs.getString('tehsil'),
+//       'district': prefs.getString('district'),
+//       'division': prefs.getString('division'),
+//       'province': prefs.getString('province'),
+//       'city': prefs.getString('city'),
+//       'country': 'Pakistan',
+//       'role': 'user',
+//     };
 
-    // Map<String, dynamic> businessData = {
-    //   'businessName': prefs.getString('businessName')!,
-    //   'ownerName': prefs.getString('ownerName')!,
-    //   // 'username': prefs.getString('username')!,
-    //   'email': prefs.getString('email')!,
-    //   'mobile': prefs.getString('mobileNo')!,
-    //   'logoMedia': '',
-    //   'sehrCode': '1234567890',
-    //   'lat': '33.598362',
-    //   'lon': '73.147408',
-    //   'about': 'About Business',
-    //   'address': addressTextController.text.trim(),
-    //   'tehsil': _selectedTehsil,
-    //   'district': _selectedDistrict,
-    //   'division': _selectedDivision,
-    //   'province': _selectedProvince,
-    //   'city': _selectedCity,
-    //   'country': 'Pakistan',
-    //   'category': 1,
-    //   'role': prefs.getString('userRole')!,
-    // };
+//     print(registerData);
+//     setLoading(true);
+//     _authRepo.registerApi(registerData).then((value) {
+//       setLoading(false);
 
-    print(registerData);
-    setLoading(true);
-    _authRepo.registerApi(registerData).then((value) {
-      setLoading(false);
+  // final userPreference = Provider.of<UserViewModel>(context, listen: false);
+  // userPreference.saveUser(
+  //   UserModel(accessToken: value['token']),
+  // );
 
-      final userPreference = Provider.of<UserViewModel>(context, listen: false);
-      userPreference.saveUser(
-        UserModel(accessToken: value['token']),
-      );
-
-      Utils.flushBarErrorMessage(context, 'Register Successfully');
-      // Navigator.pushNamed(context, RoutesName.home);
-      if (kDebugMode) {
-        print(value.toString());
-      }
-    }).onError((error, stackTrace) {
-      setLoading(false);
-      Utils.flushBarErrorMessage(context, error.toString());
-      if (kDebugMode) {
-        print(error.toString());
-      }
-    });
-  }
+  // Utils.flushBarErrorMessage(context, 'Register Successfully');
+//       // Navigator.pushNamed(context, RoutesName.home);
+//       if (kDebugMode) {
+//         print(value.toString());
+//       }
+//     }).onError((error, stackTrace) {
+//       setLoading(false);
+//       Utils.flushBarErrorMessage(context, error.toString());
+//       if (kDebugMode) {
+//         print(error.toString());
+//       }
+//     });
+//   }
 
 //! Register MultiPartApi
   Future<void> registerMultiPartApi(BuildContext context) async {
@@ -424,8 +402,12 @@ class ProfileViewModel extends ChangeNotifier {
     request.files.add(multipartFile);
     _authRepo.registerMultiPartApi(request).then((value) {
       setLoading(false);
-      // Utils.flushBarErrorMessage(context, 'Register Successfully');
-      Get.toNamed(Routes.drawerRoute);
+      final userServices = Provider.of<UserViewModel>(context, listen: false);
+      userServices.saveUser(
+        UserModel(accessToken: value['token']),
+      );
+      Utils.flushBarErrorMessage(context, 'Register Successfully');
+      Get.toNamed(Routes.verificationCodeRoute);
       if (kDebugMode) {
         print(value.toString());
       }
