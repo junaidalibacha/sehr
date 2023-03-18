@@ -3,6 +3,7 @@ import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
 import 'package:sehr/presentation/views/drawer/membership_view.dart';
 import 'package:sehr/presentation/views/drawer/reward_view.dart';
+import 'package:sehr/presentation/views/profile/profile_preview_view.dart';
 
 import '../../routes/routes.dart';
 import '../../src/index.dart';
@@ -73,10 +74,20 @@ class DrawerMenuView extends StatelessWidget {
                                 color: ColorManager.secondaryLight,
                               ),
                             ),
+
                           ],
                         ),
                         buildVerticleSpace(5),
                         kTextBentonSansReg(
+
+                          ),
+                        ],
+                      ),
+                      buildVerticleSpace(5),
+                      GestureDetector(
+                        onTap: () => Get.to(() => const ProfilePreviewView()),
+                        child: kTextBentonSansReg(
+
                           'Check your profile',
                           fontSize: getProportionateScreenHeight(15),
                           color: ColorManager.primary,
@@ -98,6 +109,25 @@ class DrawerMenuView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(
                                 getProportionateScreenHeight(10),
                               ),
+
+                      ),
+                      buildVerticleSpace(5),
+                      kTextBentonSansReg(
+                        'Verify your Business',
+                        fontSize: getProportionateScreenHeight(12),
+                        color: ColorManager.blue,
+                      ),
+                      buildVerticleSpace(15),
+                      DefaultTabController(
+                        length: 2,
+                        child: Container(
+                          height: getProportionateScreenHeight(33),
+                          width: getProportionateScreenWidth(150),
+                          decoration: BoxDecoration(
+                            color: ColorManager.grey,
+                            borderRadius: BorderRadius.circular(
+                              getProportionateScreenHeight(10),
+
                             ),
                             child: TabBar(
                               onTap: (value) {

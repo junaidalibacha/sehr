@@ -25,8 +25,12 @@ class SignUpView extends StatelessWidget {
             children: [
               // buildVerticleSpace(20),
               const Spacer(),
-              const LogoWidget(),
-              buildVerticleSpace(30),
+              Column(
+                children: [
+                  const LogoWidget(),
+                  buildVerticleSpace(30),
+                ],
+              ),
               kTextBentonSansBold(
                 'Sign Up',
                 fontSize: getProportionateScreenHeight(20),
@@ -164,7 +168,7 @@ class SignUpView extends StatelessWidget {
                         if (value == null || value.isEmpty) {
                           return 'Confirm Password is required';
                         } else if (value !=
-                            viewModel.confirmPasswordController.text) {
+                            viewModel.signupPasswordController.text) {
                           return 'Password did\'t match';
                         }
                         return null;

@@ -1,35 +1,66 @@
-import 'package:flutter/material.dart';
-
 import 'package:flutter/services.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/common/logo_widget.dart';
+import 'package:sehr/presentation/routes/routes.dart';
 import 'package:sehr/presentation/src/index.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:visibility_detector/visibility_detector.dart';
+
+import '../../../app/index.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  String youtubeUrl;
-
-  OnboardingScreen(this.youtubeUrl, {super.key});
+  const OnboardingScreen({super.key});
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   late YoutubePlayerController _controller;
   late TextEditingController _idController;
   late TextEditingController _seekToController;
-  final bool _isPlayerReady = false;
-  late String videoId;
+
+  // late PlayerState _playerState;
+  // late YoutubeMetaData _videoMetaData;
+  // final double _volume = 100;
+  // final bool _muted = false;
+  bool _isPlayerReady = false;
+
+  final List<String> _videoIds = [
+    YoutubePlayer.convertUrlToId(
+        'https://www.youtube.com/watch?v=ho9kEuiB-pg&list=PLvQ2RGpesg2YG2ES7hsZ-nVI36NvKLxFO&ab_channel=SEHR')!,
+    YoutubePlayer.convertUrlToId(
+        'https://www.youtube.com/watch?v=KA69j9Z4JMs&list=PLvQ2RGpesg2YG2ES7hsZ-nVI36NvKLxFO&index=2&ab_channel=SEHR')!,
+    YoutubePlayer.convertUrlToId(
+        'https://www.youtube.com/watch?v=U87EzTr4IL4&list=PLvQ2RGpesg2YG2ES7hsZ-nVI36NvKLxFO&index=3&ab_channel=SEHR')!,
+
+    // 'PLvQ2RGpesg2YG2ES7hsZ',
+    // 'gQDByCdjUXw',
+    // 'iLnmTe5Q2Qw',
+    // '_WoCV4c6XOE',
+    // 'KmzdUe0RSJo',
+    // '6jZDSSZZxjQ',
+    // 'p2lYr3vM_1w',
+    // '7QUtEmBT_-w',
+    // '34_PXCzGw1M',
+  ];
+
+  String? video1 = YoutubePlayer.convertUrlToId('url');
+
+  // String? videoId(String url) {
+  //   return YoutubePlayer.convertUrlToId(url);
+  // }
+  int videoIndex = 0;
+  void next() {
+    setState(() {
+      videoIndex = videoIndex + 1;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    videoId = YoutubePlayer.convertUrlToId(widget.youtubeUrl)!;
     _controller = YoutubePlayerController(
-      initialVideoId: videoId,
+      initialVideoId: _videoIds.first,
       flags: const YoutubePlayerFlags(
         mute: false,
         autoPlay: true,
@@ -42,11 +73,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     )..addListener(listener);
     _idController = TextEditingController();
     _seekToController = TextEditingController();
+    // _videoMetaData = const YoutubeMetaData();
+    // _playerState = PlayerState.unknown;
   }
 
   void listener() {
     if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
-      setState(() {});
+      setState(() {
+        // _playerState = _controller.value.playerState;
+        // _videoMetaData = _controller.metadata;
+      });
     }
   }
 
@@ -67,65 +103,95 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: getProportionateScreenHeight(200),
-      color: ColorManager.primary,
-      child: VisibilityDetector(
-        key: const Key("unique key"),
-        onVisibilityChanged: (info) {
-          if (info.visibleFraction == 0) {
-            _controller.pause();
-          } else {
-            _controller.value.isPlaying
-                ? _controller.play()
-                : _controller.pause();
-          }
-        },
-        child: YoutubePlayerBuilder(
-          onExitFullScreen: () {
-            // The player forces portraitUp after exiting fullscreen. This overrides the behaviour.
-            SystemChrome.setPreferredOrientations(DeviceOrientation.values);
-          },
-          player: YoutubePlayer(
-            controller: _controller,
-            showVideoProgressIndicator: true,
-            progressIndicatorColor: ColorManager.primary,
-            topActions: <Widget>[
-              // const SizedBox(width: 8.0),
-              Expanded(
-                child: Text(
-                  _controller.metadata.title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: getProportionateScreenHeight(18),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+    return YoutubePlayerBuilder(
+      onExitFullScreen: () {
+        // The player forces portraitUp after exiting fullscreen. This overrides the behaviour.
+        SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+      },
+      player: YoutubePlayer(
+        controller: _controller,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: Colors.blueAccent,
+        topActions: <Widget>[
+          Expanded(
+            child: Text(
+              _controller.metadata.title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: getProportionateScreenHeight(18),
               ),
-            ],
-            onReady: () {
-              _controller.addListener(listener);
-            },
-            onEnded: (data) {},
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
-          builder: (context, player) => Scaffold(
-            key: _scaffoldKey,
-            body: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  const LogoWidget(),
-                  buildVerticleSpace(20),
-                  Card(
-                    child: player,
+        ],
+        onReady: () {
+          _isPlayerReady = true;
+        },
+        onEnded: (data) {
+          _controller.load(_videoIds[
+              (_videoIds.indexOf(data.videoId) + 1) % _videoIds.length]);
+          // _showSnackBar('Next Video Started!');
+        },
+      ),
+      builder: (context, player) => SafeArea(
+        child: Scaffold(
+          body: Padding(
+            padding: EdgeInsets.all(getProportionateScreenHeight(8)),
+            child: Column(
+              children: [
+                buildVerticleSpace(20),
+                const LogoWidget(),
+                // buildVerticleSpace(20),
+                const Spacer(),
+                kTextBentonSansMed(
+                  _controller.metadata.title.capitalize!,
+                  textAlign: TextAlign.center,
+                  fontSize: getProportionateScreenHeight(20),
+                ),
+                buildVerticleSpace(20),
+                player,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    3,
+                    (index) => Container(
+                      height: getProportionateScreenHeight(5),
+                      width: getProportionateScreenWidth(50),
+                      margin: EdgeInsets.all(getProportionateScreenHeight(20)),
+                      decoration: BoxDecoration(
+                        color: videoIndex == index
+                            ? ColorManager.ambar
+                            : ColorManager.grey,
+                        borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(20),
+                        ),
+                      ),
+                    ),
                   ),
-                  AppButtonWidget(
-                    ontap: () {},
+                ),
+                const Spacer(flex: 2),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(20),
+                  ),
+                  child: AppButtonWidget(
                     text: 'Next',
+                    ontap: () {
+                      next();
+                      videoIndex == 2
+                          ? Get.offAndToNamed(Routes.loginRoute)
+                          : (_isPlayerReady
+                              ? _controller.load(_videoIds[(_videoIds.indexOf(
+                                          _controller.metadata.videoId) +
+                                      1) %
+                                  _videoIds.length])
+                              : null);
+                    },
                   ),
-                ],
-              ),
+                ),
+                buildVerticleSpace(50),
+              ],
             ),
           ),
         ),
