@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
+import 'package:sehr/presentation/common/logo_widget.dart';
 import 'package:sehr/presentation/routes/routes.dart';
 import 'package:sehr/presentation/src/index.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -48,10 +49,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // String? videoId(String url) {
   //   return YoutubePlayer.convertUrlToId(url);
   // }
-  int index = 0;
+  int videoIndex = 0;
   void next() {
     setState(() {
-      index = index + 1;
+      videoIndex = videoIndex + 1;
     });
   }
 
@@ -133,46 +134,66 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           // _showSnackBar('Next Video Started!');
         },
       ),
-      builder: (context, player) => Scaffold(
-        body: ListView(
-          children: [
-            player,
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Expanded(
-                  //   child: AppButtonWidget(
-                  //     text: 'Back',
-                  //     ontap: _isPlayerReady
-                  //         ? () => _controller.load(_ids[
-                  //             (_ids.indexOf(_controller.metadata.videoId) - 1) %
-                  //                 _ids.length])
-                  //         : null,
-                  //   ),
-                  // ),
-                  // buildHorizontalSpace(100),
-                  Expanded(
-                    child: AppButtonWidget(
-                      text: 'Next',
-                      ontap: () {
-                        index == 2
-                            ? Get.offAndToNamed(Routes.loginRoute)
-                            : (_isPlayerReady
-                                ? _controller.load(_videoIds[(_videoIds.indexOf(
-                                            _controller.metadata.videoId) +
-                                        1) %
-                                    _videoIds.length])
-                                : null);
-                        next();
-                      },
+      builder: (context, player) => SafeArea(
+        child: Scaffold(
+          body: Padding(
+            padding: EdgeInsets.all(getProportionateScreenHeight(8)),
+            child: Column(
+              children: [
+                buildVerticleSpace(20),
+                const LogoWidget(),
+                // buildVerticleSpace(20),
+                const Spacer(),
+                kTextBentonSansMed(
+                  _controller.metadata.title.capitalize!,
+                  textAlign: TextAlign.center,
+                  fontSize: getProportionateScreenHeight(20),
+                ),
+                buildVerticleSpace(20),
+                player,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    3,
+                    (index) => Container(
+                      height: getProportionateScreenHeight(5),
+                      width: getProportionateScreenWidth(50),
+                      margin: EdgeInsets.all(getProportionateScreenHeight(20)),
+                      decoration: BoxDecoration(
+                        color: videoIndex == index
+                            ? ColorManager.ambar
+                            : ColorManager.grey,
+                        borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(20),
+                        ),
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                const Spacer(flex: 2),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(20),
+                  ),
+                  child: AppButtonWidget(
+                    text: 'Next',
+                    ontap: () {
+                      next();
+                      videoIndex == 2
+                          ? Get.offAndToNamed(Routes.loginRoute)
+                          : (_isPlayerReady
+                              ? _controller.load(_videoIds[(_videoIds.indexOf(
+                                          _controller.metadata.videoId) +
+                                      1) %
+                                  _videoIds.length])
+                              : null);
+                    },
+                  ),
+                ),
+                buildVerticleSpace(50),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
