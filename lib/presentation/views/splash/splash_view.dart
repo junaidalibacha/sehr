@@ -23,14 +23,13 @@ class _SplashViewState extends State<SplashView> {
   }
 
   void _goNext() {
-    Get.to(() => OnboardingScreen(
-        'https://youtu.be/ho9kEuiB-pg?list=PLvQ2RGpesg2YG2ES7hsZ-nVI36NvKLxFO'));
+    Get.to(() => const OnboardingScreen());
   }
 
   @override
   void initState() {
-    // _splashScreenDelay();
-    _splashServices.checkAuthentication();
+    _splashScreenDelay();
+    // _splashServices.checkAuthentication();
     super.initState();
   }
 
