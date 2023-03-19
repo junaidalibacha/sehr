@@ -9,8 +9,19 @@ import '../../routes/routes.dart';
 import '../../src/index.dart';
 import '../../view_models/user_view_model.dart';
 
-class DrawerMenuView extends StatelessWidget {
-  DrawerMenuView({super.key});
+class DrawerMenuView extends StatefulWidget {
+  const DrawerMenuView({super.key});
+
+  @override
+  State<DrawerMenuView> createState() => _DrawerMenuViewState();
+}
+
+class _DrawerMenuViewState extends State<DrawerMenuView> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,165 +32,167 @@ class DrawerMenuView extends StatelessWidget {
         backgroundColor: ColorManager.white,
         body: ChangeNotifierProvider(
           create: (context) => DrawerMenuViewModel(),
-          child: Padding(
-            padding: EdgeInsets.only(left: getProportionateScreenHeight(25)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // buildVerticleSpace(100),
-                const Spacer(),
-                Padding(
-                  padding:
-                      EdgeInsets.only(left: getProportionateScreenWidth(25)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            left: getProportionateScreenWidth(18)),
-                        child: CircleAvatar(
-                          backgroundColor: ColorManager.primary,
-                          radius: getProportionateScreenHeight(40),
-                          child: Padding(
-                            padding:
-                                EdgeInsets.all(getProportionateScreenHeight(4)),
-                            child: Image.asset('assets/images/profile.png'),
+          child: Consumer<DrawerMenuViewModel>(builder: (context, model, ch) {
+            return Padding(
+              padding: EdgeInsets.only(left: getProportionateScreenHeight(25)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // buildVerticleSpace(100),
+                  const Spacer(),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(left: getProportionateScreenWidth(25)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: getProportionateScreenWidth(18)),
+                          child: CircleAvatar(
+                            backgroundColor: ColorManager.primary,
+                            radius: getProportionateScreenHeight(40),
+                            child: Padding(
+                              padding: EdgeInsets.all(
+                                  getProportionateScreenHeight(4)),
+                              child: Image.asset('assets/images/profile.png'),
+                            ),
                           ),
                         ),
-                      ),
-                      buildVerticleSpace(15),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          kTextBentonSansBold(
-                            '${appUser.firstName}\n${appUser.lastName}',
-                            fontSize: getProportionateScreenHeight(19),
-                          ),
-                          buildHorizontalSpace(11),
-                          Container(
-                            color: ColorManager.secondaryLight.withOpacity(0.2),
-                            padding: EdgeInsets.only(
-                              left: getProportionateScreenWidth(5),
-                              right: getProportionateScreenWidth(15),
-                              top: getProportionateScreenHeight(3),
-                              bottom: getProportionateScreenWidth(3),
+                        buildVerticleSpace(15),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            kTextBentonSansBold(
+                              '${appUser.firstName}\n${appUser.lastName}',
+                              fontSize: getProportionateScreenHeight(19),
                             ),
-                            child: kTextBentonSansReg(
-                              ' ${appUser.country}',
-                              fontSize: getProportionateScreenHeight(9),
-                              color: ColorManager.secondaryLight,
+                            buildHorizontalSpace(11),
+                            Container(
+                              color:
+                                  ColorManager.secondaryLight.withOpacity(0.2),
+                              padding: EdgeInsets.only(
+                                left: getProportionateScreenWidth(5),
+                                right: getProportionateScreenWidth(15),
+                                top: getProportionateScreenHeight(3),
+                                bottom: getProportionateScreenWidth(3),
+                              ),
+                              child: kTextBentonSansReg(
+                                ' ${appUser.country}',
+                                fontSize: getProportionateScreenHeight(9),
+                                color: ColorManager.secondaryLight,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      buildVerticleSpace(5),
-                      GestureDetector(
-                        onTap: () => Get.to(() => const ProfilePreviewView()),
-                        child: kTextBentonSansReg(
-                          'Check your profile',
-                          fontSize: getProportionateScreenHeight(15),
-                          color: ColorManager.primary,
+                          ],
                         ),
-                      ),
-                      buildVerticleSpace(5),
-                      kTextBentonSansReg(
-                        'Verify your Business',
-                        fontSize: getProportionateScreenHeight(12),
-                        color: ColorManager.blue,
-                      ),
-                      buildVerticleSpace(15),
-                      DefaultTabController(
-                        length: 2,
-                        child: Container(
-                          height: getProportionateScreenHeight(33),
-                          width: getProportionateScreenWidth(150),
-                          decoration: BoxDecoration(
-                            color: ColorManager.grey,
-                            borderRadius: BorderRadius.circular(
-                              getProportionateScreenHeight(10),
-                            ),
+                        buildVerticleSpace(5),
+                        GestureDetector(
+                          onTap: () => Get.to(() => const ProfilePreviewView()),
+                          child: kTextBentonSansReg(
+                            'Check your profile',
+                            fontSize: getProportionateScreenHeight(15),
+                            color: ColorManager.primary,
                           ),
-                          child: TabBar(
-                            onTap: (value) {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    // contentPadding:
-                                    //     const EdgeInsets.symmetric(),
-                                    // insetPadding: EdgeInsets.symmetric(
-                                    //   horizontal:
-                                    //       getProportionateScreenWidth(20),
-                                    // ),
-                                    // title: const Text('Popup Dialog'),
-                                    content: SizedBox(
-                                      height: getProportionateScreenHeight(100),
-                                      child: Column(
-                                        children: [
-                                          kTextBentonSansMed(
-                                            'Please Register Your Business',
-                                            fontSize:
-                                                getProportionateScreenHeight(
-                                                    18),
-                                          ),
-                                          // buildVerticleSpace(50),
-                                          const Spacer(),
-                                          ActionChip(
-                                            backgroundColor: ColorManager
-                                                .primary
-                                                .withOpacity(0.7),
-                                            onPressed: () {
-                                              Get.toNamed(
-                                                  Routes.addBusinessBioRoute);
-                                            },
-                                            label: kTextBentonSansReg(
-                                              'Register',
-                                              color: ColorManager.white,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    // actions: [
-                                    //   TextButton(
-                                    //     onPressed: () {
-                                    //       Navigator.of(context).pop();
-                                    //     },
-                                    //     child: const Text('Close'),
-                                    //   ),
-                                    // ],
-                                  );
-                                },
-                              );
-                            },
-                            labelStyle: TextStyleManager.boldTextStyle(
-                              fontSize: getProportionateScreenHeight(12),
-                            ),
-                            labelPadding: EdgeInsets.zero,
-                            indicator: BoxDecoration(
+                        ),
+                        buildVerticleSpace(5),
+                        kTextBentonSansReg(
+                          'Verify your Business',
+                          fontSize: getProportionateScreenHeight(12),
+                          color: ColorManager.blue,
+                        ),
+                        buildVerticleSpace(15),
+                        DefaultTabController(
+                          length: 2,
+                          child: Container(
+                            height: getProportionateScreenHeight(33),
+                            width: getProportionateScreenWidth(150),
+                            decoration: BoxDecoration(
+                              color: ColorManager.grey,
                               borderRadius: BorderRadius.circular(
                                 getProportionateScreenHeight(10),
                               ),
-                              gradient: LinearGradient(
-                                colors: [
-                                  ColorManager.gradient1,
-                                  ColorManager.gradient2,
-                                ],
-                              ),
                             ),
-                            tabs: const [
-                              Tab(text: 'Customer'),
-                              Tab(text: 'Business'),
-                            ],
+                            child: TabBar(
+                              onTap: (value) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      // contentPadding:
+                                      //     const EdgeInsets.symmetric(),
+                                      // insetPadding: EdgeInsets.symmetric(
+                                      //   horizontal:
+                                      //       getProportionateScreenWidth(20),
+                                      // ),
+                                      // title: const Text('Popup Dialog'),
+                                      content: SizedBox(
+                                        height:
+                                            getProportionateScreenHeight(100),
+                                        child: Column(
+                                          children: [
+                                            kTextBentonSansMed(
+                                              'Please Register Your Business',
+                                              fontSize:
+                                                  getProportionateScreenHeight(
+                                                      18),
+                                            ),
+                                            // buildVerticleSpace(50),
+                                            const Spacer(),
+                                            ActionChip(
+                                              backgroundColor: ColorManager
+                                                  .primary
+                                                  .withOpacity(0.7),
+                                              onPressed: () {
+                                                Get.toNamed(
+                                                    Routes.addBusinessBioRoute);
+                                              },
+                                              label: kTextBentonSansReg(
+                                                'Register',
+                                                color: ColorManager.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      // actions: [
+                                      //   TextButton(
+                                      //     onPressed: () {
+                                      //       Navigator.of(context).pop();
+                                      //     },
+                                      //     child: const Text('Close'),
+                                      //   ),
+                                      // ],
+                                    );
+                                  },
+                                );
+                              },
+                              labelStyle: TextStyleManager.boldTextStyle(
+                                fontSize: getProportionateScreenHeight(12),
+                              ),
+                              labelPadding: EdgeInsets.zero,
+                              indicator: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  getProportionateScreenHeight(10),
+                                ),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    ColorManager.gradient1,
+                                    ColorManager.gradient2,
+                                  ],
+                                ),
+                              ),
+                              tabs: const [
+                                Tab(text: 'Customer'),
+                                Tab(text: 'Business'),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                buildVerticleSpace(35),
-                Consumer<DrawerMenuViewModel>(
-                  builder: (context, value, child) => ListView.separated(
+                  buildVerticleSpace(35),
+                  ListView.separated(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) => InkWell(
@@ -220,35 +233,35 @@ class DrawerMenuView extends StatelessWidget {
                         buildVerticleSpace(25),
                     itemCount: munuList.length,
                   ),
-                ),
-                buildVerticleSpace(40),
-                InkWell(
-                  onTap: () {
-                    userPrefs.remove().then(
-                          (value) => Get.offAndToNamed(Routes.loginRoute),
-                        );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.logout_rounded,
-                        size: getProportionateScreenHeight(24),
-                      ),
-                      SizedBox(
-                        width: getProportionateScreenWidth(11),
-                      ),
-                      kTextBentonSansReg(
-                        'Logout',
-                        fontSize: getProportionateScreenHeight(16),
-                      ),
-                    ],
+                  buildVerticleSpace(40),
+                  InkWell(
+                    onTap: () {
+                      userPrefs.remove().then(
+                            (value) => Get.offAndToNamed(Routes.loginRoute),
+                          );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.logout_rounded,
+                          size: getProportionateScreenHeight(24),
+                        ),
+                        SizedBox(
+                          width: getProportionateScreenWidth(11),
+                        ),
+                        kTextBentonSansReg(
+                          'Logout',
+                          fontSize: getProportionateScreenHeight(16),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
+                  const Spacer(),
+                ],
+              ),
+            );
+          }),
         ),
       ),
     );
