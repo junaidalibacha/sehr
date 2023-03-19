@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:sehr/app/index.dart';
+
 import 'package:sehr/domain/services/location_services.dart';
 import 'package:sehr/presentation/views/onboarding/onboarding_view.dart';
 
@@ -24,13 +25,13 @@ class _SplashViewState extends State<SplashView> {
   }
 
   void _goNext() {
-    Get.to(() => const OnboardingScreen());
+    // Get.to(() => const OnboardingScreen());
   }
 
   @override
   void initState() {
-    _splashScreenDelay();
-    // _splashServices.checkAuthentication();
+    // _splashScreenDelay();
+    _splashServices.checkAuthentication();
     super.initState();
   }
 
