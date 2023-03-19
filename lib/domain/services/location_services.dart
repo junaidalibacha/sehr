@@ -8,7 +8,7 @@ class LocationServices {
     myLoction();
   }
 
-  Future<Position> _determinePosition() async {
+  static Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -33,23 +33,13 @@ class LocationServices {
     return await Geolocator.getCurrentPosition();
   }
 
-  Position? position;
-
-  myLoction() async {
+  static Future<Position?> myLoction() async {
+    Position? position;
     print("my location caliing");
     position = await _determinePosition();
     print(
-        "lat>>>>>>>>>>>>   ${position!.latitude}    lng>>>>>>>>>>>>>>>> ${position!.longitude * (-1)}");
-    try {
-      List<geo.Placemark> placemarks =
-          await geo.placemarkFromCoordinates(34.0046716, -71.5029527);
-      List<geo.Location> locations = await geo
-          .locationFromAddress("Jahangir Abad, Peshawar 25000, Pakistan");
-      // print("the lat and lon is ${locations.last.latitude.toString() + locations.last.longitude.toString()}");
-      print(
-          "the add is ${placemarks.last.locality.toString() + placemarks.last.administrativeArea.toString() + placemarks.last.street.toString()}");
-    } catch (e) {
-      print("give me error ${e.toString()}");
-    }
+        "lat>>>>>>>>>>>>   ${position.latitude}    lng>>>>>>>>>>>>>>>> ${position.longitude * (-1)}");
+
+    return position;
   }
 }

@@ -83,8 +83,15 @@ class NetworkApiService extends BaseApiServices {
   Future getPostMultiPartResponse(MultipartRequest request) async {
     dynamic responseJson;
     try {
-      StreamedResponse response = await request.send();
-      responseJson = returnStreamResponse(response);
+      StreamedResponse res = await request.send();
+      // responseJson = returnStreamResponse(res);
+      print("${responseJson}");
+      print("objecttt $res");
+      print(res.stream);
+      print(res.statusCode);
+
+      final response = await http.Response.fromStream(res);
+      print(response.body);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }

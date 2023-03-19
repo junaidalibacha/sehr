@@ -10,8 +10,11 @@ import '../../domain/models/blog_model.dart';
 import '../../domain/models/user_model.dart';
 import '../../domain/repository/app_urls.dart';
 import '../../domain/repository/auth_repository.dart';
+import '../../domain/services/location_services.dart';
 import '../routes/routes.dart';
+import 'customer_view_models/home_view_model.dart';
 import 'user_view_model.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 
 class AuthViewModel extends ChangeNotifier {
   NetworkApiService _networkApiService = NetworkApiService();
@@ -40,6 +43,25 @@ class AuthViewModel extends ChangeNotifier {
 
   void showLoginPass() {
     loginPassObscureText = !loginPassObscureText;
+    notifyListeners();
+  }
+
+  init() async {
+    position = await LocationServices.myLoction();
+    try {
+      List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(
+        position!.latitude,
+        position!.longitude,
+      );
+
+      address = ("${placemarks.last.locality.toString()} " +
+          "${placemarks.last.administrativeArea.toString().trim()} " +
+          "${placemarks.last.name.toString()}");
+      print("Address: $address");
+    } catch (e) {
+      print("give me error ${e.toString()}");
+    }
+
     notifyListeners();
   }
 
@@ -113,14 +135,14 @@ class AuthViewModel extends ChangeNotifier {
     } else if (loginPasswordController.text.length < 8) {
       Utils.flushBarErrorMessage(context, 'Password must be 8 charactors');
     } else {
-      Map<String, dynamic> loginData = {
+      Map<String, dynamic> body = {
         'username': loginUserNameController.text.trim(),
         'password': loginPasswordController.text.trim(),
       };
       setLoading(true);
-      print("${loginData["username"]}  \n ${loginData["password"]}");
+      print("${body["username"]}  \n ${body["password"]}");
 
-      _authRepo.loginApi(loginData).then((value) async {
+      _authRepo.loginApi(body).then((value) async {
         setLoading(false);
 
         final userPreference =
@@ -130,8 +152,8 @@ class AuthViewModel extends ChangeNotifier {
         );
 
         Utils.flushBarErrorMessage(context, 'Login Successfully');
-
-        Get.offAll(const DrawerView());
+        await init();
+        await Get.offAll(const DrawerView());
         if (kDebugMode) {
           print(value.toString());
         }

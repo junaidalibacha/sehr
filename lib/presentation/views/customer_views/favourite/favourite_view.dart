@@ -11,118 +11,120 @@ class FavouriteView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => HomeViewModel(),
-      child: Column(
-        children: [
-          Padding(
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(23),
+            vertical: getProportionateScreenHeight(13),
+          ),
+          child: Row(
+            children: [
+              _buildSearchField(),
+              const Spacer(),
+              _buildFilterButton(),
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(23),
-              vertical: getProportionateScreenHeight(13),
+              horizontal: getProportionateScreenWidth(40),
+              vertical: getProportionateScreenHeight(10),
             ),
-            child: Row(
-              children: [
-                _buildSearchField(),
-                const Spacer(),
-                _buildFilterButton(),
-              ],
+            child: kTextBentonSansReg(
+              'Favorite',
+              fontSize: getProportionateScreenHeight(15),
             ),
           ),
-          Align(
-            alignment: Alignment.centerLeft,
+        ),
+        // buildVerticleSpace(10),
+        Expanded(
+          child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(40),
-                vertical: getProportionateScreenHeight(10),
+                horizontal: getProportionateScreenWidth(24),
               ),
-              child: kTextBentonSansReg(
-                'Favorite',
-                fontSize: getProportionateScreenHeight(15),
-              ),
-            ),
-          ),
-          // buildVerticleSpace(10),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: getProportionateScreenWidth(24),
-                ),
-                child: Consumer<HomeViewModel>(
-                  builder: (context, viewModel, child) => ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: viewModel.favItems.length,
-                    separatorBuilder: (context, index) =>
-                        buildVerticleSpace(10),
-                    padding: EdgeInsets.only(
-                      bottom: getProportionateScreenHeight(100),
+              child: Consumer<HomeViewModel>(
+                builder: (context, viewModel, child) => ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: viewModel.listOfUserFavouriteBusiness.length,
+                  separatorBuilder: (context, index) => buildVerticleSpace(10),
+                  padding: EdgeInsets.only(
+                    bottom: getProportionateScreenHeight(100),
+                  ),
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) => CustomListTileWidget(
+                    leading: Image.asset(viewModel.favItems[index].shopImage),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        kTextBentonSansMed(
+                          viewModel.listOfUserFavouriteBusiness[index].business!
+                              .businessName
+                              .toString(),
+                          fontSize: getProportionateScreenHeight(15),
+                        ),
+                        // buildVerticleSpace(3),
+                        kTextBentonSansReg(
+                          viewModel.favItems[index].shopCategory,
+                          color: ColorManager.textGrey.withOpacity(0.8),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                        // buildVerticleSpace(3),
+                        kTextBentonSansReg(
+                          '${viewModel.listOfUserFavouriteBusiness[index].business!.ownerName}km away',
+                          color: ColorManager.textGrey.withOpacity(0.8),
+                          fontSize: getProportionateScreenHeight(10),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                      ],
                     ),
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => CustomListTileWidget(
-                      leading: Image.asset(viewModel.favItems[index].shopImage),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          kTextBentonSansMed(
-                            viewModel.favItems[index].shopName,
-                            fontSize: getProportionateScreenHeight(15),
+                    trailing: Column(
+                      children: [
+                        InkWell(
+                          // onTap: () => viewModel.toggleFav(index),
+                          splashColor: ColorManager.transparent,
+                          borderRadius: BorderRadius.circular(40),
+                          child: Icon(
+                            Icons.favorite_rounded,
+                            size: getProportionateScreenHeight(20),
+                            color: ColorManager.error,
                           ),
-                          // buildVerticleSpace(3),
-                          kTextBentonSansReg(
-                            viewModel.favItems[index].shopCategory,
-                            color: ColorManager.textGrey.withOpacity(0.8),
-                            letterSpacing: getProportionateScreenWidth(0.5),
-                          ),
-                          // buildVerticleSpace(3),
-                          kTextBentonSansReg(
-                            '8km away',
-                            color: ColorManager.textGrey.withOpacity(0.8),
-                            fontSize: getProportionateScreenHeight(10),
-                            letterSpacing: getProportionateScreenWidth(0.5),
-                          ),
-                        ],
-                      ),
-                      trailing: Column(
-                        children: [
-                          InkWell(
-                            // onTap: () => viewModel.toggleFav(index),
-                            splashColor: ColorManager.transparent,
-                            borderRadius: BorderRadius.circular(40),
-                            child: Icon(
-                              Icons.favorite_rounded,
-                              size: getProportionateScreenHeight(20),
-                              color: ColorManager.error,
-                            ),
-                          ),
-                          const Spacer(),
-                          AppButtonWidget(
-                            ontap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: ColorManager.transparent,
-                                builder: (ctx) => Container(),
-                              );
-                            },
-                            height: getProportionateScreenHeight(26),
-                            width: getProportionateScreenWidth(72),
-                            borderRadius: getProportionateScreenHeight(18),
-                            text: 'dsdsdsd',
-                            textSize: getProportionateScreenHeight(12),
-                            letterSpacing: getProportionateScreenWidth(0.5),
-                          ),
-                          buildVerticleSpace(5),
-                        ],
-                      ),
+                        ),
+                        const Spacer(),
+                        AppButtonWidget(
+                          ontap: () {
+                            // showModalBottomSheet(
+                            //   context: context,
+                            //   isScrollControlled: true,
+                            //   backgroundColor: ColorManager.transparent,
+                            //   builder: (ctx) => ShopDetailsView(
+                            //     businessModel: viewModel
+                            //         .listOfUserFavouriteBusiness[index]
+                            //         .business,
+                            //   ),
+                            // );
+                          },
+                          height: getProportionateScreenHeight(26),
+                          width: getProportionateScreenWidth(72),
+                          borderRadius: getProportionateScreenHeight(18),
+                          text: 'Detail',
+                          textSize: getProportionateScreenHeight(12),
+                          letterSpacing: getProportionateScreenWidth(0.5),
+                        ),
+                        buildVerticleSpace(5),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

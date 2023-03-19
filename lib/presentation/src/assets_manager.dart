@@ -28,6 +28,7 @@ class AppIcons {
   static const String recentIcon = '$iconsPath/recent.png';
   static const String requestIcon = '$iconsPath/request.png';
   static const String progress2Icon = '$iconsPath/progres2.png';
+  static const String editIcon = '$iconsPath/edit.png';
 }
 
 class AppImages {
@@ -45,6 +46,7 @@ class AppImages {
   static const String visa = '$imagesPath/visa.png';
   static const String jazzCash = '$imagesPath/jazz_cash.png';
   static const String paid = '$imagesPath/paid.png';
+  static const String profilePreview = '$imagesPath/profile_preview.png';
   // static const String onboarding1 = '$imagesPath/onboarding_logo1.svg';
   // static const String onboarding2 = '$imagesPath/onboarding_logo2.svg';
   // static const String onboarding3 = '$imagesPath/onboarding_logo3.svg';

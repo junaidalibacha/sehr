@@ -16,6 +16,7 @@ class TextFieldWidget extends StatelessWidget {
     this.onChange,
     this.onFieldSubmit,
     this.validator,
+    this.readOnly = false,
   }) : super(key: key);
 
   final TextEditingController? controller;
@@ -30,6 +31,7 @@ class TextFieldWidget extends StatelessWidget {
   final String? Function(String? value)? validator;
   final void Function(String? value)? onChange;
   final void Function(String? value)? onFieldSubmit;
+  final bool? readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,7 @@ class TextFieldWidget extends StatelessWidget {
         controller: controller,
         keyboardType: keyboardType,
         focusNode: focusNode,
+        readOnly: readOnly!,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         style: TextStyleManager.regularTextStyle(
           fontSize: getProportionateScreenHeight(14),

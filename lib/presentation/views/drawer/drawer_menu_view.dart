@@ -3,15 +3,25 @@ import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
 import 'package:sehr/presentation/views/drawer/membership_view.dart';
 import 'package:sehr/presentation/views/drawer/reward_view.dart';
+import 'package:sehr/presentation/views/profile/profile_preview_view.dart';
 
 import '../../routes/routes.dart';
 import '../../src/index.dart';
-import '../../view_models/auth_view_model.dart';
-import '../../view_models/customer_view_models/home_view_model.dart';
 import '../../view_models/user_view_model.dart';
 
-class DrawerMenuView extends StatelessWidget {
+class DrawerMenuView extends StatefulWidget {
   DrawerMenuView({super.key});
+
+  @override
+  State<DrawerMenuView> createState() => _DrawerMenuViewState();
+}
+
+class _DrawerMenuViewState extends State<DrawerMenuView> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +32,7 @@ class DrawerMenuView extends StatelessWidget {
         backgroundColor: ColorManager.white,
         body: ChangeNotifierProvider(
           create: (context) => DrawerMenuViewModel(),
-          child: Consumer<DrawerMenuViewModel>(builder: (contex, model, ch) {
+          child: Consumer<DrawerMenuViewModel>(builder: (context, model, ch) {
             return Padding(
               padding: EdgeInsets.only(left: getProportionateScreenHeight(25)),
               child: Column(
@@ -76,10 +86,13 @@ class DrawerMenuView extends StatelessWidget {
                           ],
                         ),
                         buildVerticleSpace(5),
-                        kTextBentonSansReg(
-                          'Check your profile',
-                          fontSize: getProportionateScreenHeight(15),
-                          color: ColorManager.primary,
+                        GestureDetector(
+                          onTap: () => Get.to(() => const ProfilePreviewView()),
+                          child: kTextBentonSansReg(
+                            'Check your profile',
+                            fontSize: getProportionateScreenHeight(15),
+                            color: ColorManager.primary,
+                          ),
                         ),
                         buildVerticleSpace(5),
                         kTextBentonSansReg(

@@ -97,7 +97,7 @@ class HomeView extends StatelessWidget {
                           kTextBentonSansMed(
                             "${viewModel.business?[index].businessName}",
                             fontSize: getProportionateScreenHeight(15),
-                            overFlow: TextOverflow.fade,
+                            overFlow: TextOverflow.ellipsis,
                           ),
                           // buildVerticleSpace(3),
                           kTextBentonSansReg(

@@ -12,7 +12,7 @@ class TopBackButtonWidget extends StatelessWidget {
       alignment: Alignment.topLeft,
       child: Padding(
         padding: EdgeInsets.only(
-          top: getProportionateScreenHeight(38),
+          top: getProportionateScreenHeight(35),
           left: getProportionateScreenWidth(25),
         ),
         child: InkWell(
