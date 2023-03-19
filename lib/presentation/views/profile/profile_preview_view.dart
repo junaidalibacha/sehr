@@ -5,6 +5,7 @@ import 'package:sehr/presentation/common/top_back_button_widget.dart';
 import '../../common/app_button_widget.dart';
 import '../../common/custom_chip_widget.dart';
 import '../../src/index.dart';
+import '../../view_models/blog_view_model.dart';
 
 class ProfilePreviewView extends StatelessWidget {
   const ProfilePreviewView({super.key});
@@ -124,7 +125,7 @@ class ProfilePreviewView extends StatelessWidget {
                             Row(
                               children: [
                                 kTextBentonSansMed(
-                                  'Full Name',
+                                  '${appUser.firstName} ${appUser.lastName}',
                                   fontSize: getProportionateScreenHeight(27),
                                 ),
                                 const Spacer(),
@@ -145,27 +146,27 @@ class ProfilePreviewView extends StatelessWidget {
                             ),
                             buildVerticleSpace(4),
                             kTextBentonSansReg(
-                              'anamwp66@gmail.com',
+                              '${appUser.email}',
                               color: ColorManager.textGrey.withOpacity(0.2),
                             ),
                             buildVerticleSpace(18),
                             TextFieldWidget(
                               // readOnly: true,
-                              controller:
-                                  TextEditingController(text: 'Cnic No'),
-                              hintText: 'Cnic No',
+                              controller: TextEditingController(
+                                  text: '${appUser.cnic}'),
+                              hintText: '${appUser.cnic}',
                             ),
                             buildVerticleSpace(18),
-                            const TextFieldWidget(
-                              hintText: 'DOB',
+                            TextFieldWidget(
+                              hintText: '${appUser.dob}',
                             ),
                             buildVerticleSpace(18),
-                            const TextFieldWidget(
-                              hintText: 'Education',
+                            TextFieldWidget(
+                              hintText: '${appUser.education}',
                             ),
                             buildVerticleSpace(18),
-                            const TextFieldWidget(
-                              hintText: 'Mobile Number',
+                            TextFieldWidget(
+                              hintText: '${appUser.mobile}',
                             ),
                           ],
                         ),

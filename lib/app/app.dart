@@ -6,6 +6,7 @@ import 'package:sehr/presentation/view_models/user_view_model.dart';
 
 import '../presentation/routes/routes.dart';
 import '../presentation/src/index.dart';
+import '../presentation/view_models/customer_view_models/home_view_model.dart';
 import 'index.dart';
 
 class MyApp extends StatelessWidget {
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => ProfileViewModel()),
         ChangeNotifierProvider(create: (ctx) => UserViewModel()),
         ChangeNotifierProvider(create: (ctx) => DrawerMenuViewModel()),
+        ChangeNotifierProvider(create: (ctx) => HomeViewModel()),
       ],
       child: GetMaterialApp(
         builder: (context, child) {

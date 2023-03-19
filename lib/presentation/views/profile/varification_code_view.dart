@@ -13,9 +13,8 @@ class VerificationCodeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ProfileViewModel(),
-      child: SafeArea(
+    return Consumer<ProfileViewModel>(builder: (context, model, ch) {
+      return SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: true,
           body: Stack(
@@ -65,6 +64,7 @@ class VerificationCodeView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                             getProportionateScreenHeight(22),
                           ),
+<<<<<<< HEAD
                           boxShadow: [
                             BoxShadow(
                               color: ColorManager.black.withOpacity(0.05),
@@ -85,9 +85,26 @@ class VerificationCodeView extends StatelessWidget {
                             fontSize: getProportionateScreenHeight(40),
                           ),
                           onComplete: (result) {},
+=======
+                        ],
+                      ),
+                      child: PinCodeFields(
+                        controller: model.otpController,
+                        length: 6,
+                        // controller: newTextEditingController,
+                        // focusNode: focusNode,
+                        // borderWidth: 0,
+                        autoHideKeyboard: false,
+                        keyboardType: TextInputType.number,
+                        borderColor: ColorManager.lightGrey,
+                        activeBorderColor: ColorManager.primary,
+                        textStyle: TextStyleManager.regularTextStyle(
+                          fontSize: getProportionateScreenHeight(40),
+>>>>>>> 3fafb3b9180d3b7021a9a8084ea487f7027f220a
                         ),
                       ),
                     ),
+<<<<<<< HEAD
                     // buildVerticleSpace(50),
                     const Spacer(),
                     Padding(
@@ -104,6 +121,31 @@ class VerificationCodeView extends StatelessWidget {
                           text: 'Next',
                         ),
                       ),
+=======
+                  ),
+                  // buildVerticleSpace(50),
+                  const Spacer(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(118),
+                    ),
+                    child: AppButtonWidget(
+                      ontap: () {
+                        // value.getuserRoleFromPrefs();
+                        if (model.otpController.text.isNotEmpty) {
+                          model.verifyPhoneNo(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Enter OTP")));
+                        }
+
+                        Get.toNamed(Routes.profileCompleteRoute);
+                      },
+                      text: 'Next',
+                      child: model.isLoading
+                          ? const CircularProgressIndicator()
+                          : null,
+>>>>>>> 3fafb3b9180d3b7021a9a8084ea487f7027f220a
                     ),
                     buildVerticleSpace(50),
                   ],
@@ -112,8 +154,8 @@ class VerificationCodeView extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 

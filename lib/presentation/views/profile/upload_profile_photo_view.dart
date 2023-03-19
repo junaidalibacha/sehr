@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/top_back_button_widget.dart';
@@ -15,79 +16,85 @@ class UplaodProfilePhotoView extends StatelessWidget {
   Widget build(BuildContext context) {
     // final profileType =
     //     Provider.of<ProfileViewModel>(context, listen: false).selectedUserRole;
-    return ChangeNotifierProvider(
-      create: (_) => ProfileViewModel(),
-      child: SafeArea(
-        child: Scaffold(
-          body: Stack(
-            children: [
-              Image.asset(
-                AppImages.pattern2,
-                color: ColorManager.primary.withOpacity(0.1),
-              ),
-              Consumer<ProfileViewModel>(
-                builder: (context, viewModel, child) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const TopBackButtonWidget(),
-                    buildVerticleSpace(24),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: getProportionateScreenWidth(27),
-                      ),
-                      child: kTextBentonSansMed(
-                        'Upload Your Profile\nPhoto',
-                        fontSize: getProportionateScreenHeight(25),
-                      ),
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Image.asset(
+              AppImages.pattern2,
+              color: ColorManager.primary.withOpacity(0.1),
+            ),
+            Consumer<ProfileViewModel>(
+              builder: (context, viewModel, child) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const TopBackButtonWidget(),
+                  buildVerticleSpace(24),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: getProportionateScreenWidth(27),
                     ),
-                    buildVerticleSpace(52),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: getProportionateScreenWidth(27),
-                      ),
-                      child: kTextBentonSansMed(
-                        'This data will be displayed in your\n\naccount profile for security',
-                        fontSize: getProportionateScreenHeight(12),
-                      ),
+                    child: kTextBentonSansMed(
+                      'Upload Your Profile\nPhoto',
+                      fontSize: getProportionateScreenHeight(25),
                     ),
-                    buildVerticleSpace(20),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: getProportionateScreenWidth(34),
-                      ),
-                      child: viewModel.image == null
-                          ? _buildImageUploadTypes(viewModel)
-                          : _buildImagePreview(viewModel),
+                  ),
+                  buildVerticleSpace(52),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: getProportionateScreenWidth(27),
                     ),
-                    // buildVerticleSpace(40),
-                    const Spacer(),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: getProportionateScreenWidth(118),
-                      ),
-                      child: AppButtonWidget(
-                        ontap: () {
-                          //   Get.toNamed(Routes.setLocationRoute, arguments: {
-                          //   'image': viewModel.image,
-                          // });
-                          // viewModel.image == null
-                          //     ?
-                          // viewModel.registerApi(context);
-                          //     :
+                    child: kTextBentonSansMed(
+                      'This data will be displayed in your\n\naccount profile for security',
+                      fontSize: getProportionateScreenHeight(12),
+                    ),
+                  ),
+                  buildVerticleSpace(20),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(34),
+                    ),
+                    child: viewModel.image == null
+                        ? _buildImageUploadTypes(viewModel)
+                        : _buildImagePreview(viewModel),
+                  ),
+                  // buildVerticleSpace(40),
+                  const Spacer(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(118),
+                    ),
+                    child: AppButtonWidget(
+                      ontap: () async {
+                        final SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        final isBusiness = prefs.getString('isBusiness');
+                        print("type: $isBusiness");
+                        print("taped");
+                        //   Get.toNamed(Routes.setLocationRoute, arguments: {
+                        //   'image': viewModel.image,
+                        // });
+                        // viewModel.image == null
+                        //     ?
+                        // viewModel.registerApi(context);
+                        //     :
+                        if (isBusiness == "yes") {
+                          viewModel.registerBusiness(context);
+                        } else {
                           viewModel.registerMultiPartApi(context);
-                        },
-                        text: viewModel.image == null ? 'Skip' : 'Next',
-                        child: viewModel.isLoading
-                            ? const CircularProgressIndicator()
-                            : null,
-                      ),
+                        }
+                      },
+                      text: viewModel.image == null ? 'Skip' : 'Next',
+                      child: viewModel.isLoading
+                          ? const CircularProgressIndicator()
+                          : null,
                     ),
-                    buildVerticleSpace(50),
-                  ],
-                ),
+                  ),
+                  buildVerticleSpace(50),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

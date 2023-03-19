@@ -6,15 +6,22 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/utils/utils.dart';
+import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/view_models/user_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../../data/network/network_api_services.dart';
 import '../../domain/models/user_model.dart';
 import '../../domain/repository/app_urls.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../../domain/repository/education_repository.dart';
+import '../../domain/services/location_services.dart';
 import '../routes/routes.dart';
+import '../views/drawer/custom_drawer.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+
+import 'customer_view_models/home_view_model.dart';
 
 class ProfileViewModel extends ChangeNotifier {
 // //! Select User Role
@@ -41,6 +48,7 @@ class ProfileViewModel extends ChangeNotifier {
   final lastNameTextController = TextEditingController();
   final cnicNoTextController = TextEditingController();
   final dobTextController = TextEditingController();
+  final otpController = TextEditingController();
   // final userMobNoTextController = TextEditingController();
 
   DateTime? _selectedDate;
@@ -100,6 +108,7 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  final NetworkApiService _networkApiService = NetworkApiService();
   // Business Bio Data
   final businessNameTextController = TextEditingController();
   final ownerNameTextController = TextEditingController();
@@ -287,6 +296,7 @@ class ProfileViewModel extends ChangeNotifier {
       Utils.flushBarErrorMessage(context, 'Please select Province');
     } else {
       _saveUserAddressToPrefs();
+
       Get.toNamed(Routes.photoSelectionRoute);
     }
   }
@@ -300,6 +310,7 @@ class ProfileViewModel extends ChangeNotifier {
     prefs.setString('division', _selectedDivision!);
     prefs.setString('province', _selectedProvince!);
     prefs.setString('city', _selectedCity!);
+    prefs.setString('isBusiness', 'no');
     // prefs.setString('country', 'Pakistan');
   }
 
@@ -366,7 +377,8 @@ class ProfileViewModel extends ChangeNotifier {
     // stream.cast();
 
     int length = await File(_image!.path).length();
-
+    List<int> fileBytes = await File(_image!.path).readAsBytes();
+    String base64Image = base64Encode(fileBytes);
     print(prefs.getString('gender')!);
     print(stream);
     print(length);
@@ -397,16 +409,16 @@ class ProfileViewModel extends ChangeNotifier {
     request.fields['country'] = 'Pakistan';
     request.fields['role'] = 'user';
 
-    http.MultipartFile multipartFile =
-        http.MultipartFile('profileImage', stream, length);
+    var profileImage = http.MultipartFile.fromString(
+      'profileImage',
+      base64.encode(base64Image.codeUnits),
+      filename: _image?.path.split("/").last,
+    );
 
-    request.files.add(multipartFile);
-    _authRepo.registerMultiPartApi(request).then((value) {
+    request.files.add(profileImage);
+    await _authRepo.registerMultiPartApi(request).then((value) {
       setLoading(false);
-      final userServices = Provider.of<UserViewModel>(context, listen: false);
-      userServices.saveUser(
-        UserModel(accessToken: value['token']),
-      );
+
       Utils.flushBarErrorMessage(context, 'Register Successfully');
       Get.toNamed(Routes.verificationCodeRoute);
       if (kDebugMode) {
@@ -446,10 +458,116 @@ class ProfileViewModel extends ChangeNotifier {
     prefs.setString('mobileNo', shopKeeperMobileNoTextController.text.trim());
     prefs.setString('category', _selectedBusinessCategory!);
     prefs.setString('grade', _selectedBusinessGrade!);
+    prefs.setString('isBusiness', 'yes');
+  }
+
+  /// Register Business
+
+  Future registerBusiness(context) async {
+    print("called");
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<int> fileBytes = await File(_image!.path).readAsBytes();
+    String base64Image = base64Encode(
+        fileBytes); //// Encode the bytes as a base64-encoded string
+    var token = prefs.get('accessToken');
+
+    http.MultipartRequest request =
+        http.MultipartRequest('POST', Uri.parse(AppUrls.businessEndPoint));
+    request.headers.addAll({
+      'accept': '*/*',
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data',
+    });
+    print(
+        "businessName:${businessNameTextController.text} owner name ${ownerNameTextController.text}, mobile no: ${shopKeeperMobileNoTextController.text}");
+    int grade = 1;
+    int category = 1;
+    request.fields['businessName'] = businessNameTextController.text;
+    request.fields['ownerName'] = ownerNameTextController.text;
+
+    request.fields['mobile'] = shopKeeperMobileNoTextController.text;
+
+    request.fields['address'] = "deom address";
+    request.fields['tehsil'] = "deom tehsil";
+    request.fields['district'] = "deom division";
+    request.fields['division'] = "deom district";
+    request.fields['province'] = "deom province";
+    request.fields['city'] = "demo city";
+    request.fields['country'] = "Pakistan";
+    request.fields['category'] = "$category";
+    request.fields['grade'] = '$grade';
+    request.fields['email'] = appUser.email.toString();
+    request.fields['lat'] = "33.597524";
+    request.fields['lon'] = "73.143872";
+
+    var logoMediaFile = http.MultipartFile.fromString(
+      'logoMedia',
+      base64.encode(base64Image.codeUnits),
+      filename: _image?.path.split("/").last,
+    );
+
+    request.files.add(logoMediaFile);
+
+    await _authRepo.registerMultiPartApi(request).then((value) {
+      setLoading(false);
+
+      Utils.flushBarErrorMessage(context, 'Register Successfully');
+      // Get.toNamed(Routes.verificationCodeRoute);
+      Get.to(const DrawerView());
+      if (kDebugMode) {
+        print(value.toString());
+      }
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      Utils.flushBarErrorMessage(context, error.toString());
+      if (kDebugMode) {
+        print("MultiPart API Error=============> $error");
+      }
+    });
+  }
+
+  init() async {
+    position = await LocationServices.myLoction();
+    try {
+      List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(
+        position!.latitude,
+        position!.longitude,
+      );
+
+      address =
+          ("${placemarks.last.locality.toString()} ${placemarks.last.administrativeArea.toString().trim()} ${placemarks.last.name.toString()}");
+      print("Address: $address");
+    } catch (e) {
+      print("give me error ${e.toString()}");
+    }
+
+    notifyListeners();
+  }
+
+  /// Verify Phone Number Through Otp
+  Future verifyPhoneNo(context) async {
+    setLoading(true);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await _networkApiService
+        .getGetApiResponse(
+      "${AppUrls.verifyPhoneNo}?mobile=${prefs.getString('mobileNo')}&otp=123456",
+    )
+        .then((value) async {
+      final userPreference = Provider.of<UserViewModel>(context, listen: false);
+      userPreference.saveUser(
+        UserModel(accessToken: value['accessToken'].toString()),
+      );
+
+      Utils.flushBarErrorMessage(context, 'Login Successfully');
+      await init();
+      setLoading(false);
+
+      Get.offAll(const DrawerView());
+    });
   }
 
 //! OTP verification
-  final otpController = TextEditingController();
+  // final otpController = TextEditingController();
   // Future<void> verifyOtp(BuildContext context) async {
   //   if (otpController.text.isEmpty && otpController.text.isEmpty) {
   //     Utils.flushBarErrorMessage(context, 'Please Enter Your Email & Pasword');

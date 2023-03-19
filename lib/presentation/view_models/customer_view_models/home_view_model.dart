@@ -1,21 +1,38 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/data/network/network_api_services.dart';
 import 'package:sehr/domain/models/models.dart';
+import 'package:sehr/domain/services/location_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../domain/models/business_model.dart';
+import '../../../domain/models/userFavouriteBusinessModel.dart';
 import '../../../domain/repository/app_urls.dart';
 import '../../../domain/repository/business_repository.dart';
 import '../../src/index.dart';
 
+String? address;
+Position? position;
+
 class HomeViewModel extends ChangeNotifier {
   BusinessRepository model = BusinessRepository();
+
   final NetworkApiService _networkApiService = NetworkApiService();
+  BusinessModel businessModel = BusinessModel();
+  List<UserFavouriteBusiness> listOfUserFavouriteBusiness = [];
+
+  // final NetworkApiService _networkApiService = NetworkApiService();
 
   List<BusinessModel>? business = [];
 
   HomeViewModel() {
-    getShops();
+    init();
+  }
+
+  init() async {
+    await userFavouriteBusiness();
+    await getShops();
+    notifyListeners();
   }
 
   final List<ShopDataModel> _shops = [
@@ -135,8 +152,16 @@ class HomeViewModel extends ChangeNotifier {
 
   Future getShops() async {
     business = await model.getBusiness();
-    print("Business length: ${business?.length}");
-    notifyListeners();
+    business?.forEach((business) {
+      for (var favBusiness in listOfUserFavouriteBusiness) {
+        if (favBusiness.businessId == business.id) {
+          print("Trueeeeeeeeeee");
+          business.isFavourite = true;
+        }
+      }
+    });
+    print("Business lengthlllll: ${business?.length}");
+    //  notifyListeners();
   }
 
   /// Toggle Favourite
@@ -201,6 +226,58 @@ class HomeViewModel extends ChangeNotifier {
       );
 
       print("Successfully Deleted From Favourite: ");
+    } catch (e) {
+      print("Error Occured: $e");
+      rethrow;
+    }
+  }
+
+  ///  Get user Favourite Business
+
+  Future userFavouriteBusiness() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var token = prefs.get('accessToken');
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    try {
+      final response = await _networkApiService.getGetApiResponse(
+        AppUrls.addToFavourite,
+        headers: headers,
+      );
+
+      response.forEach((favBusiness) {
+        listOfUserFavouriteBusiness
+            .add(UserFavouriteBusiness.fromJson(favBusiness));
+      });
+    } catch (e) {
+      print("Error Occured: $e");
+      rethrow;
+    }
+
+    print("Favourite Business Length: ${listOfUserFavouriteBusiness.length}");
+  }
+
+  /// Get Business Detail when scan
+  Future getBusinessOnScan(id) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var token = prefs.get('accessToken');
+    // print(token);
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    try {
+      final response = await _networkApiService.getGetApiResponse(
+          "${AppUrls.businessEndPoint}/${id}",
+          headers: headers);
+
+      businessModel = BusinessModel.fromJson(response);
+      print("Successfully Fetched: ${businessModel.businessName}");
     } catch (e) {
       print("Error Occured: $e");
       rethrow;

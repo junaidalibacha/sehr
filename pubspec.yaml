@@ -56,8 +56,12 @@ dependencies:
   another_flushbar: ^1.12.29
   youtube_player_flutter: ^8.1.2
   visibility_detector: ^0.4.0+2
-  syncfusion_flutter_sliders: ^20.4.54
-  url_launcher: ^6.1.10
+  location: ^4.4.0
+  geolocator: ^9.0.2
+  geocoding: ^2.0.5
+  google_maps: ^4.0.0
+  google_maps_flutter: ^2.2.5
+  flutter_polyline_points: ^1.0.0
   # dropdown_search: ^5.0.5
   # pin_code_fields: ^7.4.0
 
