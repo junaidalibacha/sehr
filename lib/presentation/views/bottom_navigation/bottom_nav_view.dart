@@ -5,6 +5,8 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
 
 import '../../src/index.dart';
+import '../../view_models/blog_view_model.dart';
+import '../../view_models/customer_view_models/home_view_model.dart';
 
 class BottomNavigationView extends StatelessWidget {
   const BottomNavigationView({super.key});
@@ -144,7 +146,7 @@ class BottomNavigationView extends StatelessWidget {
             color: ColorManager.white,
           ),
           kTextBentonSansReg(
-            'Detail of current location',
+            '${address}',
             fontSize: getProportionateScreenHeight(13),
             color: ColorManager.white,
           ),

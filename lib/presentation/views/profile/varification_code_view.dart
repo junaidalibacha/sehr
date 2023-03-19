@@ -12,9 +12,8 @@ class VerificationCodeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ProfileViewModel(),
-      child: SafeArea(
+    return Consumer<ProfileViewModel>(builder: (context, model, ch) {
+      return SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: true,
           body: Stack(
@@ -71,7 +70,8 @@ class VerificationCodeView extends StatelessWidget {
                         ],
                       ),
                       child: PinCodeFields(
-                        length: 4,
+                        controller: model.otpController,
+                        length: 6,
                         // controller: newTextEditingController,
                         // focusNode: focusNode,
                         // borderWidth: 0,
@@ -92,14 +92,22 @@ class VerificationCodeView extends StatelessWidget {
                     padding: EdgeInsets.symmetric(
                       horizontal: getProportionateScreenWidth(118),
                     ),
-                    child: Consumer<ProfileViewModel>(
-                      builder: (context, value, child) => AppButtonWidget(
-                        ontap: () {
-                          // value.getuserRoleFromPrefs();
-                          Get.toNamed(Routes.profileCompleteRoute);
-                        },
-                        text: 'Next',
-                      ),
+                    child: AppButtonWidget(
+                      ontap: () {
+                        // value.getuserRoleFromPrefs();
+                        if (model.otpController.text.isNotEmpty) {
+                          model.verifyPhoneNo(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Enter OTP")));
+                        }
+
+                        Get.toNamed(Routes.profileCompleteRoute);
+                      },
+                      text: 'Next',
+                      child: model.isLoading
+                          ? const CircularProgressIndicator()
+                          : null,
                     ),
                   ),
                   buildVerticleSpace(50),
@@ -108,7 +116,7 @@ class VerificationCodeView extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

@@ -9,8 +9,19 @@ import '../../routes/routes.dart';
 import '../../src/index.dart';
 import '../../view_models/user_view_model.dart';
 
-class DrawerMenuView extends StatelessWidget {
+class DrawerMenuView extends StatefulWidget {
   DrawerMenuView({super.key});
+
+  @override
+  State<DrawerMenuView> createState() => _DrawerMenuViewState();
+}
+
+class _DrawerMenuViewState extends State<DrawerMenuView> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +32,33 @@ class DrawerMenuView extends StatelessWidget {
         backgroundColor: ColorManager.white,
         body: ChangeNotifierProvider(
           create: (context) => DrawerMenuViewModel(),
+
+          child: Consumer<DrawerMenuViewModel>(builder: (context, model, ch) {
+            return Padding(
+              padding: EdgeInsets.only(left: getProportionateScreenHeight(25)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // buildVerticleSpace(100),
+                  const Spacer(),
+                  Padding(
+                    padding:
+                        EdgeInsets.only(left: getProportionateScreenWidth(25)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: getProportionateScreenWidth(18)),
+                          child: CircleAvatar(
+                            backgroundColor: ColorManager.primary,
+                            radius: getProportionateScreenHeight(40),
+                            child: Padding(
+                              padding: EdgeInsets.all(
+                                  getProportionateScreenHeight(4)),
+                              child: Image.asset('assets/images/profile.png'),
+                            ),
+
           child: Padding(
             padding: EdgeInsets.only(left: getProportionateScreenHeight(25)),
             child: Column(
@@ -44,6 +82,7 @@ class DrawerMenuView extends StatelessWidget {
                             padding:
                                 EdgeInsets.all(getProportionateScreenHeight(4)),
                             child: Image.asset('assets/images/profile.png'),
+
                           ),
                         ),
                       ),
@@ -69,6 +108,36 @@ class DrawerMenuView extends StatelessWidget {
                               fontSize: getProportionateScreenHeight(9),
                               color: ColorManager.secondaryLight,
                             ),
+
+                          ],
+                        ),
+                        buildVerticleSpace(5),
+                        GestureDetector(
+                          onTap: () => Get.to(() => const ProfilePreviewView()),
+                          child: kTextBentonSansReg(
+                            'Check your profile',
+                            fontSize: getProportionateScreenHeight(15),
+                            color: ColorManager.primary,
+                          ),
+                        ),
+                        buildVerticleSpace(5),
+                        kTextBentonSansReg(
+                          'Verify your Business',
+                          fontSize: getProportionateScreenHeight(12),
+                          color: ColorManager.blue,
+                        ),
+                        buildVerticleSpace(15),
+                        DefaultTabController(
+                          length: 2,
+                          child: Container(
+                            height: getProportionateScreenHeight(33),
+                            width: getProportionateScreenWidth(150),
+                            decoration: BoxDecoration(
+                              color: ColorManager.grey,
+                              borderRadius: BorderRadius.circular(
+                                getProportionateScreenHeight(10),
+                              ),
+
                           ),
                         ],
                       ),
@@ -97,6 +166,7 @@ class DrawerMenuView extends StatelessWidget {
                             color: ColorManager.grey,
                             borderRadius: BorderRadius.circular(
                               getProportionateScreenHeight(10),
+
                             ),
                           ),
                           child: TabBar(
