@@ -5,14 +5,13 @@ import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 // import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/network/network_api_services.dart';
 import '../../domain/models/user_model.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../routes/routes.dart';
 import 'user_view_model.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  final NetworkApiService _networkApiService = NetworkApiService();
+  // final NetworkApiService _networkApiService = NetworkApiService();
   final loginFormKey = GlobalKey<FormState>();
   final signUpFormKey = GlobalKey<FormState>();
 
@@ -116,6 +115,7 @@ class AuthViewModel extends ChangeNotifier {
         'password': loginPasswordController.text.trim(),
       };
       setLoading(true);
+      print(loginData);
 
       _authRepo.loginApi(loginData).then((value) async {
         setLoading(false);

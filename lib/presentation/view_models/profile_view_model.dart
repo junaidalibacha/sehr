@@ -72,10 +72,11 @@ class ProfileViewModel extends ChangeNotifier {
   final _educationRepo = EducationRepository();
   Future<void> educationApi() async {
     await _educationRepo.getEducationApi().then((value) {
-      print('Education Options===>$_educationOptions');
-      // EducationModel.fromJson(value);
-      // notifyListeners();
+      //
+      print(value);
+      //
     }).onError((error, stackTrace) {
+      // Utils.flushBarErrorMessage(context, error.toString());
       print("Error==> $error");
     });
 
@@ -446,5 +447,14 @@ class ProfileViewModel extends ChangeNotifier {
     prefs.setString('category', _selectedBusinessCategory!);
     prefs.setString('grade', _selectedBusinessGrade!);
   }
+
+//! OTP verification
+  final otpController = TextEditingController();
+  // Future<void> verifyOtp(BuildContext context) async {
+  //   if (otpController.text.isEmpty && otpController.text.isEmpty) {
+  //     Utils.flushBarErrorMessage(context, 'Please Enter Your Email & Pasword');
+  //   }
+  //   else _authRepo.
+  // }
 }
 // }

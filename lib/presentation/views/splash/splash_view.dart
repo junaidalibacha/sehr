@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:sehr/app/index.dart';
+import 'package:sehr/presentation/view_models/business_view_models/business_verification_view.dart';
 
 import '../../common/logo_widget.dart';
 import '../../src/index.dart';
@@ -22,13 +23,13 @@ class _SplashViewState extends State<SplashView> {
   }
 
   void _goNext() {
-    // Get.to(() => const OnboardingScreen());
+    Get.to(() => const BusinessVerificationView());
   }
 
   @override
   void initState() {
-    // _splashScreenDelay();
-    _splashServices.checkAuthentication();
+    _splashScreenDelay();
+    // _splashServices.checkAuthentication();
     super.initState();
   }
 

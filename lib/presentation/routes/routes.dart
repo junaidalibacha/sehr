@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sehr/presentation/view_models/business_view_models/business_verification_view.dart';
 import 'package:sehr/presentation/views/bottom_navigation/bottom_nav_view.dart';
 import 'package:sehr/presentation/views/business_views/payment/payment_view.dart';
 import 'package:sehr/presentation/views/customer_views/scanner/scanner_view.dart';
@@ -31,6 +32,7 @@ class Routes {
   static const String setLocationRoute = '/setLocation';
   static const String verificationCodeRoute = '/verificationCode';
   static const String profileCompleteRoute = '/profileComplete';
+  static const String businessVerificationRoute = '/businessVerification';
 
   // Customer Side Views
   static const String drawerRoute = '/drawer';
@@ -84,6 +86,9 @@ class RoutesGenerator {
         return MaterialPageRoute(builder: (_) => const ScannerView());
 
       // Business Side Views
+      case Routes.businessVerificationRoute:
+        return MaterialPageRoute(
+            builder: (_) => const BusinessVerificationView());
       case Routes.paymentRoute:
         return MaterialPageRoute(builder: (_) => const PaymentView());
     }
