@@ -17,12 +17,11 @@ Position? position;
 class HomeViewModel extends ChangeNotifier {
   BusinessRepository model = BusinessRepository();
 
-  NetworkApiService _networkApiService = NetworkApiService();
+  final NetworkApiService _networkApiService = NetworkApiService();
   BusinessModel businessModel = BusinessModel();
   List<UserFavouriteBusiness> listOfUserFavouriteBusiness = [];
 
-  final NetworkApiService _networkApiService = NetworkApiService();
-
+  // final NetworkApiService _networkApiService = NetworkApiService();
 
   List<BusinessModel>? business = [];
 
@@ -154,12 +153,12 @@ class HomeViewModel extends ChangeNotifier {
   Future getShops() async {
     business = await model.getBusiness();
     business?.forEach((business) {
-      listOfUserFavouriteBusiness.forEach((favBusiness) {
+      for (var favBusiness in listOfUserFavouriteBusiness) {
         if (favBusiness.businessId == business.id) {
           print("Trueeeeeeeeeee");
           business.isFavourite = true;
         }
-      });
+      }
     });
     print("Business lengthlllll: ${business?.length}");
     //  notifyListeners();
@@ -273,7 +272,7 @@ class HomeViewModel extends ChangeNotifier {
 
     try {
       final response = await _networkApiService.getGetApiResponse(
-          AppUrls.businessEndPoint + "/${id}",
+          "${AppUrls.businessEndPoint}/${id}",
           headers: headers);
 
       businessModel = BusinessModel.fromJson(response);
