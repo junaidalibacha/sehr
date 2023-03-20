@@ -88,8 +88,7 @@ class HomeView extends StatelessWidget {
                     ),
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => CustomListTileWidget(
-                      leading:
-                          Image.asset("${viewModel.shops[index].shopImage}"),
+                      leading: Image.asset(viewModel.shops[index].shopImage),
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,7 +100,8 @@ class HomeView extends StatelessWidget {
                           ),
                           // buildVerticleSpace(3),
                           kTextBentonSansReg(
-                            "${viewModel.business?[index].category?.title == null ? "Candy" : viewModel.business?[index].category?.title}",
+                            viewModel.business?[index].category?.title ??
+                                "Candy",
                             color: ColorManager.textGrey.withOpacity(0.8),
                             letterSpacing: getProportionateScreenWidth(0.5),
                           ),

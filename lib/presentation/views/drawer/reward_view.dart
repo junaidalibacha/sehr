@@ -1,6 +1,5 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/top_back_button_widget.dart';
-import 'package:sehr/presentation/index.dart';
 
 import '../../src/index.dart';
 import '../customer_views/progress/customer_progress_view.dart';

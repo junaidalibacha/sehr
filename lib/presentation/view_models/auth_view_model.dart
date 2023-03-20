@@ -6,9 +6,7 @@ import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/network/network_api_services.dart';
-import '../../domain/models/blog_model.dart';
 import '../../domain/models/user_model.dart';
-import '../../domain/repository/app_urls.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../../domain/services/location_services.dart';
 import '../routes/routes.dart';
@@ -17,7 +15,7 @@ import 'user_view_model.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 
 class AuthViewModel extends ChangeNotifier {
-  NetworkApiService _networkApiService = NetworkApiService();
+  final NetworkApiService _networkApiService = NetworkApiService();
   final loginFormKey = GlobalKey<FormState>();
   final signUpFormKey = GlobalKey<FormState>();
 
@@ -39,7 +37,7 @@ class AuthViewModel extends ChangeNotifier {
   bool confirmPassObscureText = true;
   bool keepAuthData = false;
 
-  AuthViewModel() {}
+  AuthViewModel();
 
   void showLoginPass() {
     loginPassObscureText = !loginPassObscureText;
@@ -54,9 +52,8 @@ class AuthViewModel extends ChangeNotifier {
         position!.longitude,
       );
 
-      address = ("${placemarks.last.locality.toString()} " +
-          "${placemarks.last.administrativeArea.toString().trim()} " +
-          "${placemarks.last.name.toString()}");
+      address =
+          ("${placemarks.last.locality.toString()} ${placemarks.last.administrativeArea.toString().trim()} ${placemarks.last.name.toString()}");
       print("Address: $address");
     } catch (e) {
       print("give me error ${e.toString()}");

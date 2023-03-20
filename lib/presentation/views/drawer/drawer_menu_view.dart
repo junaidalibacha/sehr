@@ -10,7 +10,7 @@ import '../../src/index.dart';
 import '../../view_models/user_view_model.dart';
 
 class DrawerMenuView extends StatefulWidget {
-  DrawerMenuView({super.key});
+  const DrawerMenuView({super.key});
 
   @override
   State<DrawerMenuView> createState() => _DrawerMenuViewState();
