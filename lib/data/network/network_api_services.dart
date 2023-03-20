@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 class NetworkApiService extends BaseApiServices {
   @override
   Future getGetApiResponse(String url, {dynamic headers}) async {
-    dynamic responseJson;
+    Map<String, dynamic> responseJson;
     try {
       final response = await http
           .get(Uri.parse(url), headers: headers)
@@ -45,7 +45,7 @@ class NetworkApiService extends BaseApiServices {
   ///
   @override
   Future getDeletetApiResponse(String url, {dynamic headers}) async {
-    dynamic responseJson;
+    Map<String, dynamic> responseJson;
     try {
       Response response = await delete(
         Uri.parse(url),
@@ -85,7 +85,7 @@ class NetworkApiService extends BaseApiServices {
     try {
       StreamedResponse res = await request.send();
       // responseJson = returnStreamResponse(res);
-      print("${responseJson}");
+      print("$responseJson");
       print("objecttt $res");
       print(res.stream);
       print(res.statusCode);
@@ -99,9 +99,11 @@ class NetworkApiService extends BaseApiServices {
   }
 
   dynamic returnResponse(Response response) {
+    print(response.statusCode);
     switch (response.statusCode) {
       case 200:
-        dynamic responseJson = jsonDecode(response.body);
+        Map<String, dynamic> responseJson = jsonDecode(response.body);
+        print(responseJson);
         return responseJson;
       case 201:
         dynamic responseJson = jsonDecode(response.body);

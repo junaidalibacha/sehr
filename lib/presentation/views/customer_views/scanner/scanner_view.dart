@@ -4,6 +4,7 @@ import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
+import 'package:sehr/presentation/views/customer_views/request_order/request_order_view.dart';
 
 import '../../../src/index.dart';
 import '../../../view_models/bottom_nav_view_model.dart';
@@ -108,7 +109,9 @@ class _ScannerViewState extends State<ScannerView> {
                 ),
                 buildVerticleSpace(27),
                 AppButtonWidget(
-                  ontap: () {},
+                  ontap: () {
+                    Get.to(const RequestOrderView());
+                  },
                   height: getProportionateScreenHeight(46),
                   width: getProportionateScreenWidth(200),
                   borderRadius: getProportionateScreenHeight(23),

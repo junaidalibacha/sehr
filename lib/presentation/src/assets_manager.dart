@@ -50,6 +50,7 @@ class AppImages {
   static const String file = '$imagesPath/attach-file.png';
   static const String process = '$imagesPath/process.png';
   static const String qr = '$imagesPath/qr.png';
+  static const String cash = '$imagesPath/cash.png';
 }
 
 class AssetsJson {

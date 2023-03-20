@@ -19,7 +19,7 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
   ProfileViewModel profileViewModel = ProfileViewModel();
   @override
   void initState() {
-    // profileViewModel.educationApi();
+    profileViewModel.educationApi();
     super.initState();
   }
 

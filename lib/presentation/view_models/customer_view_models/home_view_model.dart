@@ -2,7 +2,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/data/network/network_api_services.dart';
 import 'package:sehr/domain/models/models.dart';
-import 'package:sehr/domain/services/location_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../domain/models/business_model.dart';
@@ -273,7 +272,7 @@ class HomeViewModel extends ChangeNotifier {
 
     try {
       final response = await _networkApiService.getGetApiResponse(
-          "${AppUrls.businessEndPoint}/${id}",
+          "${AppUrls.businessEndPoint}/$id",
           headers: headers);
 
       businessModel = BusinessModel.fromJson(response);

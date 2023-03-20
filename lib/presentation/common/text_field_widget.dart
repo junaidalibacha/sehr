@@ -6,6 +6,8 @@ class TextFieldWidget extends StatelessWidget {
     Key? key,
     this.controller,
     this.keyboardType,
+    this.textStyle,
+    this.textAlign,
     this.focusNode,
     this.hintText,
     this.prefixIcon,
@@ -17,10 +19,13 @@ class TextFieldWidget extends StatelessWidget {
     this.onFieldSubmit,
     this.validator,
     this.readOnly = false,
+    this.shadow = true,
   }) : super(key: key);
 
   final TextEditingController? controller;
   final TextInputType? keyboardType;
+  final TextStyle? textStyle;
+  final TextAlign? textAlign;
   final FocusNode? focusNode;
   final String? hintText;
   final Widget? prefixIcon;
@@ -32,6 +37,7 @@ class TextFieldWidget extends StatelessWidget {
   final void Function(String? value)? onChange;
   final void Function(String? value)? onFieldSubmit;
   final bool? readOnly;
+  final bool? shadow;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,9 @@ class TextFieldWidget extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: ColorManager.black.withOpacity(0.1),
+            color: shadow!
+                ? ColorManager.black.withOpacity(0.1)
+                : ColorManager.transparent,
             blurRadius: blurRadius ?? getProportionateScreenHeight(15),
           ),
         ],
@@ -53,11 +61,13 @@ class TextFieldWidget extends StatelessWidget {
         keyboardType: keyboardType,
         focusNode: focusNode,
         readOnly: readOnly!,
+        textAlign: textAlign ?? TextAlign.start,
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        style: TextStyleManager.regularTextStyle(
-          fontSize: getProportionateScreenHeight(14),
-          letterSpacing: getProportionateScreenHeight(0.5),
-        ),
+        style: textStyle ??
+            TextStyleManager.regularTextStyle(
+              fontSize: getProportionateScreenHeight(14),
+              letterSpacing: getProportionateScreenHeight(0.5),
+            ),
         obscureText: obscureText,
         decoration: InputDecoration(
           errorStyle: TextStyleManager.regularTextStyle(

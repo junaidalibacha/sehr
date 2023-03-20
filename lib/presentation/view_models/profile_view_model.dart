@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import '../../data/network/network_api_services.dart';
+import '../../domain/models/education_model.dart';
 import '../../domain/models/user_model.dart';
 import '../../domain/repository/app_urls.dart';
 import '../../domain/repository/auth_repository.dart';
@@ -75,14 +76,17 @@ class ProfileViewModel extends ChangeNotifier {
     'Matric',
   ];
   List<String> get educationOptions => _educationOptions;
+
+  List<EducationModel> educationDataList = [];
   //
 //! Get Education API
   final _educationRepo = EducationRepository();
   Future<void> educationApi() async {
     await _educationRepo.getEducationApi().then((value) {
       //
-      print(value);
+      // print(value);
       //
+      // educationDataList.add(value[])
     }).onError((error, stackTrace) {
       // Utils.flushBarErrorMessage(context, error.toString());
       print("Error==> $error");
