@@ -49,7 +49,7 @@ class FavouriteView extends StatelessWidget {
               child: Consumer<HomeViewModel>(
                 builder: (context, viewModel, child) => ListView.separated(
                   shrinkWrap: true,
-                  itemCount: viewModel.listOfUserFavouriteBusiness.length,
+                  itemCount: viewModel.favBusinesses.length,
                   separatorBuilder: (context, index) => buildVerticleSpace(10),
                   padding: EdgeInsets.only(
                     bottom: getProportionateScreenHeight(100),
@@ -62,8 +62,7 @@ class FavouriteView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         kTextBentonSansMed(
-                          viewModel.listOfUserFavouriteBusiness[index].business!
-                              .businessName
+                          viewModel.favBusinesses[index].businessName!
                               .toString(),
                           fontSize: getProportionateScreenHeight(15),
                         ),
@@ -75,7 +74,7 @@ class FavouriteView extends StatelessWidget {
                         ),
                         // buildVerticleSpace(3),
                         kTextBentonSansReg(
-                          '${viewModel.listOfUserFavouriteBusiness[index].business!.ownerName}km away',
+                          '${viewModel.favBusinesses[index].distance?.toStringAsFixed(2)}km away',
                           color: ColorManager.textGrey.withOpacity(0.8),
                           fontSize: getProportionateScreenHeight(10),
                           letterSpacing: getProportionateScreenWidth(0.5),
@@ -97,16 +96,14 @@ class FavouriteView extends StatelessWidget {
                         const Spacer(),
                         AppButtonWidget(
                           ontap: () {
-                            // showModalBottomSheet(
-                            //   context: context,
-                            //   isScrollControlled: true,
-                            //   backgroundColor: ColorManager.transparent,
-                            //   builder: (ctx) => ShopDetailsView(
-                            //     businessModel: viewModel
-                            //         .listOfUserFavouriteBusiness[index]
-                            //         .business,
-                            //   ),
-                            // );
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: ColorManager.transparent,
+                              builder: (ctx) => ShopDetailsView(
+                                businessModel: viewModel.favBusinesses[index],
+                              ),
+                            );
                           },
                           height: getProportionateScreenHeight(26),
                           width: getProportionateScreenWidth(72),

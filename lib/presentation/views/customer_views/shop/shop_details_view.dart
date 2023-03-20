@@ -1,4 +1,5 @@
 import '../../../../app/index.dart';
+import '../../../../core/mapscreen/map_screen.dart';
 import '../../../../domain/models/business_model.dart';
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
@@ -115,7 +116,14 @@ class ShopDetailsView extends StatelessWidget {
                             ),
                             const Spacer(),
                             AppButtonWidget(
-                              ontap: () {},
+                              ontap: () {
+                                Get.off(MapDirection(
+                                  destLatitude: double.parse(
+                                      businessModel.lat.toString()),
+                                  destLongitude: double.parse(
+                                      businessModel.lon.toString()),
+                                ));
+                              },
                               height: getProportionateScreenHeight(26),
                               width: getProportionateScreenWidth(115),
                               borderRadius: getProportionateScreenHeight(18),

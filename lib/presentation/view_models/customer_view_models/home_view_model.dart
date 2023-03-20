@@ -21,6 +21,7 @@ class HomeViewModel extends ChangeNotifier {
   List<UserFavouriteBusiness> listOfUserFavouriteBusiness = [];
 
   List<BusinessModel>? business = [];
+  List<BusinessModel> favBusinesses = [];
 
   HomeViewModel() {
     init();
@@ -157,6 +158,8 @@ class HomeViewModel extends ChangeNotifier {
         }
       });
     });
+    favBusinesses =
+        business!.where((business) => business.isFavourite == true).toList();
     print("Business lengthlllll: ${business?.length}");
     //  notifyListeners();
   }
@@ -249,7 +252,7 @@ class HomeViewModel extends ChangeNotifier {
             .add(UserFavouriteBusiness.fromJson(favBusiness));
       });
     } catch (e) {
-      print("Error Occured: $e");
+      print("Error Occureddddd: $e");
       rethrow;
     }
 

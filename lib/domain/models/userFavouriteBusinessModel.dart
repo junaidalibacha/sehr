@@ -75,7 +75,7 @@ class Business {
     email = json['email'];
     mobile = json['mobile'];
     verifiedAt = json['verifiedAt'];
-    logo = json['logo'];
+    // logo = json['logo'];
     sehrCode = json['sehrCode'];
     lat = json['lat'];
     lon = json['lon'];

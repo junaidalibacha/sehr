@@ -4,28 +4,32 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+import '../../presentation/view_models/customer_view_models/home_view_model.dart';
 
-class MyApp extends StatefulWidget {
+class MapDirection extends StatefulWidget {
+  double destLatitude;
+  double destLongitude;
+  MapDirection({required this.destLatitude, required this.destLongitude});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  _MapDirectionState createState() => _MapDirectionState();
 }
 
 // Starting point latitude
-double _originLatitude = 6.5212402;
+double _originLatitude = position!.latitude;
 // Starting point longitude
-double _originLongitude = 3.3679965;
+double _originLongitude = position!.longitude;
 // Destination latitude
-double _destLatitude = 6.849660;
+double? _destLatitude;
 // Destination Longitude
-double _destLongitude = 3.648190;
+double? _destLongitude;
 // Markers to show points on the map
 Map<MarkerId, Marker> markers = {};
 
 PolylinePoints polylinePoints = PolylinePoints();
 Map<PolylineId, Polyline> polylines = {};
 
-class _MyAppState extends State<MyApp> {
+class _MapDirectionState extends State<MapDirection> {
   // Google Maps controller
   Completer<GoogleMapController> _controller = Completer();
   // Configure map position and zoom
@@ -36,6 +40,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    _destLatitude = widget.destLatitude;
+    _destLongitude = widget.destLongitude;
+    print("destination $_destLatitude");
+    print("destination $_destLongitude");
+
     /// add origin marker origin marker
     _addMarker(
       LatLng(_originLatitude, _originLongitude),
@@ -45,7 +54,7 @@ class _MyAppState extends State<MyApp> {
 
     // Add destination marker
     _addMarker(
-      LatLng(_destLatitude, _destLongitude),
+      LatLng(_destLatitude!, _destLongitude!),
       "destination",
       BitmapDescriptor.defaultMarkerWithHue(90),
     );
@@ -61,7 +70,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Welcome to Flutter',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Welcome to Flutter'),
+          title: Text('MaP View'),
         ),
         body: GoogleMap(
           mapType: MapType.normal,
@@ -104,9 +113,9 @@ class _MyAppState extends State<MyApp> {
     List<LatLng> polylineCoordinates = [];
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "YOUR API KEY HERE",
+      "AIzaSyAM0iMSY3HUOoCaR8SLSpYmobiC3QgL9rY",
       PointLatLng(_originLatitude, _originLongitude),
-      PointLatLng(_destLatitude, _destLongitude),
+      PointLatLng(_destLatitude!, _destLongitude!),
       travelMode: TravelMode.driving,
     );
     if (result.points.isNotEmpty) {
