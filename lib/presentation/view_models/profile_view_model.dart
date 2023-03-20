@@ -229,6 +229,87 @@ class ProfileViewModel extends ChangeNotifier {
     }
   }
 
+//! Upload CNIC Photo
+  File? _cnic;
+  File? get cnic => _cnic;
+
+  Future<void> getCnic() async {
+    final imagePicker = ImagePicker();
+    final pickedCnicFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedCnicFile != null) {
+      _cnic = File(pickedCnicFile.path);
+
+      final bytes = await pickedCnicFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cnicImage', base64Image);
+
+      // _imageString = base64Image;
+      print(_cnic);
+      notifyListeners();
+    }
+  }
+
+//! Upload FBR Photo
+  File? _fbr;
+  File? get fbr => _fbr;
+
+  Future<void> getFbr() async {
+    final imagePicker = ImagePicker();
+    final pickedFbrFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedFbrFile != null) {
+      _fbr = File(pickedFbrFile.path);
+
+      final bytes = await pickedFbrFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('fbrImage', base64Image);
+
+      // _imageString = base64Image;
+      print(_fbr);
+      notifyListeners();
+    }
+  }
+
+//! Upload Other Documents
+  File? _otherDocs;
+  File? get otherDocs => _otherDocs;
+
+  Future<void> getOtherDocs() async {
+    final imagePicker = ImagePicker();
+    final pickedOtherFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedOtherFile != null) {
+      _otherDocs = File(pickedOtherFile.path);
+
+      final bytes = await pickedOtherFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('otherDocs', base64Image);
+
+      // _imageString = base64Image;
+      print(_otherDocs);
+      notifyListeners();
+    }
+  }
+
   // Future<void> getImageFromPrefs() async {
   //   final prefs = await SharedPreferences.getInstance();
   //   final image = prefs.getString('image');

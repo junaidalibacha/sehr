@@ -43,8 +43,10 @@ class LoginView extends StatelessWidget {
                   focusNode: viewModel.loginUserNameFocusNode,
                   keyboardType: TextInputType.emailAddress,
                   hintText: 'Email',
-                  prefixIcon: Image.asset(
-                    AppIcons.emailIcon,
+                  prefixIcon: Icon(
+                    Icons.email_rounded,
+                    size: getProportionateScreenHeight(18),
+                    color: ColorManager.primaryLight,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -67,8 +69,10 @@ class LoginView extends StatelessWidget {
                   keyboardType: TextInputType.visiblePassword,
                   hintText: 'Password',
                   obscureText: viewModel.loginPassObscureText,
-                  prefixIcon: Image.asset(
-                    AppIcons.passwordIcon,
+                  prefixIcon: Icon(
+                    Icons.lock_rounded,
+                    size: getProportionateScreenHeight(18),
+                    color: ColorManager.primaryLight,
                   ),
                   sufixIcon: IconButton(
                     splashRadius: 1,

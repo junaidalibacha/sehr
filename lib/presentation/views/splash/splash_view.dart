@@ -1,14 +1,11 @@
 import 'dart:async';
 
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/view_models/business_view_models/business_verification_view.dart';
-
-import 'package:sehr/domain/services/location_services.dart';
-import 'package:sehr/presentation/views/onboarding/onboarding_view.dart';
 
 import '../../common/logo_widget.dart';
 import '../../src/index.dart';
 import '../../view_models/splash_services.dart';
+import '../profile/add_bio/business_verification/business_verification_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -31,8 +28,8 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   void initState() {
-    _splashScreenDelay();
-    // _splashServices.checkAuthentication();
+    // _splashScreenDelay();
+    _splashServices.checkAuthentication();
     super.initState();
   }
 
