@@ -52,9 +52,8 @@ class AuthViewModel extends ChangeNotifier {
         position!.longitude,
       );
 
-      address = ("${placemarks.last.locality.toString()} " +
-          "${placemarks.last.administrativeArea.toString().trim()} " +
-          "${placemarks.last.name.toString()}");
+      address =
+          ("${placemarks.last.locality.toString()} ${placemarks.last.administrativeArea.toString().trim()} ${placemarks.last.name.toString()}");
       print("Address: $address");
     } catch (e) {
       print("give me error ${e.toString()}");

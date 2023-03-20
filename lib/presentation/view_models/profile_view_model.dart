@@ -80,10 +80,11 @@ class ProfileViewModel extends ChangeNotifier {
   final _educationRepo = EducationRepository();
   Future<void> educationApi() async {
     await _educationRepo.getEducationApi().then((value) {
-      print('Education Options===>$_educationOptions');
-      // EducationModel.fromJson(value);
-      // notifyListeners();
+      //
+      print(value);
+      //
     }).onError((error, stackTrace) {
+      // Utils.flushBarErrorMessage(context, error.toString());
       print("Error==> $error");
     });
 
@@ -107,7 +108,7 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  NetworkApiService _networkApiService = NetworkApiService();
+  final NetworkApiService _networkApiService = NetworkApiService();
   // Business Bio Data
   final businessNameTextController = TextEditingController();
   final ownerNameTextController = TextEditingController();
@@ -224,6 +225,87 @@ class ProfileViewModel extends ChangeNotifier {
 
       // _imageString = base64Image;
       print(_image);
+      notifyListeners();
+    }
+  }
+
+//! Upload CNIC Photo
+  File? _cnic;
+  File? get cnic => _cnic;
+
+  Future<void> getCnic() async {
+    final imagePicker = ImagePicker();
+    final pickedCnicFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedCnicFile != null) {
+      _cnic = File(pickedCnicFile.path);
+
+      final bytes = await pickedCnicFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cnicImage', base64Image);
+
+      // _imageString = base64Image;
+      print(_cnic);
+      notifyListeners();
+    }
+  }
+
+//! Upload FBR Photo
+  File? _fbr;
+  File? get fbr => _fbr;
+
+  Future<void> getFbr() async {
+    final imagePicker = ImagePicker();
+    final pickedFbrFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedFbrFile != null) {
+      _fbr = File(pickedFbrFile.path);
+
+      final bytes = await pickedFbrFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('fbrImage', base64Image);
+
+      // _imageString = base64Image;
+      print(_fbr);
+      notifyListeners();
+    }
+  }
+
+//! Upload Other Documents
+  File? _otherDocs;
+  File? get otherDocs => _otherDocs;
+
+  Future<void> getOtherDocs() async {
+    final imagePicker = ImagePicker();
+    final pickedOtherFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedOtherFile != null) {
+      _otherDocs = File(pickedOtherFile.path);
+
+      final bytes = await pickedOtherFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('otherDocs', base64Image);
+
+      // _imageString = base64Image;
+      print(_otherDocs);
       notifyListeners();
     }
   }
@@ -533,9 +615,8 @@ class ProfileViewModel extends ChangeNotifier {
         position!.longitude,
       );
 
-      address = ("${placemarks.last.locality.toString()} " +
-          "${placemarks.last.administrativeArea.toString().trim()} " +
-          "${placemarks.last.name.toString()}");
+      address =
+          ("${placemarks.last.locality.toString()} ${placemarks.last.administrativeArea.toString().trim()} ${placemarks.last.name.toString()}");
       print("Address: $address");
     } catch (e) {
       print("give me error ${e.toString()}");
@@ -550,8 +631,7 @@ class ProfileViewModel extends ChangeNotifier {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await _networkApiService
         .getGetApiResponse(
-      AppUrls.verifyPhoneNo +
-          "?mobile=${prefs.getString('mobileNo')}&otp=123456",
+      "${AppUrls.verifyPhoneNo}?mobile=${prefs.getString('mobileNo')}&otp=123456",
     )
         .then((value) async {
       final userPreference = Provider.of<UserViewModel>(context, listen: false);
@@ -566,5 +646,14 @@ class ProfileViewModel extends ChangeNotifier {
       Get.offAll(const DrawerView());
     });
   }
+
+//! OTP verification
+  // final otpController = TextEditingController();
+  // Future<void> verifyOtp(BuildContext context) async {
+  //   if (otpController.text.isEmpty && otpController.text.isEmpty) {
+  //     Utils.flushBarErrorMessage(context, 'Please Enter Your Email & Pasword');
+  //   }
+  //   else _authRepo.
+  // }
 }
 // }

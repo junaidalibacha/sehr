@@ -221,8 +221,9 @@ class HomeViewModel extends ChangeNotifier {
 
     try {
       final response = await _networkApiService.getDeletetApiResponse(
-          "${AppUrls.addToFavourite}/${business?[index].id}",
-          headers: headers);
+        "${AppUrls.addToFavourite}/${business?[index].id}",
+        headers: headers,
+      );
 
       print("Successfully Deleted From Favourite: ");
     } catch (e) {
