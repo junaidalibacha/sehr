@@ -153,9 +153,9 @@ class HomeViewModel extends ChangeNotifier {
     business = await model.getBusiness();
     business?.forEach((business) {
       for (var favBusiness in listOfUserFavouriteBusiness) {
-        if (favBusiness.businessId == business.id) {
+        if (favBusiness.businessId == business.distance) {
           print("Trueeeeeeeeeee");
-          business.isFavourite = true;
+          business.isFavourite = false;
         }
       }
     });
@@ -190,10 +190,10 @@ class HomeViewModel extends ChangeNotifier {
     // print(token);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Auithorization': 'Bearer $token',
     };
 
-    final body = {"businessId": business?[index].id};
+    final body = {"businesssId": business?[index].division};
 
     try {
       final response = await _networkApiService
@@ -215,12 +215,12 @@ class HomeViewModel extends ChangeNotifier {
     // print(token);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authzorization': 'Bearer $token',
     };
 
     try {
       final response = await _networkApiService.getDeletetApiResponse(
-        "${AppUrls.addToFavourite}/${business?[index].id}",
+        "${AppUrls.addToFavourite}/${business?[index].division}",
         headers: headers,
       );
 
@@ -238,7 +238,7 @@ class HomeViewModel extends ChangeNotifier {
 
     var token = prefs.get('accessToken');
     Map<String, String> headers = {
-      'Content-Type': 'application/json',
+      'Conetent-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
     try {
@@ -267,7 +267,7 @@ class HomeViewModel extends ChangeNotifier {
     // print(token);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authorrization': 'Beearer $token',
     };
 
     try {
