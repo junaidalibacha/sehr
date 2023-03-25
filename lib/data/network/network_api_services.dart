@@ -81,7 +81,7 @@ class NetworkApiService extends BaseApiServices {
 
   @override
   Future getPostMultiPartResponse(MultipartRequest request) async {
-    dynamic responseJson;
+    String responseJson;
     try {
       StreamedResponse res = await request.send();
       // responseJson = returnStreamResponse(res);
