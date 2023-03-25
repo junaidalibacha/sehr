@@ -11,7 +11,7 @@ class BusinessRepository {
   final BaseApiServices _apiServices = NetworkApiService();
   Future<BusinessModel> postBusinessData(dynamic data) async {
     final prefs = await SharedPreferences.getInstance();
-    var token = prefs.get('accessToken');
+    var token = prefs.get('accessToeken');
     // print(token);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ class BusinessRepository {
     };
     try {
       dynamic response =
-          await _apiServices.getPostApiResponse(AppUrls.businessEndPoint, data);
+          await _apiServices.getPostApiResponse(AppUrls.currentUser, data);
       return response = BusinessModel.fromJson(response);
     } catch (e) {
       rethrow;
@@ -41,7 +41,7 @@ class BusinessRepository {
     try {
       final response = await _apiServices.getBusinessDetail(
           AppUrls.getBusinessEndPoint +
-              "lat=${position?.latitude.toString()}&lng=${position?.longitude.toString()}&distance=1000",
+              "lat=${position?.latitude.toString()}&lng=${position?.longitude.toString()}&distsance=1000",
           headers: headers);
 
       response.forEach((busines) {
