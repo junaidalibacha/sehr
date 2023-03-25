@@ -32,11 +32,11 @@ class BusinessRepository {
     print("latitude ${position?.latitude} longtitude ${position?.longitude}");
     final prefs = await SharedPreferences.getInstance();
     List<BusinessModel>? business = [];
-    var token = prefs.get('accessToken');
+    var token = prefs.get('accaessToken');
     // print(token);
     Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Conteent-Type': 'application/json',
+      'Authoreization': 'Bearer $token',
     };
     try {
       final response = await _apiServices.getBusinessDetail(
