@@ -1,6 +1,11 @@
+import 'dart:math';
+
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/index.dart';
+import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'dart:convert' as convert;
 
 import '../../../src/index.dart';
 
@@ -11,28 +16,64 @@ class SpendData {
   final double amount;
 }
 
-class ProgressView extends StatelessWidget {
+class ProgressView extends StatefulWidget {
   const ProgressView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    List<SpendData> data = [
-      SpendData('Jan', 20000),
-      SpendData('Feb', 15000),
-      SpendData('Mar', 25000),
-      SpendData('Apr', 10000),
-      SpendData('May', 12332),
-      SpendData('Jun', 21312),
-      SpendData('Jul', 23111),
-      SpendData('Aug', 12312),
-      SpendData('Sep', 32131),
-      SpendData('Oct', 16133),
-      SpendData('Nov', 27863),
-      SpendData('Dec', 34667),
-    ];
+  State<ProgressView> createState() => _ProgressViewState();
+}
 
-    double totalAmount = 40000;
-    double spendAmount = 25000;
+class _ProgressViewState extends State<ProgressView> {
+  final OrderApi _orderApi = OrderApi();
+
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  List<dynamic> filterlist = [];
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    }
+
+    setState(() {});
+  }
+
+  bool nodata = false;
+
+  Future apicall() async {
+    print("object checkinh");
+    datatest = null;
+    filterlist.clear();
+    _list.clear();
+    setState(() {});
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var responseofdata = await _orderApi.fetchmyorderscustomers();
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    print(_list);
+    _list[0][0].forEach((element) {
+      filterlist.add(element);
+    });
+
+    return datatest;
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<SpendData> data = filterlist
+        .map((e) =>
+            SpendData(e["id"].toString(), double.parse(e["amount"].toString())))
+        .toList();
+
+    double totalAmount = 24000;
+    double spendAmount = 11000;
     double remainingAmount = totalAmount - spendAmount;
 
     List<SpendData> data2 = [
@@ -62,7 +103,9 @@ class ProgressView extends StatelessWidget {
             buildVerticleSpace(22),
             CustomCardWidget(
               titleText: 'Spend Amount',
-              valueText: 'Rs: 1400000/-',
+              valueText: filterlist
+                  .fold(0, (t, e) => t + int.parse(e["amount"]))
+                  .toString(),
               child: SizedBox(
                 height: getProportionateScreenHeight(150),
                 child: SfCartesianChart(
@@ -70,7 +113,7 @@ class ProgressView extends StatelessWidget {
                   // primaryXAxis: CategoryAxis(),
                   primaryYAxis: NumericAxis(
                     minimum: 0,
-                    maximum: 40000,
+                    maximum: 1000,
                     interval: 10000,
                   ),
                   series: [
@@ -87,7 +130,7 @@ class ProgressView extends StatelessWidget {
             buildVerticleSpace(22),
             CustomCardWidget(
               titleText: 'Remaining',
-              valueText: 'Rs: 1000000/-',
+              valueText: 'Rs: 2400/-',
               child: Column(
                 children: [
                   SizedBox(

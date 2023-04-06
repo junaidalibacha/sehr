@@ -1,10 +1,19 @@
+import 'package:sehr/core/mapscreen/try.dart';
+import 'package:sehr/presentation/views/customer_views/shop/ButtonContact.dart';
+import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+
 import '../../../../app/index.dart';
+
+import '../../../../domain/models/business_model.dart';
+
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
 
 class ShopDetailsView extends StatelessWidget {
-  const ShopDetailsView({
+  BusinessModel businessModel;
+  ShopDetailsView({
+    required this.businessModel,
     Key? key,
   }) : super(key: key);
 
@@ -49,13 +58,18 @@ class ShopDetailsView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const CustomChipWidget(text: 'Popular'),
-                        CircleAvatar(
-                          radius: getProportionateScreenHeight(17),
-                          backgroundColor: ColorManager.error.withOpacity(0.1),
-                          child: Icon(
-                            Icons.favorite_rounded,
-                            color: ColorManager.errorLight,
-                            size: getProportionateScreenHeight(20),
+                        GestureDetector(
+                          child: CircleAvatar(
+                            radius: getProportionateScreenHeight(17),
+                            backgroundColor:
+                                ColorManager.error.withOpacity(0.1),
+                            child: Icon(
+                              businessModel.isFavourite == true
+                                  ? Icons.favorite_rounded
+                                  : Icons.favorite_border_rounded,
+                              color: ColorManager.errorLight,
+                              size: getProportionateScreenHeight(20),
+                            ),
                           ),
                         ),
                       ],
@@ -71,7 +85,7 @@ class ShopDetailsView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         kTextBentonSansMed(
-                          'Wijie Bar and Resto',
+                          '${businessModel.businessName}',
                           fontSize: getProportionateScreenHeight(27),
                         ),
                         buildVerticleSpace(20),
@@ -83,7 +97,7 @@ class ShopDetailsView extends StatelessWidget {
                             ),
                             buildHorizontalSpace(13),
                             kTextBentonSansReg(
-                              '19 Km',
+                              '${businessModel.distance?.toStringAsFixed(2)} Km',
                               color: ColorManager.textGrey.withOpacity(0.2),
                             ),
                           ],
@@ -102,7 +116,9 @@ class ShopDetailsView extends StatelessWidget {
                         Row(
                           children: [
                             AppButtonWidget(
-                              ontap: () {},
+                              ontap: () {
+                                contactusdialog(context);
+                              },
                               height: getProportionateScreenHeight(26),
                               width: getProportionateScreenWidth(72),
                               borderRadius: getProportionateScreenHeight(18),
@@ -112,7 +128,22 @@ class ShopDetailsView extends StatelessWidget {
                             ),
                             const Spacer(),
                             AppButtonWidget(
-                              ontap: () {},
+                              ontap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MapDirection(
+                                            phonenumber:
+                                                businessModel.mobile.toString(),
+                                            shopname: businessModel.businessName
+                                                .toString(),
+                                            destLatitude: double.parse(
+                                                businessModel.lat.toString()),
+                                            destLongitude: double.parse(
+                                                businessModel.lon.toString()),
+                                          )),
+                                );
+                              },
                               height: getProportionateScreenHeight(26),
                               width: getProportionateScreenWidth(115),
                               borderRadius: getProportionateScreenHeight(18),
@@ -133,4 +164,38 @@ class ShopDetailsView extends StatelessWidget {
       ),
     );
   }
+}
+
+contactusdialog(BuildContext context) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text(
+                "Contact Shop",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("For further questions, contact using our contact Phone."),
+              SizedBox(
+                height: 15,
+              ),
+              ButtonContact(
+                  title: "+923092771719",
+                  onPressed: () {
+                    UrlLauncher.launch("tel://+923092771719");
+                  },
+                  color: HexColor.fromHex('#15BE77')),
+              Container(),
+            ],
+          ),
+        );
+      });
 }

@@ -1,102 +1,323 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/common/custom_card_widget.dart';
-import 'package:sehr/presentation/index.dart';
-import 'package:sehr/presentation/view_models/business_view_models/request_orders_view_model.dart';
 
-import '../../../common/app_button_widget.dart';
+import 'package:sehr/presentation/view_models/business_view_models/request_orders_view_model.dart';
+import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
+
+import 'package:sehr/presentation/views/business_views/requested_order/ganeratercode.dart';
+import 'package:sehr/presentation/views/business_views/requested_order/verifyorder.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert' as convert;
+
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
 
-class RequestedOrdersView extends StatelessWidget {
-  RequestedOrdersView({super.key});
+class RequestedOrdersView extends StatefulWidget {
+  const RequestedOrdersView({super.key});
+
+  @override
+  State<RequestedOrdersView> createState() => _RequestedOrdersViewState();
+}
+
+class _RequestedOrdersViewState extends State<RequestedOrdersView> {
+  final OrderApi _orderApi = OrderApi();
+
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  List<dynamic> filterlist = [];
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    }
+
+    setState(() {});
+  }
+
+  bool nodata = false;
+
+  Future apicall() async {
+    print("object checkinh");
+    datatest = null;
+    filterlist.clear();
+    _list.clear();
+    setState(() {});
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var responseofdata = await _orderApi
+        .fetchorderrequest(prefs.getString("sehrcode").toString());
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    _list[0][0].forEach((element) {
+      if (element["status"].toString() == "pending") {
+        filterlist.add(element);
+      }
+    });
+
+    return datatest;
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => RequestedOrdersViewModel(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(25),
-              vertical: getProportionateScreenHeight(15),
-            ),
-            child: kTextBentonSansBold(
-              'Requested Orders',
-              fontSize: getProportionateScreenHeight(31),
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(23),
-              ),
-              child: Consumer<RequestedOrdersViewModel>(
-                builder: (context, viewModel, child) => ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: viewModel.requestedOrders.length,
-                  separatorBuilder: (context, index) => buildVerticleSpace(18),
-                  padding: EdgeInsets.only(
-                    bottom: getProportionateScreenHeight(60),
-                  ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => CustomListTileWidget(
-                    leading: Image.asset(AppImages.menu),
-                    title: Column(
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: ColorManager.primary,
+          title: const Text("Requested Orders"),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const QRImageGanerate("")),
+                    );
+                  },
+                  icon: const Icon(Icons.qr_code)),
+            )
+          ],
+        ),
+        body: nodata == false
+            ? filterlist.isEmpty
+                ? Container(
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : ChangeNotifierProvider(
+                    create: (context) => RequestedOrdersViewModel(),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        kTextBentonSansMed(
-                          viewModel.requestedOrders[index].customerName,
-                          fontSize: getProportionateScreenHeight(15),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: getProportionateScreenWidth(25),
+                            vertical: getProportionateScreenHeight(15),
+                          ),
+                          child: kTextBentonSansBold(
+                            "${filterlist.length} New Requests",
+                            fontSize: getProportionateScreenHeight(31),
+                          ),
                         ),
-                        kTextBentonSansReg(
-                          viewModel.requestedOrders[index].shopName,
-                          color: ColorManager.textGrey.withOpacity(0.8),
-                          letterSpacing: getProportionateScreenWidth(0.5),
-                        ),
-                        kTextBentonSansMed(
-                          'RS ${viewModel.requestedOrders[index].price}',
-                          color: ColorManager.primary,
-                          fontSize: getProportionateScreenHeight(19),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: getProportionateScreenWidth(23),
+                            ),
+                            child: Consumer<RequestedOrdersViewModel>(
+                              builder: (context, viewModel, child) =>
+                                  ListView.separated(
+                                      shrinkWrap: true,
+                                      itemCount: filterlist.length,
+                                      separatorBuilder: (context, index) =>
+                                          buildVerticleSpace(8),
+                                      padding: EdgeInsets.only(
+                                        bottom:
+                                            getProportionateScreenHeight(60),
+                                      ),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return Card(
+                                          child: SizedBox(
+                                              height: 100,
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                      flex: 3,
+                                                      child: Container(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(12.0),
+                                                          child: Image.asset(
+                                                              AppImages.menu),
+                                                        ),
+                                                      )),
+                                                  Expanded(
+                                                      flex: 4,
+                                                      child: Container(
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              filterlist[index]
+                                                                  ["date"],
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              maxLines: 2,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  'RS ${filterlist[index]["amount"]}',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: ColorManager
+                                                                        .primary,
+                                                                    fontSize:
+                                                                        getProportionateScreenHeight(
+                                                                            19),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )),
+                                                  Expanded(
+                                                      flex: 3,
+                                                      child: Container(
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTap: () async {
+                                                                showdialogOrders(
+                                                                    context,
+                                                                    "Accept",
+                                                                    () async {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  pleasewaitDIALOG(
+                                                                      context);
+                                                                  var response = await _orderApi.sendStatusOfOrders(
+                                                                      filterlist[index]
+                                                                              [
+                                                                              "id"]
+                                                                          .toString(),
+                                                                      "accepted");
+                                                                  print(
+                                                                      response);
+                                                                  if (response !=
+                                                                      null) {
+                                                                    Navigator.pop(
+                                                                        context);
+
+                                                                    _buildOrderDetails(
+                                                                            context)
+                                                                        .then(
+                                                                            (value) async {
+                                                                      await fetchorders();
+                                                                    });
+                                                                  } else {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    errordialog(
+                                                                        context);
+                                                                  }
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                height: 30,
+                                                                decoration: BoxDecoration(
+                                                                    color: ColorManager
+                                                                        .primary,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            12)),
+                                                                width: 60,
+                                                                child:
+                                                                    const Center(
+                                                                        child:
+                                                                            Text(
+                                                                  "Accept",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                )),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                showdialogOrders(
+                                                                    context,
+                                                                    "Reject",
+                                                                    () async {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  pleasewaitDIALOG(
+                                                                      context);
+
+                                                                  var response = await _orderApi.sendStatusOfOrders(
+                                                                      filterlist[index]
+                                                                              [
+                                                                              "id"]
+                                                                          .toString(),
+                                                                      "rejected");
+
+                                                                  if (response !=
+                                                                      null) {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    await fetchorders();
+                                                                  } else {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                    errordialog(
+                                                                        context);
+                                                                  }
+                                                                });
+                                                              },
+                                                              child: Container(
+                                                                height: 30,
+                                                                decoration: BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color: Colors
+                                                                            .red),
+                                                                    color: Colors
+                                                                        .white,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            12)),
+                                                                width: 60,
+                                                                child:
+                                                                    const Center(
+                                                                        child:
+                                                                            Text(
+                                                                  "Reject",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .red),
+                                                                )),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )),
+                                                ],
+                                              )),
+                                        );
+                                      }),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    trailing: Column(
-                      children: [
-                        AppButtonWidget(
-                          ontap: () {
-                            _buildOrderDetails(context);
-                          },
-                          height: getProportionateScreenHeight(29),
-                          width: getProportionateScreenWidth(80),
-                          text: 'Accept',
-                          textSize: getProportionateScreenHeight(12),
-                          letterSpacing: getProportionateScreenWidth(0.5),
-                        ),
-                        const Spacer(),
-                        AppButtonWidget(
-                          bgColor: Colors.transparent,
-                          border: true,
-                          ontap: () {},
-                          height: getProportionateScreenHeight(29),
-                          width: getProportionateScreenWidth(80),
-                          text: 'Reject',
-                          textColor: ColorManager.error.withOpacity(0.6),
-                          textSize: getProportionateScreenHeight(12),
-                          letterSpacing: getProportionateScreenWidth(0.5),
-                        ),
-                      ],
-                    ),
+                  )
+            : Container(
+                child: const Center(
+                  child: Text(
+                    "NO New Request Right Now",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+              ));
   }
 
   Future<dynamic> _buildOrderDetails(BuildContext context) {

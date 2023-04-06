@@ -1,4 +1,5 @@
 import 'package:sehr/app/index.dart';
+import 'package:sehr/data/network/network_api_services.dart';
 import 'package:sehr/presentation/common/logo_widget.dart';
 import 'package:sehr/presentation/utils/utils.dart';
 // import 'package:sehr/presentation/index.dart';
@@ -11,7 +12,9 @@ import '../../routes/routes.dart';
 import '../../src/index.dart';
 
 class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+  LoginView({super.key});
+
+  NetworkApiService _apiService = NetworkApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +46,10 @@ class LoginView extends StatelessWidget {
                   focusNode: viewModel.loginUserNameFocusNode,
                   keyboardType: TextInputType.emailAddress,
                   hintText: 'Email',
-                  prefixIcon: Image.asset(
-                    AppIcons.emailIcon,
+                  prefixIcon: Icon(
+                    Icons.email_rounded,
+                    size: getProportionateScreenHeight(18),
+                    color: ColorManager.primaryLight,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -67,8 +72,10 @@ class LoginView extends StatelessWidget {
                   keyboardType: TextInputType.visiblePassword,
                   hintText: 'Password',
                   obscureText: viewModel.loginPassObscureText,
-                  prefixIcon: Image.asset(
-                    AppIcons.passwordIcon,
+                  prefixIcon: Icon(
+                    Icons.lock_rounded,
+                    size: getProportionateScreenHeight(18),
+                    color: ColorManager.primaryLight,
                   ),
                   sufixIcon: IconButton(
                     splashRadius: 1,

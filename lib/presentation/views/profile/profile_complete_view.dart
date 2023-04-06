@@ -1,5 +1,6 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
+import 'package:sehr/presentation/views/auth/login_view.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../src/index.dart';
@@ -85,7 +86,7 @@ class ProfileCompleteView extends StatelessWidget {
                       child: AppButtonWidget(
                         ontap: () {
                           // Get.toNamed(Routes.customerBottomNavRoute);
-                          Get.to(const DrawerView());
+                          Get.to(LoginView());
                           // print();
                         },
                         text: 'Next',

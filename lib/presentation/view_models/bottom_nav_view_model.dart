@@ -7,18 +7,27 @@ import 'package:sehr/presentation/views/customer_views/home/home_view.dart';
 import 'package:sehr/presentation/views/customer_views/progress/customer_progress_view.dart';
 import 'package:sehr/presentation/views/customer_views/scanner/scanner_view.dart';
 
+import '../routes/routes.dart';
 import '../src/index.dart';
 import '../views/customer_views/recent_orders.dart/customer_recent_orders_view.dart';
 
 class CustomerBottomNavViewModel extends ChangeNotifier {
   int _index = 0;
   int get index => _index;
+  bool dashboardscreenbussiness = false;
+
+  void chnagescreen() {
+    dashboardscreenbussiness = true;
+    ChangeNotifier();
+    notifyListeners();
+  }
 
   void pageChange(int index) {
     // if (index == 2) {
     //   Get.toNamed(Routes.scannerRoute);
     // }
     _index = index;
+
     notifyListeners();
   }
 

@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:sehr/data/app_exceptions.dart';
 import 'package:sehr/data/network/base_api_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NetworkApiService extends BaseApiServices {
   @override
@@ -23,12 +24,51 @@ class NetworkApiService extends BaseApiServices {
   }
 
   @override
+  Future getBusinessDetail(String url, {dynamic headers}) async {
+    dynamic responseJson;
+    try {
+      final response = await http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 10));
+
+      print("List of business with in 100KM radius response: ${response.body}");
+      return jsonDecode(response.body);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    } catch (e) {
+      print("error occured :$e");
+    }
+
+    return responseJson;
+  }
+
+  /// delete
+  ///
+  @override
+  Future getDeletetApiResponse(String url, {dynamic headers}) async {
+    dynamic responseJson;
+    try {
+      Response response = await delete(
+        Uri.parse(url),
+        headers: headers,
+      ).timeout(const Duration(seconds: 10));
+
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+
+    return responseJson;
+  }
+
+  @override
   Future getPostApiResponse(String url, dynamic data, {dynamic headers}) async {
+    print("called");
     dynamic responseJson;
     try {
       Response response = await post(
         Uri.parse(url),
-        body: data,
+        body: jsonEncode(data),
         headers: headers,
       ).timeout(const Duration(seconds: 10));
 
@@ -44,8 +84,23 @@ class NetworkApiService extends BaseApiServices {
   Future getPostMultiPartResponse(MultipartRequest request) async {
     dynamic responseJson;
     try {
-      StreamedResponse response = await request.send();
-      responseJson = returnStreamResponse(response);
+      StreamedResponse res = await request.send();
+      // responseJson = returnStreamResponse(res);
+      // print("${responseJson}");
+      // print("objecttt $res");
+      // print(res.stream);
+      // print("mashwani khan");
+      // print(res.statusCode);
+
+      responseJson = await http.Response.fromStream(res);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      if (responseJson.statusCode == 201) {
+        prefs.remove("error");
+      } else {
+        prefs.remove("error");
+        prefs.setString("error", responseJson.body);
+      }
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }

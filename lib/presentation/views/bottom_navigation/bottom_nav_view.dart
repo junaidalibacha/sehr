@@ -1,13 +1,55 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sehr/app/index.dart';
+import 'package:sehr/presentation/routes/routes.dart';
+import 'package:sehr/presentation/view_models/auth_view_model.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
+import 'package:sehr/presentation/views/bottom_navigation/permissionhandler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../src/index.dart';
 
-class BottomNavigationView extends StatelessWidget {
+import '../../view_models/customer_view_models/home_view_model.dart';
+
+class BottomNavigationView extends StatefulWidget {
   const BottomNavigationView({super.key});
+
+  @override
+  State<BottomNavigationView> createState() => _BottomNavigationViewState();
+}
+
+class _BottomNavigationViewState extends State<BottomNavigationView> {
+  @override
+  void initState() {
+    checklocation();
+    fetchscreen();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  checklocation() {
+    Timer.periodic(Duration(seconds: 1), (timer) async {
+      if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
+      } else {
+        Get.offAll(() => const PermissionHandler());
+        timer.cancel();
+      }
+    });
+  }
+
+  String showbussinespages = "";
+  fetchscreen() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    showbussinespages = prefs.getString("openbussiness").toString();
+    _userRole = prefs.getString("userRole").toString();
+    setState(() {});
+  }
+
+  String _userRole = '';
 
   @override
   Widget build(BuildContext context) {
@@ -20,39 +62,49 @@ class BottomNavigationView extends StatelessWidget {
       ),
     );
     return ChangeNotifierProvider(
-      create: (context) => CustomerBottomNavViewModel(),
-      child: SafeArea(
-        child: Consumer<CustomerBottomNavViewModel>(
-          builder: (ctx, viewModel, child) {
-            return WillPopScope(
-              onWillPop: () async {
-                if (viewModel.index == 2) {
-                  viewModel.pageChange(0);
-                } else {
-                  Get.back();
-                }
-                return false;
+        create: (context) => CustomerBottomNavViewModel(),
+        child: Consumer<AuthViewModel>(builder: (context, viewModel, child) {
+          if (address == null) {
+            viewModel.init();
+          }
+          return SafeArea(
+            child: Consumer<CustomerBottomNavViewModel>(
+              builder: (ctx, viewModel, child) {
+                return WillPopScope(
+                  onWillPop: () async {
+                    if (viewModel.index == 2) {
+                      viewModel.pageChange(0);
+                    } else {
+                      Get.back();
+                    }
+                    return false;
+                  },
+                  child: Scaffold(
+                    // drawer: const Drawer(),
+                    appBar: viewModel.index == 2 ? null : _buildAppBar(context),
+
+                    body: showbussinespages == "true"
+                        ? viewModel.businessPages[viewModel.index]
+                        : viewModel.customerPages[viewModel.index],
+                    // : viewModel.businessPages[viewModel.index],
+
+                    // bottomNavigationBar: ,
+                    bottomNavigationBar: _userRole != 'business'
+                        ? viewModel.index == 2
+                            ? null
+                            : _buildBottomNavigation(_userRole)
+                        : _buildBottomNavigation(_userRole),
+                  ),
+                );
               },
-              child: Scaffold(
-                // drawer: const Drawer(),
-                appBar: viewModel.index == 2 ? null : _buildAppBar(context),
-
-                body: viewModel.customerPages[viewModel.index],
-                // : viewModel.businessPages[viewModel.index],
-
-                // bottomNavigationBar: ,
-                bottomNavigationBar:
-                    (viewModel.index == 2 ? null : _buildBottomNavigation()),
-                // : _buildBottomNavigation(profileType),
-              ),
-            );
-          },
-        ),
-      ),
-    );
+            ),
+          );
+        }));
   }
 
-  Widget _buildBottomNavigation() {
+  int pageindex = 0;
+
+  Widget _buildBottomNavigation(String userRole) {
     return Container(
       height: getProportionateScreenHeight(65),
       decoration: BoxDecoration(
@@ -78,32 +130,37 @@ class BottomNavigationView extends StatelessWidget {
         builder: (context, viweModel, child) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(
-            viweModel.customerIcons.length,
-            // : viweModel.businessPages.length,
+            userRole == 'user'
+                ? viweModel.customerPages.length
+                : viweModel.businessPages.length,
             (index) => InkWell(
               onTap: () {
+                setState(() {
+                  pageindex = index;
+                });
                 viweModel.pageChange(index);
               },
-              child: index == 2
-                  ? Lottie.asset(
-                      AppIcons.lottieIcon2,
-                      height: getProportionateScreenHeight(55),
-                      fit: BoxFit.contain,
-                    )
+              child: userRole == 'user'
+                  ? index == 2
+                      ? Lottie.asset(
+                          AppIcons.lottieIcon2,
+                          height: getProportionateScreenHeight(55),
+                          fit: BoxFit.contain,
+                        )
+                      : Image.asset(
+                          viweModel.customerIcons[index],
+                          height: getProportionateScreenHeight(25),
+                          color: viweModel.index == index
+                              ? ColorManager.primary
+                              : null,
+                        )
                   : Image.asset(
-                      viweModel.customerIcons[index],
+                      viweModel.businessIcons[index],
                       height: getProportionateScreenHeight(25),
                       color: viweModel.index == index
                           ? ColorManager.primary
                           : null,
                     ),
-              // : Image.asset(
-              //     viweModel.businessIcons[index],
-              //     height: getProportionateScreenHeight(25),
-              //     color: viweModel.index == index
-              //         ? ColorManager.primary
-              //         : null,
-              //   ),
             ),
           ),
         ),
@@ -144,7 +201,7 @@ class BottomNavigationView extends StatelessWidget {
             color: ColorManager.white,
           ),
           kTextBentonSansReg(
-            'Detail of current location',
+            address.toString() == "null" ? "" : address.toString(),
             fontSize: getProportionateScreenHeight(13),
             color: ColorManager.white,
           ),

@@ -5,12 +5,17 @@ import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 // import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../data/network/network_api_services.dart';
 import '../../domain/models/user_model.dart';
 import '../../domain/repository/auth_repository.dart';
+import '../../domain/services/location_services.dart';
 import '../routes/routes.dart';
+import 'customer_view_models/home_view_model.dart';
 import 'user_view_model.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 
 class AuthViewModel extends ChangeNotifier {
+  final NetworkApiService _networkApiService = NetworkApiService();
   final loginFormKey = GlobalKey<FormState>();
   final signUpFormKey = GlobalKey<FormState>();
 
@@ -32,8 +37,28 @@ class AuthViewModel extends ChangeNotifier {
   bool confirmPassObscureText = true;
   bool keepAuthData = false;
 
+  AuthViewModel();
+
   void showLoginPass() {
     loginPassObscureText = !loginPassObscureText;
+    notifyListeners();
+  }
+
+  init() async {
+    position = await LocationServices.myLoction();
+    try {
+      List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(
+        position!.latitude,
+        position!.longitude,
+      );
+
+      address =
+          ("${placemarks.last.locality.toString()} ${placemarks.last.administrativeArea.toString().trim()} ${placemarks.last.name.toString()}");
+      print("Address: $address");
+    } catch (e) {
+      print("give me error ${e.toString()}");
+    }
+
     notifyListeners();
   }
 
@@ -107,33 +132,36 @@ class AuthViewModel extends ChangeNotifier {
     } else if (loginPasswordController.text.length < 8) {
       Utils.flushBarErrorMessage(context, 'Password must be 8 charactors');
     } else {
-      Map<String, dynamic> loginData = {
+      Map<String, dynamic> body = {
         'username': loginUserNameController.text.trim(),
         'password': loginPasswordController.text.trim(),
       };
       setLoading(true);
 
-      _authRepo.loginApi(loginData).then((value) {
-        setLoading(false);
-
+      var response = await _authRepo.loginApi(body).then((value) async {
         final userPreference =
             Provider.of<UserViewModel>(context, listen: false);
         userPreference.saveUser(
           UserModel(accessToken: value['accessToken'].toString()),
         );
-
         Utils.flushBarErrorMessage(context, 'Login Successfully');
-        Get.offAll(const DrawerView());
-        if (kDebugMode) {
-          print(value.toString());
-        }
-      }).onError((error, stackTrace) {
+        await init();
+
         setLoading(false);
+
+        await Get.offAll(const DrawerView());
+      }).onError((error, stackTrace) {
+        if (error
+            .toString()
+            .toLowerCase()
+            .trim()
+            .contains("Unauthorised request".toLowerCase())) {
+        } else {}
+        setLoading(false);
+
         Utils.flushBarErrorMessage(context, error.toString());
-        if (kDebugMode) {
-          print(error.toString());
-        }
       });
+      print(response);
     }
   }
 
@@ -197,4 +225,6 @@ class AuthViewModel extends ChangeNotifier {
     // prefs.setBool('keepAuthData', keepAuthData);
     Get.toNamed(Routes.addCustomerBioRoute);
   }
+
+  /// Get Current AppUser
 }
