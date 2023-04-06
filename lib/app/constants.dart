@@ -37,7 +37,7 @@ Text kTextBentonSansReg(
   double? letterSpacing,
   double? lineHeight,
   int? maxLines,
-  TextOverflow? textOverFlow,
+  TextOverflow? overFlow,
 }) {
   return Text(
     text,
@@ -48,7 +48,7 @@ Text kTextBentonSansReg(
       lineHeight: lineHeight,
     ),
     textAlign: textAlign,
-    overflow: textOverFlow,
+    overflow: overFlow,
     maxLines: maxLines,
   );
 }

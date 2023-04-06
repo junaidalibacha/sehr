@@ -30,18 +30,15 @@ class CustomListTileWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(18),
-                horizontal: getProportionateScreenWidth(15),
-              ),
-              child: leading,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: getProportionateScreenHeight(18),
+              horizontal: getProportionateScreenWidth(15),
             ),
+            child: leading,
           ),
-          Expanded(
-            flex: 2,
+          SizedBox(
+            width: getProportionateScreenWidth(155),
             child: Padding(
               padding: EdgeInsets.symmetric(
                 vertical: getProportionateScreenHeight(18),
@@ -50,15 +47,12 @@ class CustomListTileWidget extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(15),
-                horizontal: getProportionateScreenWidth(15),
-              ),
-              child: trailing,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: getProportionateScreenHeight(15),
+              horizontal: getProportionateScreenWidth(15),
             ),
+            child: trailing,
           ),
         ],
       ),

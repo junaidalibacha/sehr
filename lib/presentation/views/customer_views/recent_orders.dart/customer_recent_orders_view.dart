@@ -200,7 +200,7 @@ class CustomerRecentOrdersView extends StatelessWidget {
                 fontSize: getProportionateScreenHeight(12),
                 lineHeight: getProportionateScreenHeight(2.5),
                 maxLines: 4,
-                textOverFlow: TextOverflow.ellipsis,
+                overFlow: TextOverflow.ellipsis,
               ),
               buildVerticleSpace(12),
               CustomChipWidget(

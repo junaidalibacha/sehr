@@ -81,7 +81,7 @@ class BusinessRecentOrdersView extends StatelessWidget {
                               : ColorManager.textGrey.withOpacity(0.2),
                           ontap: () {},
                           height: getProportionateScreenHeight(29),
-                          width: getProportionateScreenWidth(85),
+                          width: getProportionateScreenWidth(80),
                           text: 'Completed',
                           textSize: getProportionateScreenHeight(12),
                           letterSpacing: getProportionateScreenWidth(0.5),
@@ -184,7 +184,7 @@ class BusinessRecentOrdersView extends StatelessWidget {
                 fontSize: getProportionateScreenHeight(12),
                 lineHeight: getProportionateScreenHeight(2.5),
                 maxLines: 4,
-                textOverFlow: TextOverflow.ellipsis,
+                overFlow: TextOverflow.ellipsis,
               ),
               buildVerticleSpace(12),
               CustomChipWidget(

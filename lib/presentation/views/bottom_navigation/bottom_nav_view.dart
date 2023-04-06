@@ -5,12 +5,12 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
 
 import '../../src/index.dart';
-import '../../view_models/blog_view_model.dart';
 import '../../view_models/customer_view_models/home_view_model.dart';
 
 class BottomNavigationView extends StatelessWidget {
   const BottomNavigationView({super.key});
 
+  final String _userRole = 'business';
   @override
   Widget build(BuildContext context) {
     // var profileType =
@@ -37,15 +37,22 @@ class BottomNavigationView extends StatelessWidget {
               },
               child: Scaffold(
                 // drawer: const Drawer(),
-                appBar: viewModel.index == 2 ? null : _buildAppBar(context),
+                appBar: _userRole == 'user'
+                    ? viewModel.index == 2
+                        ? null
+                        : _buildAppBar(context)
+                    : _buildAppBar(context),
 
-                body: viewModel.customerPages[viewModel.index],
-                // : viewModel.businessPages[viewModel.index],
+                body: _userRole == 'user'
+                    ? viewModel.customerPages[viewModel.index]
+                    : viewModel.businessPages[viewModel.index],
 
                 // bottomNavigationBar: ,
-                bottomNavigationBar:
-                    (viewModel.index == 2 ? null : _buildBottomNavigation()),
-                // : _buildBottomNavigation(profileType),
+                bottomNavigationBar: _userRole == 'user'
+                    ? (viewModel.index == 2
+                        ? null
+                        : _buildBottomNavigation(_userRole))
+                    : _buildBottomNavigation(_userRole),
               ),
             );
           },
@@ -54,7 +61,7 @@ class BottomNavigationView extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNavigation() {
+  Widget _buildBottomNavigation(String userRole) {
     return Container(
       height: getProportionateScreenHeight(65),
       decoration: BoxDecoration(
@@ -80,32 +87,34 @@ class BottomNavigationView extends StatelessWidget {
         builder: (context, viweModel, child) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(
-            viweModel.customerIcons.length,
-            // : viweModel.businessPages.length,
+            userRole == 'user'
+                ? viweModel.customerPages.length
+                : viweModel.businessPages.length,
             (index) => InkWell(
               onTap: () {
                 viweModel.pageChange(index);
               },
-              child: index == 2
-                  ? Lottie.asset(
-                      AppIcons.lottieIcon2,
-                      height: getProportionateScreenHeight(55),
-                      fit: BoxFit.contain,
-                    )
+              child: userRole == 'user'
+                  ? index == 2
+                      ? Lottie.asset(
+                          AppIcons.lottieIcon2,
+                          height: getProportionateScreenHeight(55),
+                          fit: BoxFit.contain,
+                        )
+                      : Image.asset(
+                          viweModel.customerIcons[index],
+                          height: getProportionateScreenHeight(25),
+                          color: viweModel.index == index
+                              ? ColorManager.primary
+                              : null,
+                        )
                   : Image.asset(
-                      viweModel.customerIcons[index],
+                      viweModel.businessIcons[index],
                       height: getProportionateScreenHeight(25),
                       color: viweModel.index == index
                           ? ColorManager.primary
                           : null,
                     ),
-              // : Image.asset(
-              //     viweModel.businessIcons[index],
-              //     height: getProportionateScreenHeight(25),
-              //     color: viweModel.index == index
-              //         ? ColorManager.primary
-              //         : null,
-              //   ),
             ),
           ),
         ),
@@ -146,7 +155,7 @@ class BottomNavigationView extends StatelessWidget {
             color: ColorManager.white,
           ),
           kTextBentonSansReg(
-            '${address}',
+            '$address',
             fontSize: getProportionateScreenHeight(13),
             color: ColorManager.white,
           ),

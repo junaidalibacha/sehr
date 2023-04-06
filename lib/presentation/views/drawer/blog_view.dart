@@ -131,7 +131,7 @@ class BlogCardWidget extends StatelessWidget {
                   description ?? '',
                   fontSize: getProportionateScreenHeight(12),
                   lineHeight: getProportionateScreenHeight(2),
-                  textOverFlow: TextOverflow.ellipsis,
+                  overFlow: TextOverflow.ellipsis,
                   maxLines: 4,
                 ),
             Divider(
