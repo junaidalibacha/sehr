@@ -1,20 +1,29 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/utils/utils.dart';
+import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/view_models/user_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../../data/network/network_api_services.dart';
 import '../../domain/models/user_model.dart';
 import '../../domain/repository/app_urls.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../../domain/repository/education_repository.dart';
+import '../../domain/services/location_services.dart';
 import '../routes/routes.dart';
+import '../views/drawer/custom_drawer.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+
+import 'customer_view_models/home_view_model.dart';
 
 class ProfileViewModel extends ChangeNotifier {
 // //! Select User Role
@@ -41,6 +50,7 @@ class ProfileViewModel extends ChangeNotifier {
   final lastNameTextController = TextEditingController();
   final cnicNoTextController = TextEditingController();
   final dobTextController = TextEditingController();
+  final otpController = TextEditingController();
   // final userMobNoTextController = TextEditingController();
 
   DateTime? _selectedDate;
@@ -55,9 +65,14 @@ class ProfileViewModel extends ChangeNotifier {
   String? _selectedGender;
   String? get selectedGender => _selectedGender;
 
-  void setGender(String? gender) {
+  void setGender(String? gender) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.remove("Usergender");
+    prefs.setString('Usergender', gender.toString());
+
     _selectedGender = gender;
-    print(_selectedGender);
+
     notifyListeners();
   }
 
@@ -72,10 +87,11 @@ class ProfileViewModel extends ChangeNotifier {
   final _educationRepo = EducationRepository();
   Future<void> educationApi() async {
     await _educationRepo.getEducationApi().then((value) {
-      print('Education Options===>$_educationOptions');
-      // EducationModel.fromJson(value);
-      // notifyListeners();
+      //
+      print(value);
+      //
     }).onError((error, stackTrace) {
+      // Utils.flushBarErrorMessage(context, error.toString());
       print("Error==> $error");
     });
 
@@ -99,6 +115,7 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  final NetworkApiService _networkApiService = NetworkApiService();
   // Business Bio Data
   final businessNameTextController = TextEditingController();
   final ownerNameTextController = TextEditingController();
@@ -219,6 +236,87 @@ class ProfileViewModel extends ChangeNotifier {
     }
   }
 
+//! Upload CNIC Photo
+  File? _cnic;
+  File? get cnic => _cnic;
+
+  Future<void> getCnic() async {
+    final imagePicker = ImagePicker();
+    final pickedCnicFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedCnicFile != null) {
+      _cnic = File(pickedCnicFile.path);
+
+      final bytes = await pickedCnicFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cnicImage', base64Image);
+
+      // _imageString = base64Image;
+      print(_cnic);
+      notifyListeners();
+    }
+  }
+
+//! Upload FBR Photo
+  File? _fbr;
+  File? get fbr => _fbr;
+
+  Future<void> getFbr() async {
+    final imagePicker = ImagePicker();
+    final pickedFbrFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedFbrFile != null) {
+      _fbr = File(pickedFbrFile.path);
+
+      final bytes = await pickedFbrFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('fbrImage', base64Image);
+
+      // _imageString = base64Image;
+      print(_fbr);
+      notifyListeners();
+    }
+  }
+
+//! Upload Other Documents
+  File? _otherDocs;
+  File? get otherDocs => _otherDocs;
+
+  Future<void> getOtherDocs() async {
+    final imagePicker = ImagePicker();
+    final pickedOtherFile = await imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedOtherFile != null) {
+      _otherDocs = File(pickedOtherFile.path);
+
+      final bytes = await pickedOtherFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('otherDocs', base64Image);
+
+      // _imageString = base64Image;
+      print(_otherDocs);
+      notifyListeners();
+    }
+  }
+
   // Future<void> getImageFromPrefs() async {
   //   final prefs = await SharedPreferences.getInstance();
   //   final image = prefs.getString('image');
@@ -269,7 +367,6 @@ class ProfileViewModel extends ChangeNotifier {
     prefs.setString('education', _selectedEducation!);
     prefs.setString('dob', _selectedDate!.toIso8601String());
     // prefs.setString('email', userMobNoTextController.text.trim());
-    prefs.setString('gender', _selectedGender!);
   }
 
 //!  add User_Address to Prefs
@@ -286,6 +383,7 @@ class ProfileViewModel extends ChangeNotifier {
       Utils.flushBarErrorMessage(context, 'Please select Province');
     } else {
       _saveUserAddressToPrefs();
+
       Get.toNamed(Routes.photoSelectionRoute);
     }
   }
@@ -299,6 +397,7 @@ class ProfileViewModel extends ChangeNotifier {
     prefs.setString('division', _selectedDivision!);
     prefs.setString('province', _selectedProvince!);
     prefs.setString('city', _selectedCity!);
+    prefs.setString('isBusiness', 'no');
     // prefs.setString('country', 'Pakistan');
   }
 
@@ -360,64 +459,136 @@ class ProfileViewModel extends ChangeNotifier {
     setLoading(true);
     final prefs = await SharedPreferences.getInstance();
 
-    var stream = File(_image!.path).readAsBytes().asStream();
+    // var stream = File(_image!.path).readAsBytes().asStream();
     // File(_image!.path).readAsBytes().asStream();
     // stream.cast();
 
-    int length = await File(_image!.path).length();
-
-    print(prefs.getString('gender')!);
-    print(stream);
-    print(length);
+    // int length = await File(_image!.path).length();
+    List<int> fileBytes = [];
+    String base64Image = "";
+    if (_image != null) {
+      fileBytes = await File(_image!.path).readAsBytes();
+      base64Image = base64Encode(fileBytes);
+    }
 
     http.MultipartRequest request =
         http.MultipartRequest('POST', Uri.parse(AppUrls.registerEndPoint));
 
-    request.fields['firstName'] = prefs.getString('firstName')!;
-    request.fields['lastName'] = prefs.getString('lastName')!;
-    request.fields['username'] = prefs.getString('username')!;
+    request.fields['firstName'] = prefs.getString('firstName').toString();
+    request.fields['lastName'] = prefs.getString('lastName').toString();
+    request.fields['username'] = prefs.getString('username').toString();
     request.fields['email'] =
-        ('${prefs.getString('firstName')!}${prefs.getString('password')!}${prefs.getString('mobileNo')!}@email.com');
+        ('${prefs.getString('firstName').toString()}${prefs.getString('mobileNo').toString()}@email.com');
     // request.fields['email'] = 'email@testmultipartapi2.com';
-    request.fields['mobile'] = prefs.getString('mobileNo')!;
-    request.fields['password'] = prefs.getString('password')!;
-    request.fields['re_password'] = prefs.getString('re_password')!;
-    // request.fields['gender'] = prefs.getString('gender')!;
-    request.fields['gender'] = 'male';
-    request.fields['dob'] = prefs.getString('dob')!;
-    request.fields['cnic'] = prefs.getString('cnic')!;
-    request.fields['education'] = prefs.getString('education')!;
-    request.fields['address'] = prefs.getString('address')!;
-    request.fields['tehsil'] = prefs.getString('tehsil')!;
-    request.fields['district'] = prefs.getString('district')!;
-    request.fields['division'] = prefs.getString('division')!;
-    request.fields['province'] = prefs.getString('province')!;
-    request.fields['city'] = prefs.getString('city')!;
+    request.fields['mobile'] = prefs.getString('mobileNo').toString();
+    request.fields['password'] = prefs.getString('password').toString();
+    request.fields['re_password'] = prefs.getString('re_password').toString();
+    // request.fields['gender'] = prefs.getString('Usergender').toString();
+    request.fields['gender'] = _selectedGender.toString();
+    request.fields['dob'] = prefs.getString('dob').toString();
+    request.fields['cnic'] = prefs.getString('cnic').toString();
+    request.fields['education'] = prefs.getString('education').toString();
+    request.fields['address'] = prefs.getString('address').toString();
+    request.fields['tehsil'] = prefs.getString('tehsil').toString();
+    request.fields['district'] = prefs.getString('district').toString();
+    request.fields['division'] = prefs.getString('division').toString();
+    request.fields['province'] = prefs.getString('province').toString();
+    request.fields['city'] = prefs.getString('city').toString();
     request.fields['country'] = 'Pakistan';
     request.fields['role'] = 'user';
 
-    http.MultipartFile multipartFile =
-        http.MultipartFile('profileImage', stream, length);
-
-    request.files.add(multipartFile);
-    _authRepo.registerMultiPartApi(request).then((value) {
-      setLoading(false);
-      final userServices = Provider.of<UserViewModel>(context, listen: false);
-      userServices.saveUser(
-        UserModel(accessToken: value['token']),
+    if (_image != null) {
+      var profileImage = http.MultipartFile.fromString(
+        'profileImage',
+        base64.encode(base64Image.codeUnits),
+        filename: _image?.path.split("/").last,
       );
-      Utils.flushBarErrorMessage(context, 'Register Successfully');
-      Get.toNamed(Routes.verificationCodeRoute);
-      if (kDebugMode) {
-        print(value.toString());
+
+      request.files.add(profileImage);
+    }
+    var response = await _authRepo.registerMultiPartApi(request);
+
+    if (response != null) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      if (prefs.getString("error").toString() == "null") {
+        Utils.flushBarErrorMessage(context, 'Register Successfully');
+        Get.toNamed(Routes.verificationCodeRoute);
+      } else {
+        setLoading(false);
+        Utils.flushBarErrorMessage(
+            context, prefs.getString("error").toString());
       }
-    }).onError((error, stackTrace) {
+
+      // ignore: use_build_context_synchronously
+    } else {
       setLoading(false);
-      Utils.flushBarErrorMessage(context, error.toString());
+      // ignore: use_build_context_synchronously
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      Utils.flushBarErrorMessage(context, prefs.getString("error").toString());
+
       if (kDebugMode) {
-        print("MultiPart API Error=============> $error");
+        print("MultiPart API Error=============> ");
       }
-    });
+    }
+  }
+
+  //! Register MultiPartApi
+  Future<void> registerMultiPartApiKYC(
+      BuildContext context, String documenttype, File kycfileimage) async {
+    setLoading(true);
+    print("object");
+
+    final prefs = await SharedPreferences.getInstance();
+    print(prefs.getString("accessToken").toString());
+    List<int> fileBytes = [];
+    String base64Image = "";
+    fileBytes = await File(kycfileimage.path).readAsBytes();
+    base64Image = base64Encode(fileBytes);
+    final headers = {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': 'Bearer ${prefs.getString("accessToken").toString()}'
+    };
+
+    http.MultipartRequest request = http.MultipartRequest(
+        'POST', Uri.parse("http://3.133.0.29/api/business/kyc"));
+    request.headers.addAll(headers);
+
+    request.fields['documentType'] = documenttype;
+    if (_image != null) {
+      var profileImage = http.MultipartFile.fromString(
+        'document',
+        base64.encode(base64Image.codeUnits),
+        filename: kycfileimage.path.split("/").last,
+      );
+
+      request.files.add(profileImage);
+    }
+    var response = await _authRepo.registerMultiPartApi(request);
+
+    if (response != null) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      if (prefs.getString("error").toString() == "null") {
+        Utils.flushBarErrorMessage(context, 'Register Successfully');
+        Get.toNamed(Routes.businessVerificationProcesingRoute);
+      } else {
+        setLoading(false);
+        Utils.flushBarErrorMessage(
+            context, prefs.getString("error").toString());
+      }
+
+      // ignore: use_build_context_synchronously
+    } else {
+      setLoading(false);
+      // ignore: use_build_context_synchronously
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      Utils.flushBarErrorMessage(context, prefs.getString("error").toString());
+
+      if (kDebugMode) {
+        print("MultiPart API Error=============> ");
+      }
+    }
   }
 
 //!  add Bussiness Data
@@ -445,6 +616,127 @@ class ProfileViewModel extends ChangeNotifier {
     prefs.setString('mobileNo', shopKeeperMobileNoTextController.text.trim());
     prefs.setString('category', _selectedBusinessCategory!);
     prefs.setString('grade', _selectedBusinessGrade!);
+    prefs.setString('isBusiness', 'yes');
   }
+
+  /// Register Business
+
+  Future registerBusiness(context, String latitudes, String longitudes) async {
+    setLoading(true);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<int> fileBytes = await File(_image!.path).readAsBytes();
+    String base64Image = base64Encode(
+        fileBytes); //// Encode the bytes as a base64-encoded string
+    var token = prefs.get('accessToken');
+
+    http.MultipartRequest request =
+        http.MultipartRequest('POST', Uri.parse(AppUrls.businessEndPoint));
+    request.headers.addAll({
+      'accept': '*/*',
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data',
+    });
+    print(
+        "businessName:${businessNameTextController.text} owner name ${ownerNameTextController.text}, mobile no: ${shopKeeperMobileNoTextController.text}");
+    int grade = 1;
+    int category = 1;
+    request.fields['businessName'] = businessNameTextController.text;
+    request.fields['ownerName'] = ownerNameTextController.text;
+
+    request.fields['mobile'] = shopKeeperMobileNoTextController.text;
+
+    request.fields['address'] = "deom address";
+    request.fields['tehsil'] = "deom tehsil";
+    request.fields['district'] = "deom division";
+    request.fields['division'] = "deom district";
+    request.fields['province'] = "deom province";
+    request.fields['city'] = "demo city";
+    request.fields['country'] = "Pakistan";
+    request.fields['category'] = "$category";
+    request.fields['grade'] = '$grade';
+    request.fields['email'] = appUser.email.toString();
+    request.fields['lat'] = latitudes;
+    request.fields['lon'] = longitudes;
+
+    var stream = http.ByteStream(_image!.openRead());
+    var length = await _image!.length();
+    var logoMediaFile = http.MultipartFile('logoMedia', stream, length);
+
+    // var logoMediaFile = http.MultipartFile.fromString(
+    //   'logoMedia',
+    //   base64.encode(base64Image.codeUnits),
+    //   filename: _image?.path.split("/").last,
+    // );
+
+    request.files.add(logoMediaFile);
+
+    await _authRepo.registerMultiPartApi(request).then((value) {
+      setLoading(false);
+
+      Utils.flushBarErrorMessage(context, 'Register Successfully');
+      Get.toNamed(Routes.businessVerificationRoute);
+      // Get.toNamed(Routes.verificationCodeRoute);
+      // Get.to(const DrawerView());
+      if (kDebugMode) {
+        print(value.toString());
+      }
+    }).onError((error, stackTrace) {
+      setLoading(false);
+      Utils.flushBarErrorMessage(context, error.toString());
+      if (kDebugMode) {
+        print("MultiPart API Error=============> $error");
+      }
+    });
+  }
+
+  init() async {
+    position = await LocationServices.myLoction();
+    try {
+      List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(
+        position!.latitude,
+        position!.longitude,
+      );
+
+      address =
+          ("${placemarks.last.locality.toString()} ${placemarks.last.administrativeArea.toString().trim()} ${placemarks.last.name.toString()}");
+      print("Address: $address");
+    } catch (e) {
+      print("give me error ${e.toString()}");
+    }
+
+    notifyListeners();
+  }
+
+  /// Verify Phone Number Through Otp
+  Future verifyPhoneNo(context) async {
+    setLoading(true);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await _networkApiService
+        .getGetApiResponse(
+      "${AppUrls.verifyPhoneNo}?mobile=${prefs.getString('mobileNo')}&otp=123456",
+    )
+        .then((value) async {
+      final userPreference = Provider.of<UserViewModel>(context, listen: false);
+      userPreference.saveUser(
+        UserModel(accessToken: value['accessToken'].toString()),
+      );
+
+      Utils.flushBarErrorMessage(context, 'Login Successfully');
+      await init();
+      setLoading(false);
+
+      Get.offAll(const DrawerView());
+    });
+  }
+
+//! OTP verification
+  // final otpController = TextEditingController();
+  // Future<void> verifyOtp(BuildContext context) async {
+  //   if (otpController.text.isEmpty && otpController.text.isEmpty) {
+  //     Utils.flushBarErrorMessage(context, 'Please Enter Your Email & Pasword');
+  //   }
+  //   else _authRepo.
+  // }
 }
 // }

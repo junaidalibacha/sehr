@@ -72,21 +72,7 @@ class TextFieldWidget extends StatelessWidget {
             fontSize: getProportionateScreenHeight(14),
             color: ColorManager.textGrey.withOpacity(0.3),
           ),
-          prefixIcon: prefixIcon != null
-              ? Padding(
-                  padding: EdgeInsets.only(
-                    left: getProportionateScreenWidth(20),
-                    right: getProportionateScreenWidth(16),
-                    top: getProportionateScreenWidth(16),
-                    bottom: getProportionateScreenWidth(16),
-                  ),
-                  child: SizedBox(
-                    height: getProportionateScreenHeight(20),
-                    width: getProportionateScreenHeight(20),
-                    child: prefixIcon,
-                  ),
-                )
-              : null,
+          prefixIcon: prefixIcon,
           suffixIcon: sufixIcon,
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
@@ -103,7 +89,7 @@ class TextFieldWidget extends StatelessWidget {
           //   ),
           // ),
           constraints: BoxConstraints(
-            minHeight: getProportionateScreenHeight(60),
+            maxHeight: getProportionateScreenHeight(60),
           ),
         ),
         validator: validator,

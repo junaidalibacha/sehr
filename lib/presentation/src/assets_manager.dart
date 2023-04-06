@@ -47,10 +47,9 @@ class AppImages {
   static const String jazzCash = '$imagesPath/jazz_cash.png';
   static const String paid = '$imagesPath/paid.png';
   static const String profilePreview = '$imagesPath/profile_preview.png';
-  // static const String onboarding1 = '$imagesPath/onboarding_logo1.svg';
-  // static const String onboarding2 = '$imagesPath/onboarding_logo2.svg';
-  // static const String onboarding3 = '$imagesPath/onboarding_logo3.svg';
-  // static const String onboarding4 = '$imagesPath/onboarding_logo4.svg';
+  static const String file = '$imagesPath/attach-file.png';
+  static const String process = '$imagesPath/process.png';
+  static const String qr = '$imagesPath/qr.png';
 }
 
 class AssetsJson {

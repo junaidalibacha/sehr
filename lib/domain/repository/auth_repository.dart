@@ -8,9 +8,15 @@ class AuthRepository {
   final BaseApiServices _apiServices = NetworkApiService();
 
   Future<dynamic> loginApi(dynamic data) async {
+    print("hereeeeeeee");
     try {
-      dynamic response =
-          await _apiServices.getPostApiResponse(AppUrls.loginEndPoint, data);
+      var response = await _apiServices.getPostApiResponse(
+        AppUrls.loginEndPoint,
+        data,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
       return response;
     } catch (e) {
       rethrow;
@@ -29,8 +35,12 @@ class AuthRepository {
 
   Future<dynamic> registerMultiPartApi(MultipartRequest request) async {
     try {
-      dynamic response = await _apiServices.getPostMultiPartResponse(request);
-      return response;
+      var response = await _apiServices.getPostMultiPartResponse(request);
+      if (response != null) {
+        return response;
+      } else {
+        return null;
+      }
     } catch (e) {
       rethrow;
     }

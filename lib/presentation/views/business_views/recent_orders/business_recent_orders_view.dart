@@ -1,13 +1,60 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/common/custom_card_widget.dart';
 import 'package:sehr/presentation/view_models/business_view_models/business_recent_orders_view_model.dart';
+import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
+import 'dart:convert' as convert;
 
-class BusinessRecentOrdersView extends StatelessWidget {
-  BusinessRecentOrdersView({super.key});
+class BusinessRecentOrdersView extends StatefulWidget {
+  const BusinessRecentOrdersView({super.key});
+
+  @override
+  State<BusinessRecentOrdersView> createState() =>
+      _BusinessRecentOrdersViewState();
+}
+
+class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
+  final OrderApi _orderApi = OrderApi();
+
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    }
+
+    setState(() {});
+  }
+
+  bool nodata = false;
+
+  List<dynamic> filterlist = [];
+
+  Future apicall() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var responseofdata = await _orderApi
+        .fetchorderrequest(prefs.getString("sehrcode").toString());
+    datatest = convert.jsonDecode(responseofdata.body) as dynamic;
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    _list[0][0].forEach((element) {
+      if (element["status"].toString() != "pending") {
+        filterlist.add(element);
+      }
+    });
+
+    return datatest;
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,77 +81,72 @@ class BusinessRecentOrdersView extends StatelessWidget {
             ),
           ),
           buildVerticleSpace(15),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(25),
-                // vertical: getProportionateScreenHeight(15),
-              ),
-              child: Consumer<BusinessRecentOrdersViewModel>(
-                builder: (context, viewModel, child) => ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: viewModel.recentOrders.length,
-                  separatorBuilder: (context, index) => buildVerticleSpace(20),
-                  padding: EdgeInsets.only(
-                    bottom: getProportionateScreenHeight(50),
+          nodata == true
+              ? Container(
+                  child: Center(
+                    child: Text("No Recent Orders"),
                   ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => CustomListTileWidget(
-                    leading: Image.asset(AppImages.menu),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        kTextBentonSansMed(
-                          viewModel.recentOrders[index].customerName,
-                          fontSize: getProportionateScreenHeight(15),
+                )
+              : filterlist.isEmpty
+                  ? Container(
+                      child: const Center(
+                        child: LinearProgressIndicator(),
+                      ),
+                    )
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(25),
+                          // vertical: getProportionateScreenHeight(15),
                         ),
-                        kTextBentonSansReg(
-                          viewModel.recentOrders[index].shopName,
-                          color: ColorManager.textGrey.withOpacity(0.8),
-                          letterSpacing: getProportionateScreenWidth(0.5),
+                        child: Consumer<BusinessRecentOrdersViewModel>(
+                          builder: (context, viewModel, child) =>
+                              ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount: filterlist.length,
+                                  separatorBuilder: (context, index) =>
+                                      buildVerticleSpace(20),
+                                  padding: EdgeInsets.only(
+                                    bottom: getProportionateScreenHeight(50),
+                                  ),
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) => Card(
+                                        elevation: 0,
+                                        child: ListTile(
+                                          trailing: Text(
+                                            "RS ${filterlist[index]["amount"]}",
+                                            style: TextStyle(),
+                                          ),
+                                          subtitle: AppButtonWidget(
+                                            bgColor: filterlist[index]
+                                                        ["status"] ==
+                                                    "accepted"
+                                                ? null
+                                                : Colors.red,
+                                            ontap: () {},
+                                            height:
+                                                getProportionateScreenHeight(
+                                                    29),
+                                            width:
+                                                getProportionateScreenWidth(85),
+                                            text: filterlist[index]["status"],
+                                            textSize:
+                                                getProportionateScreenHeight(
+                                                    12),
+                                            letterSpacing:
+                                                getProportionateScreenWidth(
+                                                    0.5),
+                                          ),
+                                          leading: Image.asset(AppImages.menu),
+                                          title: Text(
+                                            filterlist[index]["date"],
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                        ),
+                                      )),
                         ),
-                        kTextBentonSansMed(
-                          'RS ${viewModel.recentOrders[index].price}',
-                          color: viewModel.recentOrders[index].isCompleted
-                              ? ColorManager.primary
-                              : ColorManager.textGrey.withOpacity(0.3),
-                          fontSize: getProportionateScreenHeight(19),
-                        ),
-                      ],
+                      ),
                     ),
-                    trailing: Column(
-                      children: [
-                        AppButtonWidget(
-                          bgColor: viewModel.recentOrders[index].isCompleted
-                              ? null
-                              : ColorManager.textGrey.withOpacity(0.2),
-                          ontap: () {},
-                          height: getProportionateScreenHeight(29),
-                          width: getProportionateScreenWidth(85),
-                          text: 'Completed',
-                          textSize: getProportionateScreenHeight(12),
-                          letterSpacing: getProportionateScreenWidth(0.5),
-                        ),
-                        const Spacer(),
-                        InkWell(
-                          onTap: viewModel.recentOrders[index].isCompleted
-                              ? () => _buildOrderDetails(context)
-                              : null,
-                          child: kTextBentonSansReg(
-                            'Detail',
-                            color: viewModel.recentOrders[index].isCompleted
-                                ? ColorManager.blue
-                                : ColorManager.textGrey.withOpacity(0.3),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

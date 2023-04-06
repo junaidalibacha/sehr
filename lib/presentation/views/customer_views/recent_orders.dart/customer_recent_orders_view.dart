@@ -1,14 +1,65 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/custom_card_widget.dart';
 import 'package:sehr/presentation/common/custom_chip_widget.dart';
-import 'package:sehr/presentation/index.dart';
+
+import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/view_models/customer_view_models/customer_recent_orders_view_model.dart';
+import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert' as convert;
 
 import '../../../common/app_button_widget.dart';
 import '../../../src/index.dart';
 
-class CustomerRecentOrdersView extends StatelessWidget {
-  CustomerRecentOrdersView({super.key});
+class CustomerRecentOrdersView extends StatefulWidget {
+  const CustomerRecentOrdersView({super.key});
+
+  @override
+  State<CustomerRecentOrdersView> createState() =>
+      _CustomerRecentOrdersViewState();
+}
+
+class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
+  final OrderApi _orderApi = OrderApi();
+
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  List<dynamic> filterlist = [];
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    }
+
+    setState(() {});
+  }
+
+  bool nodata = false;
+
+  Future apicall() async {
+    print("object checkinh");
+    datatest = null;
+    filterlist.clear();
+    _list.clear();
+    setState(() {});
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var responseofdata = await _orderApi.fetchmyorderscustomers();
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    print(_list);
+    _list[0][0].forEach((element) {
+      filterlist.add(element);
+    });
+
+    return datatest;
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +75,22 @@ class CustomerRecentOrdersView extends StatelessWidget {
             child: Column(
               children: [
                 buildVerticleSpace(37),
-                kTextBentonSansReg(
-                  'Anam Wusono',
-                  fontSize: getProportionateScreenHeight(27),
+                Row(
+                  children: [
+                    kTextBentonSansReg(
+                      "${appUser.firstName.toString()}${appUser.lastName.toString()}",
+                      fontSize: getProportionateScreenHeight(27),
+                    ),
+                  ],
                 ),
-                kTextBentonSansReg(
-                  'anamwp66@gmail.com',
-                  color: ColorManager.textGrey.withOpacity(0.3),
-                ),
+                Row(
+                  children: [
+                    kTextBentonSansReg(
+                      appUser.email.toString(),
+                      color: ColorManager.textGrey.withOpacity(0.3),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
@@ -46,81 +105,80 @@ class CustomerRecentOrdersView extends StatelessWidget {
               fontSize: getProportionateScreenHeight(15),
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(24),
-              ),
-              child: Consumer<CustomerRecentOrdersViewModel>(
-                builder: (context, viewModel, child) => ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: viewModel.orders.length,
-                  separatorBuilder: (context, index) => buildVerticleSpace(10),
-                  padding: EdgeInsets.only(
-                    bottom: getProportionateScreenHeight(100),
-                  ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => CustomListTileWidget(
-                    leading: Image.asset(AppImages.menu),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        kTextBentonSansMed(
-                          viewModel.orders[index].itemName,
-                          fontSize: getProportionateScreenHeight(15),
-                        ),
-                        // buildVerticleSpace(4),
-                        kTextBentonSansReg(
-                          viewModel.orders[index].shopName,
-                          color: ColorManager.textGrey.withOpacity(0.8),
-                          letterSpacing: getProportionateScreenWidth(0.5),
-                        ),
-                        // buildVerticleSpace(8),
-                        kTextBentonSansReg(
-                          'RS ${viewModel.orders[index].price}',
-                          color: ColorManager.primary,
-                          fontSize: getProportionateScreenHeight(19),
-                          letterSpacing: getProportionateScreenWidth(0.5),
-                        ),
-                      ],
-                    ),
-                    trailing: Column(
-                      children: [
-                        AppButtonWidget(
-                          ontap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (ctx) => Container(
-                                height: SizeConfig.screenHeight,
-                                width: SizeConfig.screenWidth,
-                                color: ColorManager.ambar,
-                              ),
-                            );
-                          },
-                          height: getProportionateScreenHeight(29),
-                          width: getProportionateScreenWidth(85),
-                          text: 'Buy Again',
-                          textSize: getProportionateScreenHeight(12),
-                          letterSpacing: getProportionateScreenWidth(0.5),
-                        ),
-                        // buildVerticleSpace(11),
-                        const Spacer(),
-                        InkWell(
-                          onTap: () => _buildOrderDetails(context),
-                          child: kTextBentonSansReg(
-                            'Detail',
-                            color: ColorManager.blue,
+          nodata == true
+              ? Expanded(
+                  child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                        child: const Text(
+                      "No Recent Completed Orders",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ))
+                  ],
+                ))
+              : filterlist.isEmpty
+                  ? Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Center(
+                            child: LinearProgressIndicator(),
                           ),
+                        ],
+                      ),
+                    )
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(24),
                         ),
-                      ],
+                        child: Consumer<CustomerRecentOrdersViewModel>(
+                          builder: (context, viewModel, child) =>
+                              ListView.separated(
+                                  shrinkWrap: true,
+                                  itemCount: filterlist.length,
+                                  separatorBuilder: (context, index) =>
+                                      buildVerticleSpace(20),
+                                  padding: EdgeInsets.only(
+                                    bottom: getProportionateScreenHeight(50),
+                                  ),
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) => Card(
+                                        elevation: 0,
+                                        child: ListTile(
+                                          trailing: Text(
+                                            "RS ${filterlist[index]["amount"]}",
+                                            style: TextStyle(),
+                                          ),
+                                          subtitle: AppButtonWidget(
+                                            bgColor: null,
+                                            ontap: () {
+                                              _buildOrderDetails(context);
+                                            },
+                                            height:
+                                                getProportionateScreenHeight(
+                                                    29),
+                                            width:
+                                                getProportionateScreenWidth(85),
+                                            text: filterlist[index]["status"],
+                                            textSize:
+                                                getProportionateScreenHeight(
+                                                    12),
+                                            letterSpacing:
+                                                getProportionateScreenWidth(
+                                                    0.5),
+                                          ),
+                                          leading: Image.asset(AppImages.menu),
+                                          title: Text(
+                                            filterlist[index]["date"],
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                        ),
+                                      )),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
