@@ -83,6 +83,7 @@ class UplaodProfilePhotoView extends StatelessWidget {
                         // viewModel.registerApi(context);
                         //     :
                         if (isBusiness == "yes") {
+                          viewModel.setLoading(true);
                           if (await Permission
                               .locationWhenInUse.serviceStatus.isEnabled) {
                             late StreamSubscription<Position>
@@ -90,14 +91,13 @@ class UplaodProfilePhotoView extends StatelessWidget {
                             ridePositionStream = Geolocator.getPositionStream(
                                     locationSettings: const LocationSettings())
                                 .listen((Position positionmap) async {
-                              print(positionmap.latitude);
-                              print(positionmap.longitude);
                               position = positionmap;
                               await viewModel.registerBusiness(
                                   context,
                                   positionmap.latitude.toString(),
                                   positionmap.longitude.toString());
                               ridePositionStream.cancel();
+                              viewModel.setLoading(false);
                             });
                           } else {
                             // ignore: use_build_context_synchronously

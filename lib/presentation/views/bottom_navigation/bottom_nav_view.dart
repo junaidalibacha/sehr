@@ -32,7 +32,7 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
   }
 
   checklocation() {
-    Timer.periodic(Duration(seconds: 1), (timer) async {
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
       } else {
         Get.offAll(() => const PermissionHandler());
@@ -46,7 +46,9 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     showbussinespages = prefs.getString("openbussiness").toString();
     _userRole = prefs.getString("userRole").toString();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   String _userRole = '';

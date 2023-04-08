@@ -1,18 +1,79 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
+import 'package:sehr/presentation/views/profile/add_bio/apicalling.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/drop_down_widget.dart';
 import '../../common/top_back_button_widget.dart';
 import '../../src/index.dart';
+import 'dart:convert' as convert;
 
-class SetLocationView extends StatelessWidget {
+class SetLocationView extends StatefulWidget {
   // final File imageFile;
   const SetLocationView({
     super.key,
     // required this.imageFile,
   });
+
+  @override
+  State<SetLocationView> createState() => _SetLocationViewState();
+}
+
+class _SetLocationViewState extends State<SetLocationView> {
+  final BioApiCalls _orderApi = BioApiCalls();
+
+  fetchorders() async {
+    await citycall();
+    await proviencecall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    } else {
+      filterlist.forEach((element) {
+        print(element);
+      });
+    }
+
+    setState(() {});
+  }
+
+  bool nodata = false;
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  List<dynamic> filterlist = [];
+  Future citycall() async {
+    var responseofdata = await _orderApi.citiesapi();
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    _list[0][0].forEach((element) {
+      filterlist.add(element);
+    });
+
+    return datatest;
+  }
+
+  //provience
+
+  Map<String, dynamic>? provincetest;
+  final List<dynamic> _list2 = [];
+  List<dynamic> filterlist2 = [];
+  Future proviencecall() async {
+    var responseofdata = await _orderApi.provincesApi();
+    provincetest = convert.jsonDecode(responseofdata.body);
+    _list2.add(provincetest == null ? [] : provincetest!.values.toList());
+    _list2[0][0].forEach((element) {
+      filterlist2.add(element);
+    });
+
+    return provincetest;
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -174,11 +235,12 @@ class SetLocationView extends StatelessWidget {
                                       lableText: 'City',
                                       hintText: 'Select Your City',
                                       selectedOption: viewModel.selectedCity,
-                                      dropdownMenuItems: viewModel.cityOptions
+                                      dropdownMenuItems: filterlist
                                           .map<DropdownMenuItem<String>>(
                                             (value) => DropdownMenuItem(
-                                              value: value,
-                                              child: kTextBentonSansReg(value),
+                                              value: value["title"],
+                                              child: kTextBentonSansReg(
+                                                  value["title"]),
                                             ),
                                           )
                                           .toList(),
@@ -195,12 +257,12 @@ class SetLocationView extends StatelessWidget {
                                       hintText: 'Select Your Province',
                                       selectedOption:
                                           viewModel.selectedProvince,
-                                      dropdownMenuItems: viewModel
-                                          .provinceOptions
+                                      dropdownMenuItems: filterlist2
                                           .map<DropdownMenuItem<String>>(
                                             (value) => DropdownMenuItem(
-                                              value: value,
-                                              child: kTextBentonSansReg(value),
+                                              value: value["title"],
+                                              child: kTextBentonSansReg(
+                                                  value["title"]),
                                             ),
                                           )
                                           .toList(),

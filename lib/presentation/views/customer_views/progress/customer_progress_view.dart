@@ -1,7 +1,5 @@
-import 'dart:math';
-
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
+
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -34,23 +32,24 @@ class _ProgressViewState extends State<ProgressView> {
     if (filterlist.isEmpty) {
       nodata = true;
     }
-
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   bool nodata = false;
 
   Future apicall() async {
-    print("object checkinh");
     datatest = null;
     filterlist.clear();
     _list.clear();
+    if (mounted) {
+      setState(() {});
+    }
     setState(() {});
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     var responseofdata = await _orderApi.fetchmyorderscustomers();
     datatest = convert.jsonDecode(responseofdata.body);
     _list.add(datatest == null ? [] : datatest!.values.toList());
-    print(_list);
     _list[0][0].forEach((element) {
       filterlist.add(element);
     });

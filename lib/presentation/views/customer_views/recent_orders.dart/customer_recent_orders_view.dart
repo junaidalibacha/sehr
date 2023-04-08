@@ -1,11 +1,10 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/common/custom_card_widget.dart';
+
 import 'package:sehr/presentation/common/custom_chip_widget.dart';
+import 'package:sehr/presentation/utils/utils.dart';
 
 import 'package:sehr/presentation/view_models/blog_view_model.dart';
-import 'package:sehr/presentation/view_models/customer_view_models/customer_recent_orders_view_model.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 
 import '../../../common/app_button_widget.dart';
@@ -25,33 +24,37 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
   List<dynamic> filterlist = [];
+  List<dynamic> filterlisttype = [];
   fetchorders() async {
     await apicall();
     if (filterlist.isEmpty) {
       nodata = true;
+    } else {
+      filterlisttype = filterlist;
     }
-
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   bool nodata = false;
 
   Future apicall() async {
-    print("object checkinh");
     datatest = null;
     filterlist.clear();
     _list.clear();
     setState(() {});
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     var responseofdata = await _orderApi.fetchmyorderscustomers();
-    datatest = convert.jsonDecode(responseofdata.body);
-    _list.add(datatest == null ? [] : datatest!.values.toList());
-    print(_list);
-    _list[0][0].forEach((element) {
-      filterlist.add(element);
-    });
-
-    return datatest;
+    if (responseofdata != null) {
+      datatest = convert.jsonDecode(responseofdata.body);
+      _list.add(datatest == null ? [] : datatest!.values.toList());
+      _list[0][0].forEach((element) {
+        filterlist.add(element);
+      });
+      return datatest;
+    } else {
+      Utils.flushBarErrorMessage(context, 'time out internet error');
+    }
   }
 
   @override
@@ -61,130 +64,209 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
     super.initState();
   }
 
+  List sekectedfilter = [];
+
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => CustomerRecentOrdersViewModel(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(17),
-            ),
-            child: Column(
-              children: [
-                buildVerticleSpace(37),
-                Row(
-                  children: [
-                    kTextBentonSansReg(
-                      "${appUser.firstName.toString()}${appUser.lastName.toString()}",
-                      fontSize: getProportionateScreenHeight(27),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    kTextBentonSansReg(
-                      appUser.email.toString(),
-                      color: ColorManager.textGrey.withOpacity(0.3),
-                    ),
-                  ],
-                )
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(17),
           ),
-          buildVerticleSpace(20),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(40),
-              vertical: getProportionateScreenHeight(10),
-            ),
-            child: kTextBentonSansReg(
-              'Completed',
-              fontSize: getProportionateScreenHeight(15),
-            ),
+          child: Column(
+            children: [
+              buildVerticleSpace(37),
+              Row(
+                children: [
+                  kTextBentonSansReg(
+                    "${appUser.firstName.toString()}${appUser.lastName.toString()}",
+                    fontSize: getProportionateScreenHeight(27),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  kTextBentonSansReg(
+                    appUser.email.toString(),
+                    color: ColorManager.textGrey.withOpacity(0.3),
+                  ),
+                ],
+              )
+            ],
           ),
-          nodata == true
-              ? Expanded(
-                  child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                        child: const Text(
-                      "No Recent Completed Orders",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ))
-                  ],
-                ))
-              : filterlist.isEmpty
-                  ? Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Center(
-                            child: LinearProgressIndicator(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 10, right: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: sekectedfilter
+                    .map(
+                      (filter) => Padding(
+                        padding: EdgeInsets.only(
+                          right: getProportionateScreenWidth(10),
+                        ),
+                        child: Chip(
+                          backgroundColor:
+                              ColorManager.secondaryLight.withOpacity(0.15),
+                          deleteIconColor: ColorManager.icon,
+                          padding: EdgeInsets.only(
+                            left: getProportionateScreenWidth(20),
                           ),
-                        ],
+                          labelPadding: EdgeInsets.zero,
+                          label: kTextBentonSansMed(
+                            filter,
+                            fontSize: getProportionateScreenHeight(12),
+                            color: ColorManager.icon,
+                          ),
+                          deleteIcon: Icon(
+                            Icons.close,
+                            size: getProportionateScreenHeight(16),
+                          ),
+                          onDeleted: () {
+                            sekectedfilter.clear();
+                            filterlisttype = filterlist;
+                            if (mounted) {
+                              setState(() {});
+                            }
+                          },
+                        ),
                       ),
                     )
-                  : Expanded(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(24),
-                        ),
-                        child: Consumer<CustomerRecentOrdersViewModel>(
-                          builder: (context, viewModel, child) =>
-                              ListView.separated(
-                                  shrinkWrap: true,
-                                  itemCount: filterlist.length,
-                                  separatorBuilder: (context, index) =>
-                                      buildVerticleSpace(20),
-                                  padding: EdgeInsets.only(
-                                    bottom: getProportionateScreenHeight(50),
-                                  ),
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, index) => Card(
-                                        elevation: 0,
-                                        child: ListTile(
-                                          trailing: Text(
-                                            "RS ${filterlist[index]["amount"]}",
-                                            style: TextStyle(),
-                                          ),
-                                          subtitle: AppButtonWidget(
-                                            bgColor: null,
-                                            ontap: () {
-                                              _buildOrderDetails(context);
-                                            },
-                                            height:
-                                                getProportionateScreenHeight(
-                                                    29),
-                                            width:
-                                                getProportionateScreenWidth(85),
-                                            text: filterlist[index]["status"],
-                                            textSize:
-                                                getProportionateScreenHeight(
-                                                    12),
-                                            letterSpacing:
-                                                getProportionateScreenWidth(
-                                                    0.5),
-                                          ),
-                                          leading: Image.asset(AppImages.menu),
-                                          title: Text(
-                                            filterlist[index]["date"],
-                                            style: TextStyle(fontSize: 10),
-                                          ),
-                                        ),
-                                      )),
-                        ),
-                      ),
+                    .toList(),
+              ),
+              PopupMenuButton(
+                offset: Offset(
+                  getProportionateScreenWidth(0),
+                  getProportionateScreenHeight(50),
+                ),
+                padding: EdgeInsets.zero,
+                icon: Container(
+                  height: getProportionateScreenHeight(50),
+                  width: getProportionateScreenHeight(50),
+                  padding: EdgeInsets.all(
+                    getProportionateScreenHeight(13),
+                  ),
+                  decoration: BoxDecoration(
+                    color: ColorManager.secondaryLight.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(
+                      getProportionateScreenHeight(15),
                     ),
-        ],
-      ),
+                  ),
+                  child: Image.asset(
+                    AppIcons.filterIcon,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                itemBuilder: (context) {
+                  return ["accepted", "rejected", "spam"]
+                      .map(
+                        (e) => PopupMenuItem(
+                            child: Text(e),
+                            onTap: () {
+                              sekectedfilter.clear();
+                              sekectedfilter.add(e);
+                              filterlisttype = filterlist
+                                  .where((element) =>
+                                      element["status"]
+                                          .toString()
+                                          .toLowerCase()
+                                          .trim() ==
+                                      sekectedfilter.first
+                                          .toString()
+                                          .toLowerCase()
+                                          .trim())
+                                  .toList();
+                              if (mounted) {
+                                setState(() {});
+                              }
+                            }),
+                      )
+                      .toList();
+                },
+              ),
+            ],
+          ),
+        ),
+        nodata == true
+            ? Container(
+                child: const Text(
+                "No Recent Completed Orders",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ))
+            : filterlist.isEmpty
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: getProportionateScreenWidth(24),
+                      ),
+                      child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: filterlisttype.length,
+                          separatorBuilder: (context, index) =>
+                              buildVerticleSpace(20),
+                          padding: EdgeInsets.only(
+                            bottom: getProportionateScreenHeight(50),
+                          ),
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) => Card(
+                                elevation: 0,
+                                child: ListTile(
+                                  trailing: Text(
+                                    "RS ${filterlisttype[index]["amount"]}",
+                                    style: const TextStyle(),
+                                  ),
+                                  subtitle: AppButtonWidget(
+                                    bgColor: filterlisttype[index]["status"] ==
+                                            "accepted"
+                                        ? ColorManager.primary.withOpacity(0.2)
+                                        : filterlisttype[index]["status"] ==
+                                                "rejected"
+                                            ? Colors.redAccent.withOpacity(0.2)
+                                            : Colors.amberAccent
+                                                .withOpacity(0.2),
+                                    ontap: () {
+                                      _buildOrderDetails(
+                                          context, filterlisttype[index]);
+                                    },
+                                    height: getProportionateScreenHeight(29),
+                                    width: getProportionateScreenWidth(85),
+                                    textColor: filterlisttype[index]
+                                                ["status"] ==
+                                            "accepted"
+                                        ? ColorManager.primary
+                                        : filterlisttype[index]["status"] ==
+                                                "rejected"
+                                            ? Colors.redAccent
+                                            : Colors.amberAccent,
+                                    text: filterlisttype[index]["status"],
+                                    textSize: getProportionateScreenHeight(12),
+                                    letterSpacing:
+                                        getProportionateScreenWidth(0.5),
+                                  ),
+                                  leading: Image.asset(AppImages.menu),
+                                  title: Text(
+                                    filterlisttype[index]["date"],
+                                    style: const TextStyle(fontSize: 10),
+                                  ),
+                                ),
+                              )),
+                    ),
+                  ),
+      ],
     );
   }
 
-  Future<dynamic> _buildOrderDetails(BuildContext context) {
+  Future<dynamic> _buildOrderDetails(
+      BuildContext context, Map<String, dynamic> datalist) {
     return showDialog(
       context: context,
       barrierColor: ColorManager.transparent,
@@ -233,28 +315,8 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
                 text: 'Pervious shop',
               ),
               buildVerticleSpace(20),
-              kTextBentonSansMed(
-                'Shop Name',
-                fontSize: getProportionateScreenHeight(27),
-              ),
-              buildVerticleSpace(25),
-              Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    color: ColorManager.primaryLight,
-                    size: getProportionateScreenHeight(20),
-                  ),
-                  buildHorizontalSpace(12),
-                  kTextBentonSansReg(
-                    '19 Km',
-                    color: ColorManager.textGrey.withOpacity(0.2),
-                  ),
-                ],
-              ),
-              buildVerticleSpace(20),
               kTextBentonSansReg(
-                'Nulla occaecat velit laborum exercitation ullamco. Elit labore eu aute elit nostrud culpa velit excepteur deserunt sunt. Velit non est cillum consequat cupidatat ex Lorem laboris labore aliqua ad duis eu laborum.',
+                datalist["comments"].toString(),
                 fontSize: getProportionateScreenHeight(12),
                 lineHeight: getProportionateScreenHeight(2.5),
                 maxLines: 4,
@@ -262,27 +324,53 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
               ),
               buildVerticleSpace(12),
               CustomChipWidget(
-                width: getProportionateScreenWidth(95),
-                bgColor: ColorManager.ambar.withOpacity(0.2),
-                text: 'Completed',
-                textColor: ColorManager.ambar,
-              ),
+                  width: getProportionateScreenWidth(95),
+                  bgColor: datalist["status"] == "accepted"
+                      ? ColorManager.primary.withOpacity(0.2)
+                      : datalist["status"] == "rejected"
+                          ? Colors.redAccent.withOpacity(0.2)
+                          : Colors.amberAccent.withOpacity(0.2),
+                  text: datalist["status"],
+                  textColor: datalist["status"] == "accepted"
+                      ? ColorManager.primary
+                      : datalist["status"] == "rejected"
+                          ? Colors.redAccent
+                          : Colors.amberAccent),
               buildVerticleSpace(25),
               SizedBox(
                 height: getProportionateScreenHeight(120),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(
-                    orderInfoList.length,
-                    (index) => Row(
-                      children: [
-                        kTextBentonSansMed(orderInfoList[index].title),
-                        buildHorizontalSpace(5),
-                        kTextBentonSansReg(orderInfoList[index].value),
-                      ],
-                    ),
-                  ),
-                ),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          kTextBentonSansMed("Order Date"),
+                          buildHorizontalSpace(5),
+                          kTextBentonSansReg(datalist["date"]),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          kTextBentonSansMed("Order tine"),
+                          buildHorizontalSpace(5),
+                          kTextBentonSansReg(datalist["date"]),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          kTextBentonSansMed("commission"),
+                          buildHorizontalSpace(5),
+                          kTextBentonSansReg(datalist["commission"] ?? "0"),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          kTextBentonSansMed("Total Amount"),
+                          buildHorizontalSpace(5),
+                          kTextBentonSansReg(datalist["amount"]),
+                        ],
+                      ),
+                    ]),
               ),
             ],
           ),

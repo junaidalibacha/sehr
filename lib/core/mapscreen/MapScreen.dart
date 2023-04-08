@@ -236,7 +236,7 @@ class _MapDirectionState extends State<MapDirection> {
                   bottom: 50,
                   left: 20,
                   right: 20,
-                  child: km > 1
+                  child: km > 0
                       ? Container(
                           height: 250,
                           decoration: BoxDecoration(
@@ -426,7 +426,13 @@ class _MapDirectionState extends State<MapDirection> {
                                   ),
                                   MaterialButton(
                                     onPressed: () {
-                                      Get.to(() => const ScannerView());
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ScannerView()),
+                                      );
                                     },
                                     child: Container(
                                       height: 40,

@@ -91,7 +91,14 @@ class OrderApi {
       'Authorization': 'Bearer $tokenofmy'
     };
 
-    var response = await http.get(uri, headers: headers);
+    var response = await http.get(uri, headers: headers).timeout(
+          const Duration(seconds: 10),
+        );
+    if (response.statusCode == 200) {
+      return response;
+    } else {
+      return;
+    }
 
     return response;
   }
