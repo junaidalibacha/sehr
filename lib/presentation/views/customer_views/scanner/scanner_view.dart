@@ -3,10 +3,12 @@ import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
+import 'package:sehr/presentation/utils/utils.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 
 import '../../../src/index.dart';
 import '../../../view_models/bottom_nav_view_model.dart';
+import '../../drawer/custom_drawer.dart';
 
 class ScannerView extends StatefulWidget {
   static String routeName = "/qrscan";
@@ -20,6 +22,7 @@ class ScannerView extends StatefulWidget {
 class _ScannerViewState extends State<ScannerView> {
   // late Size size;
   final GlobalKey _qrKey = GlobalKey(debugLabel: "QR");
+  TextEditingController Codecontroller = TextEditingController();
   QRViewController? _controller;
   bool isFlashOff = true;
   Barcode? result;
@@ -96,6 +99,7 @@ class _ScannerViewState extends State<ScannerView> {
                   ),
                   padding: EdgeInsets.zero,
                   autoHideKeyboard: false,
+                  controller: Codecontroller,
                   keyboardType: TextInputType.number,
                   borderColor: ColorManager.lightGrey,
                   activeBorderColor: ColorManager.primary,
@@ -104,7 +108,10 @@ class _ScannerViewState extends State<ScannerView> {
                     fontSize: getProportionateScreenHeight(30),
                     color: ColorManager.white,
                   ),
-                  onComplete: (result) {},
+                  onComplete: (result) async {
+                    await _showResult(Codecontroller.text);
+                    Codecontroller.clear();
+                  },
                 ),
                 buildVerticleSpace(27),
                 AppButtonWidget(
@@ -143,8 +150,7 @@ class _ScannerViewState extends State<ScannerView> {
   TextEditingController amountcontroller = TextEditingController();
   TextEditingController commentcontroller = TextEditingController();
 
-  Widget _showResult() {
-    bool validUrl = Uri.parse(result!.code.toString()).isAbsolute;
+  Widget _showResult(String sehercode) {
     return Center(
         child: FutureBuilder<dynamic>(
       future: showDialog(
@@ -153,7 +159,7 @@ class _ScannerViewState extends State<ScannerView> {
             return WillPopScope(
               child: AlertDialog(
                 title: Text(
-                  'Scan Result ${result!.code}',
+                  'Scan Result $sehercode',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -165,6 +171,7 @@ class _ScannerViewState extends State<ScannerView> {
                     children: [
                       TextField(
                         controller: amountcontroller,
+                        keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderSide:
@@ -208,13 +215,20 @@ class _ScannerViewState extends State<ScannerView> {
                         children: [
                           MaterialButton(
                               onPressed: () async {
-                                var response =
-                                    await _orderApi.requestSendOrderApi(
-                                        result!.code.toString(),
-                                        int.parse(amountcontroller.text),
-                                        commentcontroller.text);
-                                if (response != null) {
-                                  Navigator.pop(context);
+                                if (amountcontroller.text.isNotEmpty) {
+                                  var response =
+                                      await _orderApi.requestSendOrderApi(
+                                          sehercode,
+                                          int.parse(amountcontroller.text),
+                                          commentcontroller.text);
+                                  if (response != null) {
+                                    Navigator.pop(context);
+                                    Utils.flushBarErrorMessage(context,
+                                        'order placed successfully, check out the status of order');
+                                  } else {
+                                    Utils.flushBarErrorMessage(context,
+                                        'No Shop Found or cant place order to your own shop');
+                                  }
                                 }
                               },
                               child: Container(
@@ -276,7 +290,7 @@ class _ScannerViewState extends State<ScannerView> {
       });
       if (result?.code != null) {
         print('Scanned & showing result');
-        _showResult();
+        _showResult(result!.code.toString());
       }
     });
   }

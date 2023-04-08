@@ -123,6 +123,9 @@ class _MemberShipViewState extends State<MemberShipView> {
                                                     "Grade",
                                                     filterlist[index]["title"]
                                                         .toString());
+                                                if (mounted) {
+                                                  setState(() {});
+                                                }
                                                 Navigator.pop(context);
                                               },
                                               child: Text("Ok"))

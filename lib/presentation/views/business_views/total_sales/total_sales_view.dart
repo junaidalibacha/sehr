@@ -1,7 +1,9 @@
+import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/view_models/business_view_models/total_sales_view_model.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
+import 'package:sehr/presentation/views/business_views/total_sales/fetchcomission.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 
@@ -20,59 +22,93 @@ class _TotalSalesViewState extends State<TotalSalesView> {
 
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
-  fetchorders() async {
-    await apicall();
-    if (filterlist.isEmpty) {
-      nodata = true;
+  fetchorders(String datetimerange) async {
+    await apicall(datetimerange);
+    if (mounted) {
+      setState(() {});
     }
-
-    setState(() {});
   }
 
   bool nodata = false;
 
-  List<dynamic> filterlist = [];
-
-  Future apicall() async {
+  Future apicall(String datetimerange) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    var responseofdata = await _orderApi
-        .fetchorderrequest(prefs.getString("sehrcode").toString());
+
+    var responseofdata = await reportscommissions(datetimerange);
     datatest = convert.jsonDecode(responseofdata.body) as dynamic;
     _list.add(datatest == null ? [] : datatest!.values.toList());
-    _list[0][0].forEach((element) {
-      if (element["status"].toString() != "pending") {
-        filterlist.add(element);
-      }
-    });
 
     return datatest;
   }
 
+  String datetimerange = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
   @override
   void initState() {
-    fetchorders();
+    fetchorders(datetimerange);
     // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return filterlist.isEmpty
-        ? Container(
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : ChangeNotifierProvider(
-            create: (context) => TotalSaleViewModel(),
-            child: DefaultTabController(
-              length: 3,
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
+    return ChangeNotifierProvider(
+      create: (context) => TotalSaleViewModel(),
+      child: DefaultTabController(
+        length: 3,
+        child: Column(
+          children: [
+            Consumer<TotalSaleViewModel>(
+              builder: (context, viewModel, child) => Card(
+                margin: EdgeInsets.zero,
+                elevation: 2,
+                shadowColor: ColorManager.lightGrey,
+                child: TabBar(
+                  labelColor: ColorManager.black,
+                  labelStyle: TextStyleManager.mediumTextStyle(
+                    fontSize: getProportionateScreenHeight(16),
                   ),
-                  Expanded(
+                  indicatorColor: ColorManager.primary,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  indicatorWeight: 3,
+                  tabs: const [
+                    Tab(text: 'Daily'),
+                    Tab(text: 'Monthly'),
+                    Tab(text: 'Yearly'),
+                  ],
+                  onTap: (value) {
+                    viewModel.changeDuration(value);
+                    print(value);
+
+                    setState(() {
+                      if (value == 0) {
+                        _list.clear();
+                        datetimerange =
+                            DateFormat("yyyy-MM-dd").format(DateTime.now());
+                        fetchorders(datetimerange);
+                      } else if (value == 1) {
+                        _list.clear();
+                        datetimerange = DateFormat("yyyy-MM-dd").format(
+                            DateTime.now().subtract(const Duration(days: 30)));
+                        fetchorders(datetimerange);
+                      } else if (value == 2) {
+                        _list.clear();
+                        datetimerange = DateFormat("yyyy-MM-dd").format(
+                            DateTime.now().subtract(const Duration(days: 365)));
+                        fetchorders(datetimerange);
+                      }
+                    });
+                  },
+                ),
+              ),
+            ),
+            _list.isEmpty
+                ? Container(
+                    child: const Center(
+                      child: LinearProgressIndicator(),
+                    ),
+                  )
+                : Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: EdgeInsets.symmetric(
@@ -80,14 +116,17 @@ class _TotalSalesViewState extends State<TotalSalesView> {
                         ),
                         child: Column(
                           children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
                             _buildDetailCard('Total Completed\nOrders',
-                                filterlist.length.toString()),
+                                _list[0][0].toString()),
                             buildVerticleSpace(22),
                             _buildDetailCard('Total Seher\nSale',
-                                'PKR: ${filterlist.fold(0, (t, e) => t + int.parse(e["amount"])).toString()}/-'),
+                                'PKR: ${_list[0][1].toString()}/-'),
                             buildVerticleSpace(22),
                             _buildDetailCard('Total Commision\nTo be Paid',
-                                'PKR: ${(int.parse(filterlist.fold(0, (t, e) => t + int.parse(e["amount"])).toString()) / 10).truncate()}/-'),
+                                'PKR: ${_list[0][2].toString()}/-'),
                             buildVerticleSpace(36),
                             Padding(
                               padding: EdgeInsets.symmetric(
@@ -96,7 +135,7 @@ class _TotalSalesViewState extends State<TotalSalesView> {
                               child: Row(
                                 children: [
                                   kTextBentonSansBold(
-                                    'Commission :',
+                                    "commission:",
                                     fontSize: getProportionateScreenHeight(16),
                                   ),
                                   const Spacer(),
@@ -165,10 +204,10 @@ class _TotalSalesViewState extends State<TotalSalesView> {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          );
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildDetailCard(String title, String value) {
