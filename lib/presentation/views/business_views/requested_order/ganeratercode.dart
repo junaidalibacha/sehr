@@ -81,10 +81,10 @@ class _QRImageGanerateState extends State<QRImageGanerate> {
                       children: List.generate(
                         sehercodes.length,
                         (index) => Container(
-                          height: getProportionateScreenHeight(55),
-                          width: getProportionateScreenWidth(45),
+                          height: getProportionateScreenHeight(45),
+                          width: getProportionateScreenWidth(35),
                           margin: EdgeInsets.symmetric(
-                            horizontal: getProportionateScreenWidth(8),
+                            horizontal: getProportionateScreenWidth(2),
                           ),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(

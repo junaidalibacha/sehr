@@ -46,6 +46,10 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     showbussinespages = prefs.getString("openbussiness").toString();
     _userRole = prefs.getString("userRole").toString();
+    if (_userRole == "null") {
+      _userRole = "user";
+    }
+
     if (mounted) {
       setState(() {});
     }
@@ -91,11 +95,11 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
                     // : viewModel.businessPages[viewModel.index],
 
                     // bottomNavigationBar: ,
-                    bottomNavigationBar: _userRole != 'business'
-                        ? viewModel.index == 2
+                    bottomNavigationBar: _userRole == 'business'
+                        ? _buildBottomNavigation(_userRole)
+                        : viewModel.index == 2
                             ? null
-                            : _buildBottomNavigation(_userRole)
-                        : _buildBottomNavigation(_userRole),
+                            : _buildBottomNavigation(_userRole),
                   ),
                 );
               },

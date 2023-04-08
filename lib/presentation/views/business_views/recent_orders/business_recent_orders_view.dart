@@ -26,8 +26,9 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
     if (filterlist.isEmpty) {
       nodata = true;
     }
-
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   bool nodata = false;
@@ -58,97 +59,84 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => BusinessRecentOrdersViewModel(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildVerticleSpace(18),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(23),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                kTextBentonSansBold(
-                  'Find Your\nPervious Orders',
-                  fontSize: getProportionateScreenHeight(31),
-                ),
-                buildVerticleSpace(18),
-                const SearchRow(),
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildVerticleSpace(18),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(23),
           ),
-          buildVerticleSpace(15),
-          nodata == true
-              ? Container(
-                  child: Center(
-                    child: Text("No Recent Orders"),
-                  ),
-                )
-              : filterlist.isEmpty
-                  ? Container(
-                      child: const Center(
-                        child: LinearProgressIndicator(),
-                      ),
-                    )
-                  : Expanded(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(25),
-                          // vertical: getProportionateScreenHeight(15),
-                        ),
-                        child: Consumer<BusinessRecentOrdersViewModel>(
-                          builder: (context, viewModel, child) =>
-                              ListView.separated(
-                                  shrinkWrap: true,
-                                  itemCount: filterlist.length,
-                                  separatorBuilder: (context, index) =>
-                                      buildVerticleSpace(20),
-                                  padding: EdgeInsets.only(
-                                    bottom: getProportionateScreenHeight(50),
-                                  ),
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, index) => Card(
-                                        elevation: 0,
-                                        child: ListTile(
-                                          trailing: Text(
-                                            "RS ${filterlist[index]["amount"]}",
-                                            style: TextStyle(),
-                                          ),
-                                          subtitle: AppButtonWidget(
-                                            bgColor: filterlist[index]
-                                                        ["status"] ==
-                                                    "accepted"
-                                                ? null
-                                                : Colors.red,
-                                            ontap: () {},
-                                            height:
-                                                getProportionateScreenHeight(
-                                                    29),
-                                            width:
-                                                getProportionateScreenWidth(85),
-                                            text: filterlist[index]["status"],
-                                            textSize:
-                                                getProportionateScreenHeight(
-                                                    12),
-                                            letterSpacing:
-                                                getProportionateScreenWidth(
-                                                    0.5),
-                                          ),
-                                          leading: Image.asset(AppImages.menu),
-                                          title: Text(
-                                            filterlist[index]["date"],
-                                            style: TextStyle(fontSize: 10),
-                                          ),
-                                        ),
-                                      )),
-                        ),
-                      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              kTextBentonSansBold(
+                'Find Your\nPervious Orders',
+                fontSize: getProportionateScreenHeight(31),
+              ),
+              buildVerticleSpace(18),
+              const SearchRow(),
+            ],
+          ),
+        ),
+        buildVerticleSpace(15),
+        nodata == true
+            ? Container(
+                child: Center(
+                  child: Text("No Recent Orders"),
+                ),
+              )
+            : filterlist.isEmpty
+                ? Container(
+                    child: const Center(
+                      child: LinearProgressIndicator(),
                     ),
-        ],
-      ),
+                  )
+                : Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: getProportionateScreenWidth(25),
+                        // vertical: getProportionateScreenHeight(15),
+                      ),
+                      child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: filterlist.length,
+                          separatorBuilder: (context, index) =>
+                              buildVerticleSpace(20),
+                          padding: EdgeInsets.only(
+                            bottom: getProportionateScreenHeight(50),
+                          ),
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) => Card(
+                                elevation: 0,
+                                child: ListTile(
+                                  trailing: Text(
+                                    "RS ${filterlist[index]["amount"]}",
+                                    style: TextStyle(),
+                                  ),
+                                  subtitle: AppButtonWidget(
+                                    bgColor: filterlist[index]["status"] ==
+                                            "accepted"
+                                        ? null
+                                        : Colors.red,
+                                    ontap: () {},
+                                    height: getProportionateScreenHeight(29),
+                                    width: getProportionateScreenWidth(85),
+                                    text: filterlist[index]["status"],
+                                    textSize: getProportionateScreenHeight(12),
+                                    letterSpacing:
+                                        getProportionateScreenWidth(0.5),
+                                  ),
+                                  leading: Image.asset(AppImages.menu),
+                                  title: Text(
+                                    filterlist[index]["date"],
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                ),
+                              )),
+                    ),
+                  ),
+      ],
     );
   }
 

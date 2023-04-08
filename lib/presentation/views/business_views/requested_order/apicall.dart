@@ -34,10 +34,15 @@ class OrderApi {
     String jsonBody = json.encode(body);
     final encoding = Encoding.getByName('utf-8');
 
-    var response = await http.post(uri,
-        headers: headers, body: jsonBody, encoding: encoding);
+    var response = await http
+        .post(uri, headers: headers, body: jsonBody, encoding: encoding)
+        .timeout(Duration(seconds: 10));
 
-    return response;
+    if (response.statusCode == 201) {
+      return response;
+    } else {
+      return null;
+    }
   }
 
   fetchMyorders() async {
