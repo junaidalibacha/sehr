@@ -3,6 +3,7 @@ import 'package:sehr/presentation/views/bottom_navigation/bottom_nav_view.dart';
 import 'package:sehr/presentation/views/business_views/payment/payment_view.dart';
 import 'package:sehr/presentation/views/customer_views/scanner/scanner_view.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
+import 'package:sehr/presentation/views/onboarding/onboarding_view.dart';
 import 'package:sehr/presentation/views/profile/add_bio/add_business_details_view.dart';
 import 'package:sehr/presentation/views/profile/add_bio/add_customer_bio_view.dart';
 import 'package:sehr/presentation/views/profile/profile_complete_view.dart';
@@ -21,6 +22,7 @@ import '../views/splash/splash_view.dart';
 class Routes {
   static const String mainRoute = '/mainRoute';
   static const String splashRoute = '/';
+  static const String onboardingRoute = '/onboarding';
 
   // Auth views
   static const String loginRoute = '/login';
@@ -51,6 +53,8 @@ class RoutesGenerator {
     switch (routeSettings.name) {
       case Routes.splashRoute:
         return MaterialPageRoute(builder: (_) => const SplashView());
+      case Routes.onboardingRoute:
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
 
       // Auth Routes
       case Routes.loginRoute:

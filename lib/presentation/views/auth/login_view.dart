@@ -3,6 +3,7 @@ import 'package:sehr/presentation/common/logo_widget.dart';
 import 'package:sehr/presentation/utils/utils.dart';
 // import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
+import 'package:sehr/presentation/views/customer_views/order_placing/order_placing_view.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/social_button_widget.dart';
@@ -111,7 +112,9 @@ class LoginView extends StatelessWidget {
                 ),
                 buildVerticleSpace(10),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.to(() => const OrderPlacingView());
+                  },
                   child: kTextBentonSansMed(
                     'Forgot Your Password?',
                     color: ColorManager.primary,

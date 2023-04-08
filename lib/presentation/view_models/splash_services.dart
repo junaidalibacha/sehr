@@ -14,7 +14,7 @@ class SplashServices {
       if (value.accessToken == null || value.accessToken == '') {
         // print(value.accessToken);
         await Future.delayed(const Duration(seconds: 3));
-        Get.toNamed(Routes.loginRoute);
+        Get.toNamed(Routes.onboardingRoute);
       } else {
         // print(value.accessToken);
         await Future.delayed(const Duration(seconds: 3));

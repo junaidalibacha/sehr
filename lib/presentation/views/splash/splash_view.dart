@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:sehr/app/index.dart';
 
 import '../../common/logo_widget.dart';
 import '../../src/index.dart';
 import '../../view_models/splash_services.dart';
-import '../profile/add_bio/business_verification/business_verification_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -16,15 +13,15 @@ class SplashView extends StatefulWidget {
 
 class _SplashViewState extends State<SplashView> {
   final SplashServices _splashServices = SplashServices();
-  late Timer _timer;
+  // late Timer _timer;
 
-  void _splashScreenDelay() {
-    _timer = Timer(const Duration(seconds: 3), _goNext);
-  }
+  // void _splashScreenDelay() {
+  //   _timer = Timer(const Duration(seconds: 3), _goNext);
+  // }
 
-  void _goNext() {
-    Get.to(() => const BusinessVerificationView());
-  }
+  // void _goNext() {
+  //   Get.to(() => const BusinessVerificationView());
+  // }
 
   @override
   void initState() {
