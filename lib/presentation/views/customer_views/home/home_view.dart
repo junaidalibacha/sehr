@@ -4,11 +4,14 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/domain/models/business_model.dart';
 import 'package:sehr/getXcontroller/userpagecontroller.dart';
 import 'package:sehr/presentation/view_models/customer_view_models/home_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../common/custom_card_widget.dart';
 import '../../../src/index.dart';
+import 'dart:convert' as convert;
+import "package:http/http.dart" as http;
 import '../shop/shop_details_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -26,32 +29,84 @@ class _HomeViewState extends State<HomeView> {
   bool setdata = false;
   @override
   void initState() {
-    timerchecking();
+    fetchorders();
+    dataListener();
+
     // TODO: implement initState
     super.initState();
   }
 
   late bool isloaded = getxcontroller.business.isEmpty ? false : true;
+  int seconds = 0;
 
-  timerchecking() {
-    Timer.periodic(const Duration(microseconds: 1), (timer) async {
+  dataListener() {
+    Timer.periodic(const Duration(milliseconds: 1), (timers) async {
       if (getxcontroller.business.isEmpty) {
       } else {
         filterbussinessshops = getxcontroller.business;
-        setState(() {
-          isloaded = true;
-        });
-        timer.cancel();
+        if (mounted) {
+          setState(() {
+            isloaded = true;
+          });
+        }
+
+        timers.cancel();
       }
     });
   }
 
-  @override
-  void dispose() {
-    getxcontroller.dispose();
-    // TODO: implement dispose
-    super.dispose();
+  Map<String, dynamic>? datatest;
+
+  List<dynamic> _liste = [];
+  List<dynamic> filterlist = [];
+  List<BusinessModel> favlist = [];
+  fetchorders() async {
+    filterlist = await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    } else {
+      for (var business in getxcontroller.business) {
+        for (var favBusiness in filterlist) {
+          if (favBusiness["businessId"] == business.id) {
+            business.isFavourite = true;
+          }
+        }
+      }
+      favlist = getxcontroller.business
+          .where((business) => business.isFavourite == true)
+          .toList();
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
+
+  bool nodata = false;
+  fetchFav() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var tokenofmy = prefs.get('accessToken').toString();
+
+    final uri = Uri.parse('http://3.133.0.29/api/user/favorites');
+    final headers = {'accept': '*/*', 'Authorization': 'Bearer $tokenofmy'};
+
+    var response = await http.get(uri, headers: headers);
+
+    return response;
+  }
+
+  Future apicall() async {
+    var responseofdata = await fetchFav();
+    _liste = convert.jsonDecode(responseofdata.body);
+    return _liste;
+  }
+
+  // @override
+  // void dispose() {
+  //   getxcontroller.dispose();
+  //   // TODO: implement dispose
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -74,23 +129,27 @@ class _HomeViewState extends State<HomeView> {
                           Row(
                             children: [
                               _buildSearchField(_controller, (a) {
-                                setState(() {
-                                  filterbussinessshops = getxcontroller.business
-                                      .where((element) => (element.businessName
-                                          .toString()
-                                          .toLowerCase()
-                                          .trim()
-                                          .contains(_controller.text
-                                              .toString()
-                                              .toLowerCase()
-                                              .trim())))
-                                      .toList();
-                                  if (filterbussinessshops!.isEmpty) {
-                                    searchlist.clear();
-                                  } else {
-                                    searchlist.add("1");
-                                  }
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    filterbussinessshops = getxcontroller
+                                        .business
+                                        .where((element) => (element
+                                            .businessName
+                                            .toString()
+                                            .toLowerCase()
+                                            .trim()
+                                            .contains(_controller.text
+                                                .toString()
+                                                .toLowerCase()
+                                                .trim())))
+                                        .toList();
+                                    if (filterbussinessshops!.isEmpty) {
+                                      searchlist.clear();
+                                    } else {
+                                      searchlist.add("1");
+                                    }
+                                  });
+                                }
                               }),
                               const Spacer(),
                               // _buildFilterButton(context, viewModel),
@@ -233,7 +292,9 @@ class _HomeViewState extends State<HomeView> {
                                             //         .isFavourite as bool);
                                             filterbussinessshops![index]
                                                 .isFavourite = bools;
-                                            setState(() {});
+                                            if (mounted) {
+                                              setState(() {});
+                                            }
                                           },
                                           splashColor: ColorManager.transparent,
                                           borderRadius:

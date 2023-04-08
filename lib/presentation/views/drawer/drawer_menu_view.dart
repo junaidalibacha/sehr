@@ -37,7 +37,15 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
     isbussinessVerified = prefs.getString("isverified").toString();
     indexstate = initialindex == "true" ? 1 : 0;
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -129,16 +137,7 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                                         color: ColorManager.blue,
                                       ),
                                     )
-                                  : TextButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const QRImageGanerate("")),
-                                        );
-                                      },
-                                      child: const Text("Ganerate QR Code")),
+                                  : Container(),
                               buildVerticleSpace(15),
                               DefaultTabController(
                                 initialIndex: initialindex == "true" ? 1 : 0,
@@ -253,6 +252,8 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                                   await SharedPreferences.getInstance();
 
                               prefs.remove("accessToken");
+                              prefs.remove("userRole");
+
                               prefs.remove("openbussiness");
                               Get.offAndToNamed(Routes.loginRoute);
                             });

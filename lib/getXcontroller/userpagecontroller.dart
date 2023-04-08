@@ -21,7 +21,7 @@ class AppController extends GetxController {
   @override
   void onInit() {
     userFavouriteBusiness();
-    fetchpromotions();
+    getshops();
 
     super.onInit();
   }
@@ -29,6 +29,7 @@ class AppController extends GetxController {
   String internererror = "";
 
   userFavouriteBusiness() async {
+    internererror = "";
     final prefs = await SharedPreferences.getInstance();
 
     var token = prefs.get('accessToken');
@@ -38,24 +39,26 @@ class AppController extends GetxController {
       'Authorization': 'Bearer $token',
     };
     try {
-      final response = await _networkApiService.getGetApiResponse(
+      final response = await _networkApiService
+          .getGetApiResponse(
         AppUrls.addToFavourite,
         headers: headers,
-      );
-
-      response.forEach((favBusiness) {
-        listOfUserFavouriteBusiness
-            .add(UserFavouriteBusiness.fromJson(favBusiness));
+      )
+          .catchError((e) {
+        internererror = e.toString();
+        return e;
       });
+      if (internererror.isEmpty) {
+        return response;
+      } else {
+        return;
+      }
     } catch (e) {
-      print("Error Occureddddd: $e");
       rethrow;
     }
-
-    print("Favourite Business Length: ${listOfUserFavouriteBusiness.length}");
   }
 
-  fetchpromotions() async {
+  getshops() async {
     try {
       postloading.value = true;
       var result = await model.getBusiness().catchError((e) {
@@ -64,17 +67,6 @@ class AppController extends GetxController {
       });
       if (result != null) {
         business.assignAll(result);
-        for (var business in business) {
-          for (var favBusiness in listOfUserFavouriteBusiness) {
-            if (favBusiness.businessId == business.id) {
-              business.isFavourite = true;
-            }
-          }
-        }
-
-        var favBusinessess =
-            business.where((business) => business.isFavourite == true).toList();
-        favBusinesses.assignAll(favBusinessess);
       } else {}
       internererror = "";
       // ignore: body_might_complete_normally_catch_error
@@ -86,45 +78,28 @@ class AppController extends GetxController {
   }
 
   //
-  fetchpromotions2() async {
-    try {} finally {
-      postloading2.value = false;
-    }
+  // getfavshops() async {
+  //   try {
+  //     for (var business in business) {
+  //       for (var favBusiness in listOfUserFavouriteBusiness) {
+  //         if (favBusiness.businessId == business.id) {
+  //           business.isFavourite = true;
+  //         }
+  //       }
+  //     }
+  //     business.forEach((element) {
+  //       if (element.isFavourite == true) {
+  //         favBusinesses.assign(element);
+  //       }
+  //     });
+  //   } finally {
+  //     postloading2.value = false;
+  //   }
 
-    update();
-  }
+  //   update();
+  // }
 
-  void toggleFav(int bussinessid, bool isfavourite) async {
-    try {
-      if (isfavourite != false) {
-        await deleteFromFavourite(bussinessid);
-        var data = business
-            .where((element) =>
-                element.id.toString().toLowerCase().trim() ==
-                bussinessid.toString().toLowerCase().trim())
-            .toList();
-        data.first.isFavourite = true;
-        business.removeWhere((element) =>
-            element.id.toString().toLowerCase().trim() ==
-            bussinessid.toString().toLowerCase().trim());
-        business.add(data.first);
-      } else {
-        // Favourite post api
-        await addToFavourite(bussinessid);
-        var data = business
-            .where((element) =>
-                element.id.toString().toLowerCase().trim() ==
-                bussinessid.toString().toLowerCase().trim())
-            .toList();
-        data.first.isFavourite = true;
-        business.removeWhere((element) =>
-            element.id.toString().toLowerCase().trim() ==
-            bussinessid.toString().toLowerCase().trim());
-        business.add(data.first);
-      }
-    } finally {}
-    update();
-  }
+  ///   add Business to Favourite
 
   Future addToFavourite(bussinessid) async {
     final prefs = await SharedPreferences.getInstance();
@@ -141,6 +116,7 @@ class AppController extends GetxController {
     try {
       final response = await _networkApiService
           .getPostApiResponse(AppUrls.addToFavourite, body, headers: headers);
+      return response;
     } catch (e) {
       rethrow;
     }
@@ -163,10 +139,8 @@ class AppController extends GetxController {
         "${AppUrls.addToFavourite}/$bussinessid",
         headers: headers,
       );
-
-      print("Successfully Deleted From Favourite: ");
+      return response;
     } catch (e) {
-      print("Error Occured: $e");
       rethrow;
     }
   }

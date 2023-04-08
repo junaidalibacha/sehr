@@ -166,14 +166,12 @@ class HomeViewModel extends ChangeNotifier {
     business?.forEach((business) {
       for (var favBusiness in listOfUserFavouriteBusiness) {
         if (favBusiness.businessId == business.id) {
-          print("Trueeeeeeeeeee");
           business.isFavourite = true;
         }
       }
     });
     favBusinesses =
         business!.where((business) => business.isFavourite == true).toList();
-    print("Business lengthlllll: ${business?.length}");
     //  notifyListeners();
   }
 

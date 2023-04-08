@@ -2,11 +2,13 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/radio_button_widget.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
+import 'package:sehr/presentation/views/profile/add_bio/apicalling.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../../common/drop_down_widget.dart';
 import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
+import 'dart:convert' as convert;
 
 class AddCustomerBioView extends StatefulWidget {
   const AddCustomerBioView({super.key});
@@ -17,9 +19,41 @@ class AddCustomerBioView extends StatefulWidget {
 
 class _AddCustomerBioViewState extends State<AddCustomerBioView> {
   ProfileViewModel profileViewModel = ProfileViewModel();
+  final BioApiCalls _orderApi = BioApiCalls();
+
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  List<dynamic> filterlist = [];
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    } else {
+      filterlist.forEach((element) {
+        print(element);
+      });
+    }
+
+    setState(() {});
+  }
+
+  bool nodata = false;
+
+  Future apicall() async {
+    var responseofdata = await _orderApi.educationApi();
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    _list[0][0].forEach((element) {
+      filterlist.add(element);
+    });
+
+    return datatest;
+  }
+
   @override
   void initState() {
-    // profileViewModel.educationApi();
+    fetchorders();
+    // TODO: implement initState
     super.initState();
   }
 
@@ -110,11 +144,13 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                                 lableText: 'Education',
                                 hintText: 'Select Education',
                                 selectedOption: viewModel.selectedEducation,
-                                dropdownMenuItems: viewModel.educationOptions
+                                dropdownMenuItems: filterlist
                                     .map<DropdownMenuItem<String>>(
                                       (value) => DropdownMenuItem(
-                                        value: value,
-                                        child: kTextBentonSansReg(value),
+                                        value: value["title"],
+                                        child: kTextBentonSansReg(
+                                          value["title"],
+                                        ),
                                       ),
                                     )
                                     .toList(),

@@ -1,4 +1,4 @@
-import 'package:sehr/core/mapscreen/try.dart';
+import 'package:sehr/core/mapscreen/MapScreen.dart';
 import 'package:sehr/presentation/views/customer_views/shop/ButtonContact.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
