@@ -9,8 +9,35 @@ import '../../common/top_back_button_widget.dart';
 import '../../routes/routes.dart';
 import '../../src/index.dart';
 
-class VerificationCodeView extends StatelessWidget {
+class VerificationCodeView extends StatefulWidget {
   const VerificationCodeView({super.key});
+
+  @override
+  State<VerificationCodeView> createState() => _VerificationCodeViewState();
+}
+
+class _VerificationCodeViewState extends State<VerificationCodeView> {
+  int seconds = 60;
+  starttimer() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          if (seconds == 0) {
+            timer.cancel();
+          } else {
+            seconds--;
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    starttimer();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +71,7 @@ class VerificationCodeView extends StatelessWidget {
                       padding: EdgeInsets.only(
                           left: getProportionateScreenWidth(27)),
                       child: kTextBentonSansMed(
-                        'Code send to +6282045**** . This code will \nexpired in 01:30',
+                        'Code send to +6282045**** . This code will \nexpired in $seconds Seconds',
                         fontSize: getProportionateScreenHeight(12),
                       ),
                     ),
@@ -89,22 +116,7 @@ class VerificationCodeView extends StatelessWidget {
                       ),
                     ),
                     // buildVerticleSpace(50),
-                    const Spacer(),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: getProportionateScreenWidth(118),
-                      ),
-                      child: Consumer<ProfileViewModel>(
-                        builder: (context, value, child) => AppButtonWidget(
-                          ontap: () {
-                            // value.getuserRoleFromPrefs();
-                            // Get.toNamed(Routes.profileCompleteRoute);
-                            Get.to(const CountdownTimerDemo());
-                          },
-                          text: 'Next',
-                        ),
-                      ),
-                    ),
+
                     // buildVerticleSpace(50),
                     const Spacer(),
                     Padding(

@@ -31,7 +31,7 @@ class BusinessRepository {
 
   // Get List Of Business Api Hitting Place
 
-  Future<List<BusinessModel>?> getBusiness() async {
+  Future<List<BusinessModel>?> getBusiness(String range) async {
     position = await LocationServices.myLoction();
     final prefs = await SharedPreferences.getInstance();
     List<BusinessModel>? business = [];
@@ -43,7 +43,7 @@ class BusinessRepository {
     };
     try {
       final response = await _apiServices.getBusinessDetail(
-          "${AppUrls.getBusinessEndPoint}lat=${position?.latitude.toString()}&lng=${position?.longitude.toString()}&distance=10000",
+          "${AppUrls.getBusinessEndPoint}lat=${position?.latitude.toString()}&lng=${position?.longitude.toString()}&distance=$range",
           headers: headers);
 
       response.forEach((busines) {

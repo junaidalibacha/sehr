@@ -1,6 +1,7 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/top_back_button_widget.dart';
 import 'package:sehr/presentation/views/drawer/rewardAPI.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../src/index.dart';
 import '../customer_views/progress/customer_progress_view.dart';
@@ -48,9 +49,30 @@ class _RewardViewState extends State<RewardView> {
     return datatest;
   }
 
+  String rewardname = "";
+  String rewardtitlr = "";
+
+  checkinformation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String gradekey = prefs.getString("RewardsTarget").toString();
+    String rewardstile = prefs.getString("RewardsTitle").toString();
+    if (gradekey.toString() == "null") {
+      fetchorders();
+    } else {
+      setState(() {
+        rewardname = gradekey;
+        rewardtitlr = rewardstile;
+        isactivated = true;
+        filterlist.add("1");
+      });
+    }
+  }
+
+  bool isactivated = false;
+
   @override
   void initState() {
-    fetchorders();
+    checkinformation();
     // TODO: implement initState
     super.initState();
   }
@@ -76,21 +98,62 @@ class _RewardViewState extends State<RewardView> {
                     child: kTextBentonSansBold("SEHR Reward",
                         fontSize: getProportionateScreenHeight(31)),
                   ),
-                  Expanded(
-                    child: ListView.separated(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(25)),
-                      shrinkWrap: true,
-                      itemCount: filterlist.length,
-                      separatorBuilder: (context, index) =>
-                          buildVerticleSpace(15),
-                      itemBuilder: (context, index) => CustomCardWidget(
-                        titleText: filterlist[index]["title"],
-                        valueText: 'Activate',
-                        description: filterlist[index]["description"],
-                      ),
-                    ),
-                  ),
+                  isactivated == false
+                      ? Expanded(
+                          child: ListView.separated(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: getProportionateScreenWidth(25)),
+                            shrinkWrap: true,
+                            itemCount: filterlist.length,
+                            separatorBuilder: (context, index) =>
+                                buildVerticleSpace(15),
+                            itemBuilder: (context, index) => GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text("Sure"),
+                                        content: Text(
+                                            "sure to activate ${filterlist[index]["title"]}"),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () async {
+                                                SharedPreferences prefs =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                prefs.setString(
+                                                    "RewardsTarget",
+                                                    filterlist[index]
+                                                            ["salesTarget"]
+                                                        .toString());
+                                                prefs.setString(
+                                                    "RewardsTitle",
+                                                    filterlist[index]["title"]
+                                                        .toString());
+                                                if (mounted) {
+                                                  setState(() {});
+                                                }
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("Ok"))
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: CustomCardWidget(
+                                titleText: filterlist[index]["title"],
+                                valueText: 'Activate',
+                                description: filterlist[index]["description"],
+                              ),
+                            ),
+                          ),
+                        )
+                      : CustomCardWidget(
+                          titleText: rewardtitlr,
+                          valueText: 'Activated',
+                          description: 'target sale ${rewardname}',
+                        ),
                 ],
               ),
       ),

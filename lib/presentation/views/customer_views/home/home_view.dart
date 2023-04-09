@@ -10,8 +10,7 @@ import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../common/custom_card_widget.dart';
 import '../../../src/index.dart';
-import 'dart:convert' as convert;
-import "package:http/http.dart" as http;
+
 import '../shop/shop_details_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -26,10 +25,12 @@ class _HomeViewState extends State<HomeView> {
   List<BusinessModel>? filterbussinessshops = [];
   List<String> searchlist = ["1"];
   var getxcontroller = Get.put(AppController());
+  List<dynamic> filterlisttype = [];
+  List sekectedfilter = [];
   bool setdata = false;
   @override
   void initState() {
-    fetchorders();
+    // fetchorders();
     dataListener();
 
     // TODO: implement initState
@@ -38,12 +39,32 @@ class _HomeViewState extends State<HomeView> {
 
   late bool isloaded = getxcontroller.business.isEmpty ? false : true;
   int seconds = 0;
+  bool noshop = false;
 
   dataListener() {
     Timer.periodic(const Duration(milliseconds: 1), (timers) async {
       if (getxcontroller.business.isEmpty) {
+        seconds++;
+        if (seconds == 10000) {
+          setState(() {
+            isloaded = true;
+            noshop = true;
+            timers.cancel();
+          });
+        }
       } else {
+        if (getxcontroller.filterlistFavo.isNotEmpty) {
+          for (var business in getxcontroller.business) {
+            for (var favBusiness in getxcontroller.filterlistFavo) {
+              if (favBusiness["businessId"] == business.id) {
+                business.isFavourite = true;
+              }
+            }
+          }
+          getxcontroller.filterlistFavo.clear();
+        }
         filterbussinessshops = getxcontroller.business;
+
         if (mounted) {
           setState(() {
             isloaded = true;
@@ -57,49 +78,49 @@ class _HomeViewState extends State<HomeView> {
 
   Map<String, dynamic>? datatest;
 
-  List<dynamic> _liste = [];
-  List<dynamic> filterlist = [];
-  List<BusinessModel> favlist = [];
-  fetchorders() async {
-    filterlist = await apicall();
-    if (filterlist.isEmpty) {
-      nodata = true;
-    } else {
-      for (var business in getxcontroller.business) {
-        for (var favBusiness in filterlist) {
-          if (favBusiness["businessId"] == business.id) {
-            business.isFavourite = true;
-          }
-        }
-      }
-      favlist = getxcontroller.business
-          .where((business) => business.isFavourite == true)
-          .toList();
-    }
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  // List<dynamic> _liste = [];
+  // List<dynamic> filterlist = [];
+  // List<BusinessModel> favlist = [];
+  // fetchorders() async {
+  //   filterlist = await apicall();
+  //   if (filterlist.isEmpty) {
+  //     nodata = true;
+  //   } else {
+  //     for (var business in getxcontroller.business) {
+  //       for (var favBusiness in filterlist) {
+  //         if (favBusiness["businessId"] == business.id) {
+  //           business.isFavourite = true;
+  //         }
+  //       }
+  //     }
+  //     favlist = getxcontroller.business
+  //         .where((business) => business.isFavourite == true)
+  //         .toList();
+  //   }
+  //   if (mounted) {
+  //     setState(() {});
+  //   }
+  // }
 
-  bool nodata = false;
-  fetchFav() async {
-    final prefs = await SharedPreferences.getInstance();
+  // bool nodata = false;
+  // fetchFav() async {
+  //   final prefs = await SharedPreferences.getInstance();
 
-    var tokenofmy = prefs.get('accessToken').toString();
+  //   var tokenofmy = prefs.get('accessToken').toString();
 
-    final uri = Uri.parse('http://3.133.0.29/api/user/favorites');
-    final headers = {'accept': '*/*', 'Authorization': 'Bearer $tokenofmy'};
+  //   final uri = Uri.parse('http://3.133.0.29/api/user/favorites');
+  //   final headers = {'accept': '*/*', 'Authorization': 'Bearer $tokenofmy'};
 
-    var response = await http.get(uri, headers: headers);
+  //   var response = await http.get(uri, headers: headers);
 
-    return response;
-  }
+  //   return response;
+  // }
 
-  Future apicall() async {
-    var responseofdata = await fetchFav();
-    _liste = convert.jsonDecode(responseofdata.body);
-    return _liste;
-  }
+  // Future apicall() async {
+  //   var responseofdata = await fetchFav();
+  //   _liste = convert.jsonDecode(responseofdata.body);
+  //   return _liste;
+  // }
 
   // @override
   // void dispose() {
@@ -152,7 +173,69 @@ class _HomeViewState extends State<HomeView> {
                                 }
                               }),
                               const Spacer(),
-                              // _buildFilterButton(context, viewModel),
+                              PopupMenuButton(
+                                offset: Offset(
+                                  getProportionateScreenWidth(0),
+                                  getProportionateScreenHeight(50),
+                                ),
+                                padding: EdgeInsets.zero,
+                                icon: Container(
+                                  height: getProportionateScreenHeight(50),
+                                  width: getProportionateScreenHeight(50),
+                                  padding: EdgeInsets.all(
+                                    getProportionateScreenHeight(13),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ColorManager.secondaryLight
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenHeight(15),
+                                    ),
+                                  ),
+                                  child: Image.asset(
+                                    AppIcons.filterIcon,
+                                  ),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                itemBuilder: (context) {
+                                  return ["1'sKM", "5'sKM", "15'sKM"]
+                                      .map(
+                                        (e) => PopupMenuItem(
+                                            child: Text(e),
+                                            onTap: () async {
+                                              String ramge = e == "1'sKM"
+                                                  ? "100"
+                                                  : e == "5'sKM"
+                                                      ? "500"
+                                                      : "10000";
+
+                                              if (mounted) {
+                                                setState(() {
+                                                  filterbussinessshops =
+                                                      getxcontroller
+                                                          .business
+                                                          .where((element) =>
+                                                              (element
+                                                                      .distance!
+                                                                      .truncate() <
+                                                                  int.parse(
+                                                                      ramge)))
+                                                          .toList();
+                                                  if (filterbussinessshops!
+                                                      .isEmpty) {
+                                                    noshop = true;
+                                                  } else {
+                                                    noshop = false;
+                                                  }
+                                                });
+                                              }
+                                            }),
+                                      )
+                                      .toList();
+                                },
+                              ),
                             ],
                           ),
                           buildVerticleSpace(12),
@@ -195,155 +278,181 @@ class _HomeViewState extends State<HomeView> {
                         ],
                       ),
                     ),
-                    searchlist.isEmpty
-                        ? SizedBox(
-                            height: MediaQuery.of(context).size.height - 600,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Center(
-                                  child: Text(
-                                    "No Shop Nearby Found",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
+                    noshop != false
+                        ? Container(
+                            child: const Center(
+                                child: Text(
+                              "No Shop NearBy Found",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )),
                           )
-                        : Expanded(
-                            child: SingleChildScrollView(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: getProportionateScreenWidth(24),
-                                ),
-                                child: ListView.separated(
-                                  shrinkWrap: true,
-                                  itemCount: filterbussinessshops!.length,
-                                  separatorBuilder: (context, index) =>
-                                      buildVerticleSpace(10),
-                                  padding: EdgeInsets.only(
-                                    bottom: getProportionateScreenHeight(100),
-                                  ),
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemBuilder: (context, index) =>
-                                      CustomListTileWidget(
-                                    leading: Image.asset(AppImages.menu),
-                                    title: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        kTextBentonSansMed(
-                                          "${filterbussinessshops![index].businessName}",
-                                          fontSize:
-                                              getProportionateScreenHeight(15),
-                                          overFlow: TextOverflow.ellipsis,
-                                        ),
-                                        // buildVerticleSpace(3),
-                                        kTextBentonSansReg(
-                                          filterbussinessshops![index]
-                                                  .category
-                                                  ?.title ??
-                                              "Candy",
-                                          color: ColorManager.textGrey
-                                              .withOpacity(0.8),
-                                          letterSpacing:
-                                              getProportionateScreenWidth(0.5),
-                                        ),
-                                        // buildVerticleSpace(3),
-                                        kTextBentonSansReg(
-                                          '${double.parse("${filterbussinessshops![index].distance}").toStringAsFixed(2)}km away',
-                                          color: ColorManager.textGrey
-                                              .withOpacity(0.8),
-                                          fontSize:
-                                              getProportionateScreenHeight(10),
-                                          letterSpacing:
-                                              getProportionateScreenWidth(0.5),
-                                        ),
-                                      ],
+                        : searchlist.isEmpty
+                            ? SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height - 600,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Center(
+                                      child: Text(
+                                        "No search keywords Found",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
-                                    trailing: Column(
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            filterbussinessshops![index]
-                                                        .isFavourite !=
-                                                    true
-                                                ? getxcontroller.addToFavourite(
-                                                    filterbussinessshops![index]
-                                                        .id)
-                                                : getxcontroller
-                                                    .deleteFromFavourite(
-                                                        filterbussinessshops![
-                                                                index]
-                                                            .id);
-                                            var bools =
-                                                filterbussinessshops![index]
-                                                            .isFavourite ==
-                                                        true
-                                                    ? false
-                                                    : true;
-                                            // getxcontroller.toggleFav(
-                                            //     filterbussinessshops![index].id
-                                            //         as int,
-                                            //     filterbussinessshops![index]
-                                            //         .isFavourite as bool);
-                                            filterbussinessshops![index]
-                                                .isFavourite = bools;
-                                            if (mounted) {
-                                              setState(() {});
-                                            }
-                                          },
-                                          splashColor: ColorManager.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(40),
-                                          child: Icon(
-                                              filterbussinessshops![index]
-                                                      .isFavourite!
-                                                  ? Icons.favorite_rounded
-                                                  : Icons
-                                                      .favorite_border_rounded,
-                                              size:
+                                  ],
+                                ),
+                              )
+                            : Expanded(
+                                child: SingleChildScrollView(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          getProportionateScreenWidth(24),
+                                    ),
+                                    child: ListView.separated(
+                                      shrinkWrap: true,
+                                      itemCount: filterbussinessshops!.length,
+                                      separatorBuilder: (context, index) =>
+                                          buildVerticleSpace(10),
+                                      padding: EdgeInsets.only(
+                                        bottom:
+                                            getProportionateScreenHeight(100),
+                                      ),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) =>
+                                          CustomListTileWidget(
+                                        leading: Image.asset(AppImages.menu),
+                                        title: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            kTextBentonSansMed(
+                                              "${filterbussinessshops![index].businessName}",
+                                              fontSize:
                                                   getProportionateScreenHeight(
-                                                      20),
-                                              color: ColorManager.error),
+                                                      15),
+                                              overFlow: TextOverflow.ellipsis,
+                                            ),
+                                            // buildVerticleSpace(3),
+                                            kTextBentonSansReg(
+                                              filterbussinessshops![index]
+                                                      .category
+                                                      ?.title ??
+                                                  "Candy",
+                                              color: ColorManager.textGrey
+                                                  .withOpacity(0.8),
+                                              letterSpacing:
+                                                  getProportionateScreenWidth(
+                                                      0.5),
+                                            ),
+                                            // buildVerticleSpace(3),
+                                            kTextBentonSansReg(
+                                              '${double.parse("${filterbussinessshops![index].distance}").toStringAsFixed(2)}km away',
+                                              color: ColorManager.textGrey
+                                                  .withOpacity(0.8),
+                                              fontSize:
+                                                  getProportionateScreenHeight(
+                                                      10),
+                                              letterSpacing:
+                                                  getProportionateScreenWidth(
+                                                      0.5),
+                                            ),
+                                          ],
                                         ),
-                                        const Spacer(),
-                                        AppButtonWidget(
-                                          ontap: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              backgroundColor:
+                                        trailing: Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                filterbussinessshops![index]
+                                                            .isFavourite !=
+                                                        true
+                                                    ? getxcontroller
+                                                        .addToFavourite(
+                                                            filterbussinessshops![
+                                                                    index]
+                                                                .id)
+                                                    : getxcontroller
+                                                        .deleteFromFavourite(
+                                                            filterbussinessshops![
+                                                                    index]
+                                                                .id);
+                                                var bools =
+                                                    filterbussinessshops![index]
+                                                                .isFavourite ==
+                                                            true
+                                                        ? false
+                                                        : true;
+                                                // getxcontroller.toggleFav(
+                                                //     filterbussinessshops![index].id
+                                                //         as int,
+                                                //     filterbussinessshops![index]
+                                                //         .isFavourite as bool);
+                                                filterbussinessshops![index]
+                                                    .isFavourite = bools;
+                                                if (mounted) {
+                                                  setState(() {});
+                                                }
+                                              },
+                                              splashColor:
                                                   ColorManager.transparent,
-                                              builder: (ctx) => ShopDetailsView(
-                                                  businessModel:
-                                                      filterbussinessshops![
-                                                          index]),
-                                            );
-                                          },
-                                          height:
-                                              getProportionateScreenHeight(26),
-                                          width:
-                                              getProportionateScreenWidth(72),
-                                          borderRadius:
-                                              getProportionateScreenHeight(9),
-                                          text: 'Detail',
-                                          textSize:
-                                              getProportionateScreenHeight(10),
-                                          letterSpacing:
-                                              getProportionateScreenWidth(0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(40),
+                                              child: Icon(
+                                                  filterbussinessshops![index]
+                                                          .isFavourite!
+                                                      ? Icons.favorite_rounded
+                                                      : Icons
+                                                          .favorite_border_rounded,
+                                                  size:
+                                                      getProportionateScreenHeight(
+                                                          20),
+                                                  color: ColorManager.error),
+                                            ),
+                                            const Spacer(),
+                                            AppButtonWidget(
+                                              ontap: () {
+                                                showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  backgroundColor:
+                                                      ColorManager.transparent,
+                                                  builder: (ctx) => ShopDetailsView(
+                                                      businessModel:
+                                                          filterbussinessshops![
+                                                              index]),
+                                                ).then((value) {
+                                                  setState(() {});
+                                                });
+                                              },
+                                              height:
+                                                  getProportionateScreenHeight(
+                                                      26),
+                                              width:
+                                                  getProportionateScreenWidth(
+                                                      72),
+                                              borderRadius:
+                                                  getProportionateScreenHeight(
+                                                      9),
+                                              text: 'Detail',
+                                              textSize:
+                                                  getProportionateScreenHeight(
+                                                      10),
+                                              letterSpacing:
+                                                  getProportionateScreenWidth(
+                                                      0.5),
+                                            ),
+                                            buildVerticleSpace(0),
+                                          ],
                                         ),
-                                        buildVerticleSpace(0),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
                   ],
                 )
               : Container(

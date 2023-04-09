@@ -4,22 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderApi {
-  checkBussinessByQrCode(sehrcode) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    var token = prefs.get('accessToken');
-    final uri =
-        Uri.parse('http://3.133.0.29/api/business/by-sehr-code/$sehrcode');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token'
-    };
-
-    var response = await http.get(uri, headers: headers);
-
-    return response;
-  }
-
   requestSendOrderApi(sehrcode, int amount, commentOfOrder) async {
     final prefs = await SharedPreferences.getInstance();
 
