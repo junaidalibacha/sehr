@@ -135,6 +135,7 @@ class _RewardViewState extends State<RewardView> {
                                                   setState(() {});
                                                 }
                                                 Navigator.pop(context);
+                                                Navigator.pop(context);
                                               },
                                               child: const Text("Ok"))
                                         ],
