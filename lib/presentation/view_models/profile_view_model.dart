@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
@@ -537,10 +536,8 @@ class ProfileViewModel extends ChangeNotifier {
   Future<void> registerMultiPartApiKYC(
       BuildContext context, String documenttype, File kycfileimage) async {
     setLoading(true);
-    print("object");
 
     final prefs = await SharedPreferences.getInstance();
-    print(prefs.getString("accessToken").toString());
     List<int> fileBytes = [];
     String base64Image = "";
     fileBytes = await File(kycfileimage.path).readAsBytes();
@@ -637,8 +634,7 @@ class ProfileViewModel extends ChangeNotifier {
       'Authorization': 'Bearer $token',
       'Content-Type': 'multipart/form-data',
     });
-    print(
-        "businessName:${businessNameTextController.text} owner name ${ownerNameTextController.text}, mobile no: ${shopKeeperMobileNoTextController.text}");
+
     int grade = 1;
     int category = 1;
     request.fields['businessName'] = businessNameTextController.text;

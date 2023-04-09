@@ -132,6 +132,10 @@ class AuthViewModel extends ChangeNotifier {
     } else if (loginPasswordController.text.length < 8) {
       Utils.flushBarErrorMessage(context, 'Password must be 8 charactors');
     } else {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.clear();
+      prefs.setString("username", loginUserNameController.text.trim());
+      prefs.setString("password", loginPasswordController.text.trim());
       Map<String, dynamic> body = {
         'username': loginUserNameController.text.trim(),
         'password': loginPasswordController.text.trim(),

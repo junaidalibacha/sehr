@@ -28,16 +28,21 @@ class _ProgressViewState extends State<ProgressView> {
   final List<dynamic> _list = [];
   List<dynamic> filterlist = [];
   fetchorders() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String gradekey = prefs.getString("RewardsTarget").toString();
     await apicall();
     if (filterlist.isEmpty) {
       nodata = true;
     }
     if (mounted) {
-      setState(() {});
+      setState(() {
+        targetamount = gradekey;
+      });
     }
   }
 
   bool nodata = false;
+  String targetamount = "";
 
   Future apicall() async {
     datatest = null;
@@ -64,120 +69,135 @@ class _ProgressViewState extends State<ProgressView> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    List<SpendData> data = filterlist
-        .map((e) =>
-            SpendData(e["id"].toString(), double.parse(e["amount"].toString())))
-        .toList();
+  late List<SpendData> data = filterlist
+      .map((e) =>
+          SpendData(e["id"].toString(), double.parse(e["amount"].toString())))
+      .toList();
 
-    double totalAmount = 24000;
-    double spendAmount = 11000;
-    double remainingAmount = totalAmount - spendAmount;
+  late double remainingAmount = int.parse(targetamount) -
+      filterlist.fold(0, (t, e) => t + int.parse(e["amount"]));
 
-    List<SpendData> data2 = [
-      SpendData('Remaing', spendAmount),
-      SpendData('Spend', remainingAmount),
-    ];
+  late List<SpendData> data2 = [
+    SpendData('Remaing', remainingAmount < 0 ? 0 : remainingAmount),
+    SpendData(
+        'Spend', filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))),
+  ];
 
-    double percent() {
-      var per = (spendAmount / totalAmount) * 100;
+  double percent() {
+    var per = (filterlist.fold(0, (t, e) => t + int.parse(e["amount"])) /
+            int.parse(targetamount)) *
+        100;
+    if (per > 100) {
+      return 100;
+    } else {
       return per;
     }
+  }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(25),
-          vertical: getProportionateScreenHeight(25),
-        ),
-        child: Column(
-          children: [
-            const CustomCardWidget(
-              titleText: 'Target Amount',
-              valueText: 'Rs: 2400000/-',
-              description:
-                  'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole ',
+  @override
+  Widget build(BuildContext context) {
+    return filterlist.isEmpty
+        ? Container(
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
-            buildVerticleSpace(22),
-            CustomCardWidget(
-              titleText: 'Spend Amount',
-              valueText: filterlist
-                  .fold(0, (t, e) => t + int.parse(e["amount"]))
-                  .toString(),
-              child: SizedBox(
-                height: getProportionateScreenHeight(150),
-                child: SfCartesianChart(
-                  primaryXAxis: CategoryAxis(),
-                  // primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(
-                    minimum: 0,
-                    maximum: 1000,
-                    interval: 10000,
-                  ),
-                  series: [
-                    ColumnSeries(
-                      color: ColorManager.primaryLight,
-                      dataSource: data,
-                      xValueMapper: (SpendData sales, _) => sales.day,
-                      yValueMapper: (SpendData sales, _) => sales.amount,
-                    ),
-                  ],
-                ),
+          )
+        : SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: getProportionateScreenWidth(25),
+                vertical: getProportionateScreenHeight(25),
               ),
-            ),
-            buildVerticleSpace(22),
-            CustomCardWidget(
-              titleText: 'Remaining',
-              valueText: 'Rs: 2400/-',
               child: Column(
                 children: [
-                  SizedBox(
-                    height: getProportionateScreenHeight(130),
-                    child: SfCircularChart(
-                      palette: [
-                        ColorManager.primaryLight,
-                        ColorManager.error,
-                      ],
-                      series: [
-                        DoughnutSeries<SpendData, String>(
-                          radius: '50',
-                          innerRadius: '40',
-                          dataSource: data2,
-                          xValueMapper: (SpendData data, _) => data.day,
-                          yValueMapper: (SpendData data, _) => data.amount,
+                  CustomCardWidget(
+                    titleText: 'Target Amount',
+                    valueText: 'Rs: $targetamount/-',
+                    description:
+                        'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole ',
+                  ),
+                  buildVerticleSpace(22),
+                  CustomCardWidget(
+                    titleText: 'Spend Amount',
+                    valueText: filterlist
+                        .fold(0, (t, e) => t + int.parse(e["amount"]))
+                        .toString(),
+                    child: SizedBox(
+                      height: getProportionateScreenHeight(150),
+                      child: SfCartesianChart(
+                        primaryXAxis: CategoryAxis(),
+                        // primaryXAxis: CategoryAxis(),
+                        primaryYAxis: NumericAxis(
+                          minimum: 0,
+                          maximum: 1000,
+                          interval: 10000,
                         ),
-                      ],
+                        series: [
+                          ColumnSeries(
+                            color: ColorManager.primaryLight,
+                            dataSource: data,
+                            xValueMapper: (SpendData sales, _) => sales.day,
+                            yValueMapper: (SpendData sales, _) => sales.amount,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
+                  buildVerticleSpace(22),
+                  CustomCardWidget(
+                    titleText:
+                        remainingAmount < 0 ? "Target Archieved" : 'Remaining',
+                    valueText:
+                        'Rs: ${(int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))) < 0 ? "0" : int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))}',
+                    child: Column(
                       children: [
-                        TextSpan(
-                          text: percent().toString(),
-                          style: GoogleFonts.libreFranklin(
-                            fontSize: getProportionateScreenHeight(12),
-                            color: ColorManager.black,
+                        SizedBox(
+                          height: getProportionateScreenHeight(130),
+                          child: SfCircularChart(
+                            palette: [
+                              ColorManager.primaryLight,
+                              ColorManager.error,
+                            ],
+                            series: [
+                              DoughnutSeries<SpendData, String>(
+                                radius: '50',
+                                innerRadius: '40',
+                                dataSource: data2,
+                                xValueMapper: (SpendData data, _) => data.day,
+                                yValueMapper: (SpendData data, _) =>
+                                    data.amount,
+                              ),
+                            ],
                           ),
                         ),
-                        TextSpan(
-                          text: '/100%',
-                          style: GoogleFonts.libreFranklin(
-                            fontSize: getProportionateScreenHeight(14),
-                            color: ColorManager.black,
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: percent().truncate().toString(),
+                                style: GoogleFonts.libreFranklin(
+                                  fontSize: getProportionateScreenHeight(12),
+                                  color: ColorManager.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '/100%',
+                                style: GoogleFonts.libreFranklin(
+                                  fontSize: getProportionateScreenHeight(14),
+                                  color: ColorManager.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                        buildVerticleSpace(10),
                       ],
                     ),
                   ),
-                  buildVerticleSpace(10),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }
 

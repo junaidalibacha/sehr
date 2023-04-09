@@ -5,11 +5,14 @@ import 'package:sehr/domain/models/userFavouriteBusinessModel.dart';
 import 'package:sehr/domain/repository/app_urls.dart';
 import 'package:sehr/domain/repository/business_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 class AppController extends GetxController {
   var business = <BusinessModel>[].obs;
   var filterbussiness = <BusinessModel>[].obs;
   var favBusinesses = <BusinessModel>[].obs;
+  var _liste = <dynamic>[].obs;
   var listOfUserFavouriteBusiness = <UserFavouriteBusiness>[].obs;
 
   final NetworkApiService _networkApiService = NetworkApiService();
@@ -20,48 +23,49 @@ class AppController extends GetxController {
 
   @override
   void onInit() {
-    userFavouriteBusiness();
-    getshops();
+    // userFavouriteBusiness();
+    getshops("10000");
+    fetchorders();
 
     super.onInit();
   }
 
   String internererror = "";
 
-  userFavouriteBusiness() async {
-    internererror = "";
-    final prefs = await SharedPreferences.getInstance();
+  // userFavouriteBusiness() async {
+  //   internererror = "";
+  //   final prefs = await SharedPreferences.getInstance();
 
-    var token = prefs.get('accessToken');
+  //   var token = prefs.get('accessToken');
 
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-    try {
-      final response = await _networkApiService
-          .getGetApiResponse(
-        AppUrls.addToFavourite,
-        headers: headers,
-      )
-          .catchError((e) {
-        internererror = e.toString();
-        return e;
-      });
-      if (internererror.isEmpty) {
-        return response;
-      } else {
-        return;
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
+  //   Map<String, String> headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $token',
+  //   };
+  //   try {
+  //     final response = await _networkApiService
+  //         .getGetApiResponse(
+  //       AppUrls.addToFavourite,
+  //       headers: headers,
+  //     )
+  //         .catchError((e) {
+  //       internererror = e.toString();
+  //       return e;
+  //     });
+  //     if (internererror.isEmpty) {
+  //       return response;
+  //     } else {
+  //       return;
+  //     }
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
-  getshops() async {
+  getshops(String range) async {
     try {
       postloading.value = true;
-      var result = await model.getBusiness().catchError((e) {
+      var result = await model.getBusiness(range).catchError((e) {
         internererror = e.toString();
         return e;
       });
@@ -78,26 +82,26 @@ class AppController extends GetxController {
   }
 
   //
-  // getfavshops() async {
-  //   try {
-  //     for (var business in business) {
-  //       for (var favBusiness in listOfUserFavouriteBusiness) {
-  //         if (favBusiness.businessId == business.id) {
-  //           business.isFavourite = true;
-  //         }
-  //       }
-  //     }
-  //     business.forEach((element) {
-  //       if (element.isFavourite == true) {
-  //         favBusinesses.assign(element);
-  //       }
-  //     });
-  //   } finally {
-  //     postloading2.value = false;
-  //   }
+  getfavshops() async {
+    try {
+      for (var business in business) {
+        for (var favBusiness in listOfUserFavouriteBusiness) {
+          if (favBusiness.businessId == business.id) {
+            business.isFavourite = true;
+          }
+        }
+      }
+      business.forEach((element) {
+        if (element.isFavourite == true) {
+          favBusinesses.assign(element);
+        }
+      });
+    } finally {
+      postloading2.value = false;
+    }
 
-  //   update();
-  // }
+    update();
+  }
 
   ///   add Business to Favourite
 
@@ -143,5 +147,39 @@ class AppController extends GetxController {
     } catch (e) {
       rethrow;
     }
+  }
+
+  fetchFav() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var tokenofmy = prefs.get('accessToken').toString();
+
+    final uri = Uri.parse('http://3.133.0.29/api/user/favorites');
+    final headers = {'accept': '*/*', 'Authorization': 'Bearer $tokenofmy'};
+
+    var response = await http.get(uri, headers: headers);
+
+    return response;
+  }
+
+  Future apicall() async {
+    var responseofdata = await fetchFav();
+    _liste.assignAll(convert.jsonDecode(responseofdata.body));
+
+    filterlistFavo.assignAll(_liste);
+  }
+
+  var filterlistFavo = <dynamic>[].obs;
+  var favlist = <BusinessModel>[].obs;
+
+  fetchorders() async {
+    try {
+      postloading.value = true;
+      await apicall();
+    } finally {
+      postloading.value = false;
+    }
+
+    update();
   }
 }

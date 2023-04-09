@@ -31,7 +31,6 @@ class NetworkApiService extends BaseApiServices {
           .get(Uri.parse(url), headers: headers)
           .timeout(const Duration(seconds: 10));
 
-      print("List of business with in 100KM radius response: ${response.body}");
       return jsonDecode(response.body);
     } on SocketException {
       throw FetchDataException('No Internet Connection');

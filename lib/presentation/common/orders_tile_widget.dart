@@ -78,7 +78,7 @@ class RecentOrdersBuilder extends StatelessWidget {
           builder: (context, value, child) => Column(
             children: [
               InkWell(
-                onTap: () => value.toggleFav(index),
+                onTap: () => {},
                 splashColor: ColorManager.transparent,
                 borderRadius: BorderRadius.circular(40),
                 child: Icon(
