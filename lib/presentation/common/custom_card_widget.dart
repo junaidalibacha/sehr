@@ -37,12 +37,12 @@ class CustomListTileWidget extends StatelessWidget {
             ),
             child: leading,
           ),
-          SizedBox(
-            width: getProportionateScreenWidth(155),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(18),
-              ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: getProportionateScreenHeight(18),
+            ),
+            child: SizedBox(
+              width: getProportionateScreenWidth(140),
               child: title,
             ),
           ),

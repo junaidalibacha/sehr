@@ -80,6 +80,9 @@ class TextFieldWidget extends StatelessWidget {
               getProportionateScreenHeight(15),
             ),
           ),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(20),
+          ),
           // errorBorder: OutlineInputBorder(
           //   borderSide: BorderSide(
           //     color: ColorManager.error,
@@ -88,9 +91,9 @@ class TextFieldWidget extends StatelessWidget {
           //     getProportionateScreenHeight(15),
           //   ),
           // ),
-          constraints: BoxConstraints(
-            maxHeight: getProportionateScreenHeight(60),
-          ),
+          // constraints: BoxConstraints(
+          //   maxHeight: getProportionateScreenHeight(60),
+          // ),
         ),
         validator: validator,
         onChanged: onChange,

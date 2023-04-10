@@ -32,15 +32,37 @@ class AuthViewModel extends ChangeNotifier {
   final mobileNoTextController = TextEditingController();
   final signupPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  //
   bool loginPassObscureText = true;
   bool signupPassObscureText = true;
   bool confirmPassObscureText = true;
+  //
+
   bool keepAuthData = false;
 
   AuthViewModel();
 
   void showLoginPass() {
     loginPassObscureText = !loginPassObscureText;
+    notifyListeners();
+  }
+
+//! Forgot Password
+  final forgotPassFormKey = GlobalKey<FormState>();
+  final newPasswordFocusNode = FocusNode();
+  final confirmNewPasswordFocusNode = FocusNode();
+  final newPasswordController = TextEditingController();
+  final confirmNewPasswordController = TextEditingController();
+  bool newPassObscureText = true;
+  bool confirnNewPassObscureText = true;
+
+  void showNewPass() {
+    newPassObscureText = !newPassObscureText;
+    notifyListeners();
+  }
+
+  void showConfirmNewPass() {
+    confirnNewPassObscureText = !confirnNewPassObscureText;
     notifyListeners();
   }
 

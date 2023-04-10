@@ -3,6 +3,7 @@ import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
 import 'package:sehr/presentation/views/drawer/membership_view.dart';
 import 'package:sehr/presentation/views/drawer/reward_view.dart';
+import 'package:sehr/presentation/views/drawer/terms_condition_view.dart';
 import 'package:sehr/presentation/views/profile/profile_preview_view.dart';
 
 import '../../routes/routes.dart';
@@ -211,7 +212,10 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                                       }
                                     : index == 3
                                         ? Get.to(() => MemberShipView())
-                                        : const SizedBox();
+                                        : index == 4
+                                            ? Get.to(() =>
+                                                const TermsConditionView())
+                                            : const SizedBox();
                       },
                       child: Row(
                         children: [

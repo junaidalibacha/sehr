@@ -1,5 +1,4 @@
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../src/index.dart';

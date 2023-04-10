@@ -1,3 +1,5 @@
+import 'package:sehr/presentation/views/customer_views/order_placing/order_processing.dart';
+
 import '../../../../app/index.dart';
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
@@ -163,7 +165,11 @@ class OrderPlacingView extends StatelessWidget {
                                 ),
                                 buildVerticleSpace(10),
                                 AppButtonWidget(
-                                  ontap: () {},
+                                  ontap: () {
+                                    Get.to(
+                                      () => const OrderProcessingView(),
+                                    );
+                                  },
                                   bgColor: ColorManager.white,
                                   // text: 'Verify My Order',
                                   // textColor: ColorManager.primary,

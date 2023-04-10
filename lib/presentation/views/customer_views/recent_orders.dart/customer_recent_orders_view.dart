@@ -1,7 +1,6 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/custom_card_widget.dart';
 import 'package:sehr/presentation/common/custom_chip_widget.dart';
-import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/customer_view_models/customer_recent_orders_view_model.dart';
 
 import '../../../common/app_button_widget.dart';
@@ -69,12 +68,14 @@ class CustomerRecentOrdersView extends StatelessWidget {
                         kTextBentonSansMed(
                           viewModel.orders[index].itemName,
                           fontSize: getProportionateScreenHeight(15),
+                          overFlow: TextOverflow.ellipsis,
                         ),
                         // buildVerticleSpace(4),
                         kTextBentonSansReg(
                           viewModel.orders[index].shopName,
                           color: ColorManager.textGrey.withOpacity(0.8),
                           letterSpacing: getProportionateScreenWidth(0.5),
+                          overFlow: TextOverflow.ellipsis,
                         ),
                         // buildVerticleSpace(8),
                         kTextBentonSansReg(

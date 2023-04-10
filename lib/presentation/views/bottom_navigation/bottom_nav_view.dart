@@ -43,9 +43,11 @@ class BottomNavigationView extends StatelessWidget {
                         : _buildAppBar(context)
                     : _buildAppBar(context),
 
-                body: _userRole == 'user'
-                    ? viewModel.customerPages[viewModel.index]
-                    : viewModel.businessPages[viewModel.index],
+                body:
+                    // viewModel.customerPages[viewModel.index],
+                    _userRole == 'user'
+                        ? viewModel.customerPages[viewModel.index]
+                        : viewModel.businessPages[viewModel.index],
 
                 // bottomNavigationBar: ,
                 bottomNavigationBar: _userRole == 'user'
@@ -90,31 +92,46 @@ class BottomNavigationView extends StatelessWidget {
             userRole == 'user'
                 ? viweModel.customerPages.length
                 : viweModel.businessPages.length,
+            // viweModel.customerPages.length,
             (index) => InkWell(
               onTap: () {
                 viweModel.pageChange(index);
               },
-              child: userRole == 'user'
-                  ? index == 2
-                      ? Lottie.asset(
-                          AppIcons.lottieIcon2,
-                          height: getProportionateScreenHeight(55),
-                          fit: BoxFit.contain,
-                        )
+              child:
+                  // index == 2
+                  //     ? Lottie.asset(
+                  //         AppIcons.lottieIcon2,
+                  //         height: getProportionateScreenHeight(55),
+                  //         fit: BoxFit.contain,
+                  //       )
+                  //     : Image.asset(
+                  //         viweModel.customerIcons[index],
+                  //         height: getProportionateScreenHeight(25),
+                  //         color: viweModel.index == index
+                  //             ? ColorManager.primary
+                  //             : null,
+                  //       ),
+                  userRole == 'user'
+                      ? index == 2
+                          ? Lottie.asset(
+                              AppIcons.lottieIcon2,
+                              height: getProportionateScreenHeight(55),
+                              fit: BoxFit.contain,
+                            )
+                          : Image.asset(
+                              viweModel.customerIcons[index],
+                              height: getProportionateScreenHeight(25),
+                              color: viweModel.index == index
+                                  ? ColorManager.primary
+                                  : null,
+                            )
                       : Image.asset(
-                          viweModel.customerIcons[index],
+                          viweModel.businessIcons[index],
                           height: getProportionateScreenHeight(25),
                           color: viweModel.index == index
                               ? ColorManager.primary
                               : null,
-                        )
-                  : Image.asset(
-                      viweModel.businessIcons[index],
-                      height: getProportionateScreenHeight(25),
-                      color: viweModel.index == index
-                          ? ColorManager.primary
-                          : null,
-                    ),
+                        ),
             ),
           ),
         ),

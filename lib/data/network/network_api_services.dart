@@ -85,7 +85,7 @@ class NetworkApiService extends BaseApiServices {
     try {
       StreamedResponse res = await request.send();
       // responseJson = returnStreamResponse(res);
-      print("${responseJson}");
+      print("$responseJson");
       print("objecttt $res");
       print(res.stream);
       print(res.statusCode);
@@ -107,13 +107,13 @@ class NetworkApiService extends BaseApiServices {
         dynamic responseJson = jsonDecode(response.body);
         return responseJson;
       case 400:
-        throw UnauthorizedException(response.body.toString());
+        throw InvalidInputException(' username');
       case 401:
         throw UnauthorizedException(response.body.toString());
       case 404:
         throw UnauthorizedException(response.body.toString());
       case 422:
-        throw UnauthorizedException(response.body.toString());
+        throw InvalidInputException(' password');
       case 500:
         throw BadRequestException(response.body.toString());
       default:
