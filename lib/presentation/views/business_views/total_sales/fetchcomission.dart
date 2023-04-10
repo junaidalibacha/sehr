@@ -6,7 +6,7 @@ reportscommissions(String datetime) async {
 
   var token = prefs.get('accessToken');
   final uri = Uri.parse(
-      'http://3.133.0.29/api/shop/my-sales-report?startDate=$datetime%2000%3A00%3A00.000000');
+      'http://3.133.0.29/api/shop/my-sales-report?startDate=$datetime%2000%3A00%3A00.000000&status=accepted');
   final headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $token'

@@ -1,12 +1,13 @@
+import 'dart:convert' as convert;
+
+import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/view_models/business_view_models/business_recent_orders_view_model.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
-import 'dart:convert' as convert;
 
 class BusinessRecentOrdersView extends StatefulWidget {
   const BusinessRecentOrdersView({super.key});
@@ -16,24 +17,72 @@ class BusinessRecentOrdersView extends StatefulWidget {
       _BusinessRecentOrdersViewState();
 }
 
+class OrderInfoModel {
+  String title;
+  String value;
+  OrderInfoModel(this.title, this.value);
+}
+
+class SearchRow extends StatelessWidget {
+  const SearchRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _buildSearchField(),
+        const Spacer(),
+        _buildFilterButton(),
+      ],
+    );
+  }
+
+  Widget _buildFilterButton() {
+    return Container(
+      height: getProportionateScreenHeight(50),
+      width: getProportionateScreenHeight(50),
+      padding: EdgeInsets.all(
+        getProportionateScreenHeight(13),
+      ),
+      decoration: BoxDecoration(
+        color: ColorManager.secondaryLight.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(
+          getProportionateScreenHeight(15),
+        ),
+      ),
+      child: IconButton(
+        splashColor: ColorManager.transparent,
+        splashRadius: getProportionateScreenHeight(30),
+        padding: EdgeInsets.zero,
+        onPressed: () {},
+        icon: Image.asset(
+          AppIcons.filterIcon,
+        ),
+      ),
+    );
+  }
+
+  _buildSearchField() {}
+}
+
 class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
   final OrderApi _orderApi = OrderApi();
 
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
-  fetchorders() async {
-    await apicall();
-    if (filterlist.isEmpty) {
-      nodata = true;
-    }
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   bool nodata = false;
 
+  String filtername = "All";
   List<dynamic> filterlist = [];
+
+  List<dynamic> searchfilterlist = [];
+  TextEditingController searchcontroller = TextEditingController();
+
+  List<OrderInfoModel> orderInfoList = [
+    OrderInfoModel('Order Date :', '02/02/2023'),
+    OrderInfoModel('Order Time :', '23:36 pm'),
+    OrderInfoModel('Total Amount :', '3500/-'),
+  ];
 
   Future apicall() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -48,13 +97,6 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
     });
 
     return datatest;
-  }
-
-  @override
-  void initState() {
-    fetchorders();
-    // TODO: implement initState
-    super.initState();
   }
 
   @override
@@ -75,14 +117,106 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
                 fontSize: getProportionateScreenHeight(31),
               ),
               buildVerticleSpace(18),
-              const SearchRow(),
+              Row(
+                children: [
+                  TextFormField(
+                    controller: searchcontroller..text = filtername,
+                    readOnly: true,
+                    onChanged: (a) {},
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: ColorManager.secondaryLight.withOpacity(0.1),
+                      constraints: BoxConstraints(
+                        maxHeight: getProportionateScreenHeight(50),
+                        maxWidth: getProportionateScreenWidth(280),
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(15),
+                        ),
+                      ),
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(18),
+                          vertical: getProportionateScreenHeight(13),
+                        ),
+                        child: Image.asset(AppIcons.searchIcon),
+                      ),
+                      hintText: 'What do you want to order?',
+                      hintStyle: TextStyleManager.regularTextStyle(
+                        color: ColorManager.icon.withOpacity(0.4),
+                        fontSize: getProportionateScreenHeight(12),
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  PopupMenuButton(
+                    offset: Offset(
+                      getProportionateScreenWidth(0),
+                      getProportionateScreenHeight(50),
+                    ),
+                    padding: EdgeInsets.zero,
+                    icon: Container(
+                      height: getProportionateScreenHeight(50),
+                      width: getProportionateScreenHeight(50),
+                      padding: EdgeInsets.all(
+                        getProportionateScreenHeight(13),
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorManager.secondaryLight.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(
+                          getProportionateScreenHeight(15),
+                        ),
+                      ),
+                      child: Image.asset(
+                        AppIcons.filterIcon,
+                      ),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    itemBuilder: (context) {
+                      return ["All", "accepted", "rejected", "spam"]
+                          .map(
+                            (e) => PopupMenuItem(
+                                child: Text(e),
+                                onTap: () {
+                                  if (mounted) {
+                                    setState(() {
+                                      filtername = e.toString();
+                                      if (e == "All") {
+                                        searchfilterlist = filterlist;
+                                      } else {
+                                        searchfilterlist = filterlist
+                                            .where((element) =>
+                                                element["status"]
+                                                    .toString()
+                                                    .toLowerCase()
+                                                    .trim() ==
+                                                e
+                                                    .toString()
+                                                    .toLowerCase()
+                                                    .trim())
+                                            .toList();
+                                      }
+                                    });
+                                  }
+                                }),
+                          )
+                          .toList();
+                    },
+                  ),
+                ],
+              )
             ],
           ),
         ),
         buildVerticleSpace(15),
         nodata == true
             ? Container(
-                child: Center(
+                child: const Center(
                   child: Text("No Recent Orders"),
                 ),
               )
@@ -92,55 +226,108 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
                       child: LinearProgressIndicator(),
                     ),
                   )
-                : Expanded(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: getProportionateScreenWidth(25),
-                        // vertical: getProportionateScreenHeight(15),
-                      ),
-                      child: ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: filterlist.length,
-                          separatorBuilder: (context, index) =>
-                              buildVerticleSpace(20),
-                          padding: EdgeInsets.only(
-                            bottom: getProportionateScreenHeight(50),
+                : searchfilterlist.isEmpty
+                    ? Container(
+                        child: const Center(
+                          child: Text("No Type Order"),
+                        ),
+                      )
+                    : Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: getProportionateScreenWidth(25),
+                            // vertical: getProportionateScreenHeight(15),
                           ),
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) => Card(
-                                elevation: 0,
-                                child: ListTile(
-                                  trailing: Text(
-                                    "RS ${filterlist[index]["amount"]}",
-                                    style: TextStyle(),
-                                  ),
-                                  subtitle: AppButtonWidget(
-                                    bgColor: filterlist[index]["status"] ==
-                                            "accepted"
-                                        ? null
-                                        : Colors.red,
-                                    ontap: () {},
-                                    height: getProportionateScreenHeight(29),
-                                    width: getProportionateScreenWidth(85),
-                                    text: filterlist[index]["status"],
-                                    textSize: getProportionateScreenHeight(12),
-                                    letterSpacing:
-                                        getProportionateScreenWidth(0.5),
-                                  ),
-                                  leading: Image.asset(AppImages.menu),
-                                  title: Text(
-                                    filterlist[index]["date"],
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                              )),
-                    ),
-                  ),
+                          child: ListView.separated(
+                              shrinkWrap: true,
+                              itemCount: searchfilterlist.length,
+                              separatorBuilder: (context, index) =>
+                                  buildVerticleSpace(20),
+                              padding: EdgeInsets.only(
+                                bottom: getProportionateScreenHeight(50),
+                              ),
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) => GestureDetector(
+                                    onTap: () {
+                                      _buildOrderDetails(
+                                          context,
+                                          searchfilterlist[index]["status"]
+                                              .toString(),
+                                          searchfilterlist[index]);
+                                    },
+                                    child: Card(
+                                      elevation: 0,
+                                      child: ListTile(
+                                        trailing: Text(
+                                          "RS ${searchfilterlist[index]["amount"]}",
+                                          style: const TextStyle(),
+                                        ),
+                                        subtitle: AppButtonWidget(
+                                          bgColor: searchfilterlist[index]
+                                                      ["status"] ==
+                                                  "accepted"
+                                              ? null
+                                              : Colors.red,
+                                          ontap: () {},
+                                          height:
+                                              getProportionateScreenHeight(29),
+                                          width:
+                                              getProportionateScreenWidth(85),
+                                          text: searchfilterlist[index]
+                                              ["status"],
+                                          textSize:
+                                              getProportionateScreenHeight(12),
+                                          letterSpacing:
+                                              getProportionateScreenWidth(0.5),
+                                        ),
+                                        leading: Image.asset(AppImages.menu),
+                                        title: Text(
+                                          searchfilterlist[index]["date"],
+                                          style: const TextStyle(fontSize: 10),
+                                        ),
+                                      ),
+                                    ),
+                                  )),
+                        ),
+                      ),
       ],
     );
   }
 
-  Future<dynamic> _buildOrderDetails(BuildContext context) {
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    } else {
+      searchfilterlist = filterlist;
+    }
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  Future<dynamic> _buildOrderDetails(
+      BuildContext context, String status, Map<String, dynamic>? orderdata) {
+    List<OrderInfoModel> orderInfoListdata = [
+      OrderInfoModel(
+          'Order Date :',
+          DateFormat("yyyy-MM-dd")
+              .format(DateTime.parse(orderdata!["date"].toString()))
+              .toString()),
+      OrderInfoModel(
+          'Order Time :',
+          DateFormat("hh:mm")
+              .format(DateTime.parse(orderdata["date"].toString()))
+              .toString()),
+      OrderInfoModel('Total Amount :', '${orderdata["amount"].toString()}/-'),
+    ];
     return showDialog(
       context: context,
       barrierColor: ColorManager.transparent,
@@ -210,7 +397,7 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
 
               // buildVerticleSpace(20),
               kTextBentonSansReg(
-                'Nulla occaecat velit laborum exercitation ullamco. Elit labore eu aute elit nostrud culpa velit excepteur deserunt sunt. Velit non est cillum consequat cupidatat ex Lorem laboris labore aliqua ad duis eu laborum.',
+                orderdata["comments"].toString(),
                 fontSize: getProportionateScreenHeight(12),
                 lineHeight: getProportionateScreenHeight(2.5),
                 maxLines: 4,
@@ -220,7 +407,7 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
               CustomChipWidget(
                 width: getProportionateScreenWidth(95),
                 bgColor: ColorManager.ambar.withOpacity(0.2),
-                text: 'Completed',
+                text: orderdata["status"],
                 textColor: ColorManager.ambar,
               ),
               buildVerticleSpace(25),
@@ -234,7 +421,7 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
                       children: [
                         kTextBentonSansMed(orderInfoList[index].title),
                         buildHorizontalSpace(5),
-                        kTextBentonSansReg(orderInfoList[index].value),
+                        kTextBentonSansReg(orderInfoListdata[index].value),
                       ],
                     ),
                   ),
@@ -242,8 +429,15 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
               ),
               buildVerticleSpace(14),
               AppButtonWidget(
+                bgColor:
+                    status.toLowerCase().trim() == "spam".toLowerCase().trim()
+                        ? Colors.red
+                        : status.toLowerCase().trim() ==
+                                "rejected".toLowerCase().trim()
+                            ? Colors.red
+                            : null,
                 ontap: () {},
-                text: 'Mark as Spam',
+                text: status,
               ),
             ],
           ),
@@ -252,89 +446,4 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
       ),
     );
   }
-
-  List<OrderInfoModel> orderInfoList = [
-    OrderInfoModel('Order Date :', '02/02/2023'),
-    OrderInfoModel('Order Time :', '23:36 pm'),
-    OrderInfoModel('Customer contact :', '+92 3xxxxxxxx'),
-    OrderInfoModel('Total Amount :', '3500/-'),
-  ];
-}
-
-class SearchRow extends StatelessWidget {
-  const SearchRow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _buildSearchField(),
-        const Spacer(),
-        _buildFilterButton(),
-      ],
-    );
-  }
-
-  Widget _buildFilterButton() {
-    return Container(
-      height: getProportionateScreenHeight(50),
-      width: getProportionateScreenHeight(50),
-      padding: EdgeInsets.all(
-        getProportionateScreenHeight(13),
-      ),
-      decoration: BoxDecoration(
-        color: ColorManager.secondaryLight.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(
-          getProportionateScreenHeight(15),
-        ),
-      ),
-      child: IconButton(
-        splashColor: ColorManager.transparent,
-        splashRadius: getProportionateScreenHeight(30),
-        padding: EdgeInsets.zero,
-        onPressed: () {},
-        icon: Image.asset(
-          AppIcons.filterIcon,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchField() {
-    return TextFormField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: ColorManager.secondaryLight.withOpacity(0.1),
-        constraints: BoxConstraints(
-          maxHeight: getProportionateScreenHeight(50),
-          maxWidth: getProportionateScreenWidth(280),
-        ),
-        contentPadding: EdgeInsets.zero,
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenHeight(15),
-          ),
-        ),
-        prefixIcon: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: getProportionateScreenWidth(18),
-            vertical: getProportionateScreenHeight(13),
-          ),
-          child: Image.asset(AppIcons.searchIcon),
-        ),
-        hintText: 'What do you want to order?',
-        hintStyle: TextStyleManager.regularTextStyle(
-          color: ColorManager.icon.withOpacity(0.4),
-          fontSize: getProportionateScreenHeight(12),
-        ),
-      ),
-    );
-  }
-}
-
-class OrderInfoModel {
-  String title;
-  String value;
-  OrderInfoModel(this.title, this.value);
 }

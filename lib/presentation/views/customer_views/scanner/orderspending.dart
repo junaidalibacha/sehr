@@ -2,24 +2,11 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 
 import 'package:sehr/presentation/src/index.dart';
-import 'package:sehr/presentation/utils/utils.dart';
+
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 
-class OrderProcessingView extends StatefulWidget {
+class OrderProcessingView extends StatelessWidget {
   const OrderProcessingView({super.key});
-
-  @override
-  State<OrderProcessingView> createState() => _OrderProcessingViewState();
-}
-
-class _OrderProcessingViewState extends State<OrderProcessingView> {
-  @override
-  void initState() {
-    Utils.flushBarErrorMessage(
-        context, 'order placed successfully, check out the status of order');
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +28,12 @@ class _OrderProcessingViewState extends State<OrderProcessingView> {
             ),
             buildVerticleSpace(12),
             kTextBentonSansMed(
+              'order placed successfully, check out the status of order',
+              fontSize: getProportionateScreenHeight(20),
+              textAlign: TextAlign.center,
+            ),
+            buildVerticleSpace(12),
+            kTextBentonSansMed(
               'Your Order is in Process',
               fontSize: getProportionateScreenHeight(20),
               textAlign: TextAlign.center,
@@ -52,7 +45,9 @@ class _OrderProcessingViewState extends State<OrderProcessingView> {
               ),
               child: AppButtonWidget(
                 ontap: () {
-                  Get.offAll(() => const DrawerView());
+                  Get.offAll(() => DrawerView(
+                        pageindex: 0,
+                      ));
                 },
                 text: 'Back',
               ),

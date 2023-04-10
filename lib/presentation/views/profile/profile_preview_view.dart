@@ -342,7 +342,9 @@ class _ProfilePreviewViewState extends State<ProfilePreviewView> {
                                           );
                                           Utils.flushBarErrorMessage(
                                               context, 'Updated Successfully');
-                                          Get.offAll(() => const DrawerView());
+                                          Get.offAll(() => DrawerView(
+                                                pageindex: 0,
+                                              ));
                                         }).onError((error, stackTrace) {
                                           if (error
                                               .toString()

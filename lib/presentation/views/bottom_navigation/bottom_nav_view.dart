@@ -16,7 +16,8 @@ import '../../src/index.dart';
 import '../../view_models/customer_view_models/home_view_model.dart';
 
 class BottomNavigationView extends StatefulWidget {
-  const BottomNavigationView({super.key});
+  BottomNavigationView({super.key, required this.pageindexview});
+  int pageindexview = 0;
 
   @override
   State<BottomNavigationView> createState() => _BottomNavigationViewState();

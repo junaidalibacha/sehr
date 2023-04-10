@@ -722,7 +722,9 @@ class ProfileViewModel extends ChangeNotifier {
       await init();
       setLoading(false);
 
-      Get.offAll(const DrawerView());
+      Get.offAll(DrawerView(
+        pageindex: 0,
+      ));
     });
   }
 

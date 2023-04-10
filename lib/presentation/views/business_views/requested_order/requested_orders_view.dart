@@ -1,16 +1,124 @@
+import 'dart:convert' as convert;
+
+import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
-
-import 'package:sehr/presentation/view_models/business_view_models/request_orders_view_model.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
-
 import 'package:sehr/presentation/views/business_views/requested_order/ganeratercode.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/verifyorder.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert' as convert;
 
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
+
+// class RecentOrdersWidget extends StatelessWidget {
+//   const RecentOrdersWidget({
+//     Key? key,
+//     // required this.name,
+//     // required this.category,
+//     // required this.distance,
+//     // required this.onFavourite,
+//     // required this.onDetail,
+//     // required this.isFavourite,
+//     required this.items,
+//   }) : super(key: key);
+//   // final String name;
+//   // final String category;
+//   // final String distance;
+//   // final bool isFavourite;
+//   // final void Function() onFavourite;
+//   // final void Function() onDetail;
+//   final List<RequestedOrdersModel> items;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.separated(
+//       shrinkWrap: true,
+//       itemCount: items.length,
+//       separatorBuilder: (context, index) => buildVerticleSpace(18),
+//       padding: EdgeInsets.only(
+//         bottom: getProportionateScreenHeight(60),
+//       ),
+//       physics: const NeverScrollableScrollPhysics(),
+//       itemBuilder: (context, index) => ListTile(
+//         tileColor: ColorManager.white,
+//         // selectedTileColor: ColorManager.white,
+//         // selected: items[index].isCompleted,
+//         contentPadding: EdgeInsets.only(
+//           left: getProportionateScreenWidth(14),
+//           right: getProportionateScreenHeight(20),
+//           top: getProportionateScreenHeight(18),
+//           bottom: getProportionateScreenHeight(10),
+//         ),
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(
+//             getProportionateScreenHeight(22),
+//           ),
+//         ),
+//         leading: Image.asset(
+//           AppImages.menu,
+//           height: getProportionateScreenHeight(56.5),
+//           width: getProportionateScreenHeight(56.5),
+//         ),
+
+//         title: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             kTextBentonSansMed(
+//               items[index].customerName,
+//               fontSize: getProportionateScreenHeight(15),
+//             ),
+//             buildVerticleSpace(4),
+//             kTextBentonSansReg(
+//               items[index].shopName,
+//               color: ColorManager.textGrey.withOpacity(0.8),
+//               letterSpacing: getProportionateScreenWidth(0.5),
+//             ),
+//             buildVerticleSpace(8),
+//             kTextBentonSansMed(
+//               'RS ${items[index].price}',
+//               color: ColorManager.primary,
+//               fontSize: getProportionateScreenHeight(19),
+//             ),
+//           ],
+//         ),
+
+//         trailing: Column(
+//           children: [
+//             AppButtonWidget(
+//               ontap: () {
+//                 _buildOrderDetails(context);
+//               },
+//               height: getProportionateScreenHeight(29),
+//               width: getProportionateScreenWidth(80),
+//               text: 'Accept',
+//               textSize: getProportionateScreenHeight(12),
+//               letterSpacing: getProportionateScreenWidth(0.5),
+//             ),
+//             // buildVerticleSpace(10),
+//             const Spacer(),
+//             AppButtonWidget(
+//               bgColor: Colors.transparent,
+//               border: true,
+//               ontap: () {},
+//               height: getProportionateScreenHeight(29),
+//               width: getProportionateScreenWidth(80),
+//               text: 'Reject',
+//               textColor: ColorManager.error.withOpacity(0.6),
+//               textSize: getProportionateScreenHeight(12),
+//               letterSpacing: getProportionateScreenWidth(0.5),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class OrderInfoModel {
+  String title;
+  String value;
+  OrderInfoModel(this.title, this.value);
+}
 
 class RequestedOrdersView extends StatefulWidget {
   const RequestedOrdersView({super.key});
@@ -25,16 +133,14 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
   List<dynamic> filterlist = [];
-  fetchorders() async {
-    await apicall();
-    if (filterlist.isEmpty) {
-      nodata = true;
-    }
-
-    setState(() {});
-  }
-
   bool nodata = false;
+
+  List<OrderInfoModel> orderInfoList = [
+    OrderInfoModel('Order Date :', '02/02/2023'),
+    OrderInfoModel('Order Time :', '23:36 pm'),
+    OrderInfoModel('Customer contact :', '+92 3xxxxxxxx'),
+    OrderInfoModel('Total Amount :', '3500/-'),
+  ];
 
   Future apicall() async {
     print("object checkinh");
@@ -54,13 +160,6 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
     });
 
     return datatest;
-  }
-
-  @override
-  void initState() {
-    fetchorders();
-    // TODO: implement initState
-    super.initState();
   }
 
   @override
@@ -186,14 +285,44 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
                                                                           ["id"]
                                                                       .toString(),
                                                                   "accepted");
-                                                          print(response);
                                                           if (response !=
                                                               null) {
+                                                            // ignore: use_build_context_synchronously
                                                             Navigator.pop(
                                                                 context);
+                                                            Map<String,
+                                                                    dynamic>?
+                                                                datatest;
+                                                            final List<dynamic>
+                                                                _list = [];
+                                                            List<dynamic>
+                                                                datafilterlist =
+                                                                [];
+                                                            _list.add(datatest ==
+                                                                    null
+                                                                ? []
+                                                                : datatest
+                                                                    .values
+                                                                    .toList());
+                                                            _list[0][0].forEach(
+                                                                (element) {
+                                                              if (element["status"]
+                                                                      .toString() !=
+                                                                  "pending") {
+                                                                filterlist.add(
+                                                                    element);
+                                                              }
+                                                            });
 
+                                                            // ignore: use_build_context_synchronously
                                                             _buildOrderDetails(
-                                                                    context)
+                                                                    context,
+                                                                    datafilterlist[
+                                                                            index]
+                                                                        [
+                                                                        'status'],
+                                                                    datafilterlist[
+                                                                        index])
                                                                 .then(
                                                                     (value) async {
                                                               await fetchorders();
@@ -300,13 +429,41 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
               ));
   }
 
-  Future<dynamic> _buildOrderDetails(BuildContext context) {
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    }
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  Future<dynamic> _buildOrderDetails(
+      BuildContext context, String status, Map<String, dynamic>? orderdata) {
+    List<OrderInfoModel> orderInfoListdata = [
+      OrderInfoModel(
+          'Order Date :',
+          DateFormat("yyyy-MM-dd")
+              .format(DateTime.parse(orderdata!["date"].toString()))
+              .toString()),
+      OrderInfoModel(
+          'Order Time :',
+          DateFormat("hh:mm")
+              .format(DateTime.parse(orderdata["date"].toString()))
+              .toString()),
+      OrderInfoModel('Total Amount :', '${orderdata["amount"].toString()}/-'),
+    ];
     return showDialog(
       context: context,
       barrierColor: ColorManager.transparent,
       builder: (context) => AlertDialog(
-        // backgroundColor: ColorManager.white,
-        // elevation: 5,
         contentPadding: EdgeInsets.symmetric(
           horizontal: getProportionateScreenWidth(17),
           vertical: getProportionateScreenHeight(16),
@@ -318,6 +475,8 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
         ),
+        backgroundColor: ColorManager.white,
+        elevation: 5,
         content: SizedBox(
           height: SizeConfig.screenHeight,
           width: SizeConfig.screenWidth,
@@ -327,7 +486,7 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
               Row(
                 children: [
                   kTextBentonSansBold(
-                    'Order Accepted',
+                    'Detail of Order',
                     fontSize: getProportionateScreenHeight(31),
                   ),
                   const Spacer(),
@@ -345,62 +504,62 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
               ),
               buildVerticleSpace(30),
               CustomChipWidget(
-                width: getProportionateScreenWidth(132),
-                text: 'Pervious Customer',
-              ),
+                  width: getProportionateScreenWidth(132),
+                  text: 'Pervious Customer'),
               buildVerticleSpace(20),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: getProportionateScreenWidth(40),
-                ),
-                child: kTextBentonSansMed(
-                  'Customer Name',
-                  fontSize: getProportionateScreenHeight(27),
-                ),
+              kTextBentonSansMed(
+                'Customer Name',
+                fontSize: getProportionateScreenHeight(27),
               ),
               buildVerticleSpace(65),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: getProportionateScreenWidth(40),
-                ),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    SizedBox(
-                      // color: Colors.amber,
-                      height: getProportionateScreenHeight(120),
-                      // width: SizeConfig.screenWidth,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(
-                          orderInfoList.length,
-                          (index) => Row(
-                            children: [
-                              kTextBentonSansMed(orderInfoList[index].title),
-                              buildHorizontalSpace(5),
-                              kTextBentonSansReg(orderInfoList[index].value),
-                            ],
-                          ),
-                        ),
-                      ),
+              // Row(
+              //   children: [
+              //     Icon(
+              //       Icons.location_on_outlined,
+              //       color: ColorManager.primaryLight,
+              //       size: getProportionateScreenHeight(20),
+              //     ),
+              //     buildHorizontalSpace(12),
+              //     kTextBentonSansReg(
+              //       '19 Km',
+              //       color: ColorManager.textGrey.withOpacity(0.2),
+              //     ),
+              //   ],
+              // ),
+
+              // buildVerticleSpace(20),
+              kTextBentonSansReg(
+                orderdata["comments"].toString(),
+                fontSize: getProportionateScreenHeight(12),
+                lineHeight: getProportionateScreenHeight(2.5),
+                maxLines: 4,
+                textOverFlow: TextOverflow.ellipsis,
+              ),
+              buildVerticleSpace(12),
+              CustomChipWidget(
+                width: getProportionateScreenWidth(95),
+                bgColor: ColorManager.ambar.withOpacity(0.2),
+                text: orderdata["status"],
+                textColor: ColorManager.ambar,
+              ),
+              buildVerticleSpace(25),
+              SizedBox(
+                height: getProportionateScreenHeight(120),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    orderInfoList.length,
+                    (index) => Row(
+                      children: [
+                        kTextBentonSansMed(orderInfoList[index].title),
+                        buildHorizontalSpace(5),
+                        kTextBentonSansReg(orderInfoListdata[index].value),
+                      ],
                     ),
-                    Positioned(
-                      bottom: getProportionateScreenHeight(-120),
-                      right: getProportionateScreenWidth(80),
-                      child: Image.asset(
-                        AppImages.paid,
-                        height: getProportionateScreenHeight(145),
-                        width: getProportionateScreenWidth(140),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-              // buildVerticleSpace(14),
-              // AppButtonWidget(
-              //   ontap: () {},
-              //   text: 'Mark as Spam',
-              // ),
+              buildVerticleSpace(14),
             ],
           ),
           // color: ColorManager.transparent,
@@ -408,121 +567,4 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
       ),
     );
   }
-
-  List<OrderInfoModel> orderInfoList = [
-    OrderInfoModel('Order Date :', '02/02/2023'),
-    OrderInfoModel('Order Time :', '23:36 pm'),
-    OrderInfoModel('Customer contact :', '+92 3xxxxxxxx'),
-    OrderInfoModel('Total Amount :', '3500/-'),
-  ];
-}
-
-// class RecentOrdersWidget extends StatelessWidget {
-//   const RecentOrdersWidget({
-//     Key? key,
-//     // required this.name,
-//     // required this.category,
-//     // required this.distance,
-//     // required this.onFavourite,
-//     // required this.onDetail,
-//     // required this.isFavourite,
-//     required this.items,
-//   }) : super(key: key);
-//   // final String name;
-//   // final String category;
-//   // final String distance;
-//   // final bool isFavourite;
-//   // final void Function() onFavourite;
-//   // final void Function() onDetail;
-//   final List<RequestedOrdersModel> items;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView.separated(
-//       shrinkWrap: true,
-//       itemCount: items.length,
-//       separatorBuilder: (context, index) => buildVerticleSpace(18),
-//       padding: EdgeInsets.only(
-//         bottom: getProportionateScreenHeight(60),
-//       ),
-//       physics: const NeverScrollableScrollPhysics(),
-//       itemBuilder: (context, index) => ListTile(
-//         tileColor: ColorManager.white,
-//         // selectedTileColor: ColorManager.white,
-//         // selected: items[index].isCompleted,
-//         contentPadding: EdgeInsets.only(
-//           left: getProportionateScreenWidth(14),
-//           right: getProportionateScreenHeight(20),
-//           top: getProportionateScreenHeight(18),
-//           bottom: getProportionateScreenHeight(10),
-//         ),
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(
-//             getProportionateScreenHeight(22),
-//           ),
-//         ),
-//         leading: Image.asset(
-//           AppImages.menu,
-//           height: getProportionateScreenHeight(56.5),
-//           width: getProportionateScreenHeight(56.5),
-//         ),
-
-//         title: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             kTextBentonSansMed(
-//               items[index].customerName,
-//               fontSize: getProportionateScreenHeight(15),
-//             ),
-//             buildVerticleSpace(4),
-//             kTextBentonSansReg(
-//               items[index].shopName,
-//               color: ColorManager.textGrey.withOpacity(0.8),
-//               letterSpacing: getProportionateScreenWidth(0.5),
-//             ),
-//             buildVerticleSpace(8),
-//             kTextBentonSansMed(
-//               'RS ${items[index].price}',
-//               color: ColorManager.primary,
-//               fontSize: getProportionateScreenHeight(19),
-//             ),
-//           ],
-//         ),
-
-//         trailing: Column(
-//           children: [
-//             AppButtonWidget(
-//               ontap: () {
-//                 _buildOrderDetails(context);
-//               },
-//               height: getProportionateScreenHeight(29),
-//               width: getProportionateScreenWidth(80),
-//               text: 'Accept',
-//               textSize: getProportionateScreenHeight(12),
-//               letterSpacing: getProportionateScreenWidth(0.5),
-//             ),
-//             // buildVerticleSpace(10),
-//             const Spacer(),
-//             AppButtonWidget(
-//               bgColor: Colors.transparent,
-//               border: true,
-//               ontap: () {},
-//               height: getProportionateScreenHeight(29),
-//               width: getProportionateScreenWidth(80),
-//               text: 'Reject',
-//               textColor: ColorManager.error.withOpacity(0.6),
-//               textSize: getProportionateScreenHeight(12),
-//               letterSpacing: getProportionateScreenWidth(0.5),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class OrderInfoModel {
-  String title;
-  String value;
-  OrderInfoModel(this.title, this.value);
 }

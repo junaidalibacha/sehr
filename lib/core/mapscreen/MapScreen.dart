@@ -3,16 +3,17 @@ import 'dart:math';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 import 'package:location/location.dart';
+import 'package:sehr/app/index.dart';
 import 'package:sehr/core/mapscreen/mapkithelper.dart';
 import 'package:sehr/presentation/src/assets_manager.dart';
 import 'package:sehr/presentation/src/colors_manager.dart';
+import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
 import 'package:sehr/presentation/views/customer_views/scanner/scanner_view.dart';
+import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 import '../../presentation/view_models/customer_view_models/home_view_model.dart';
@@ -236,7 +237,7 @@ class _MapDirectionState extends State<MapDirection> {
                   bottom: 50,
                   left: 20,
                   right: 20,
-                  child: km > 0
+                  child: km < 0
                       ? Container(
                           height: 250,
                           decoration: BoxDecoration(
@@ -426,13 +427,22 @@ class _MapDirectionState extends State<MapDirection> {
                                   ),
                                   MaterialButton(
                                     onPressed: () {
-                                      Navigator.pop(context);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ScannerView()),
-                                      );
+                                      // final viewModel = Provider.of<
+                                      //         CustomerBottomNavViewModel>(
+                                      //     context,
+                                      //     listen: false);
+                                      // MaterialPageRoute(builder: (context) {
+                                      //   return ChangeNotifierProvider.value(
+                                      //       value: viewModel,
+                                      //       child: ScannerView());
+                                      // });
+                                      Get.to(() => ScannerView());
+                                      // Navigator.push(
+                                      //   context,d
+                                      //   MaterialPageRoute(
+                                      //       builder: (context) =>
+                                      //           const ScannerView()),
+                                      // );
                                     },
                                     child: Container(
                                       height: 40,

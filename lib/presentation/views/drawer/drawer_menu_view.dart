@@ -166,7 +166,9 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
 
                                           prefs.setString(
                                               "openbussiness", "false");
-                                          Get.offAll(() => const DrawerView());
+                                          Get.offAll(() => DrawerView(
+                                                pageindex: 0,
+                                              ));
                                         }
                                         if (value == 1) {
                                           indexstate = value;
