@@ -39,7 +39,9 @@ class _CheckBussinessValidateState extends State<CheckBussinessValidate> {
 
         prefs.remove("openbussiness");
         prefs.setString("openbussiness", "true");
-        Get.offAll(() => const DrawerView());
+        Get.offAll(() => DrawerView(
+              pageindex: 0,
+            ));
       } else {
         Get.offAll(() => const BusinessVerificationProcessingView());
       }
@@ -79,7 +81,9 @@ class _CheckBussinessValidateState extends State<CheckBussinessValidate> {
                     ),
                     MaterialButton(
                       onPressed: () {
-                        Get.offAll(() => const DrawerView());
+                        Get.offAll(() => DrawerView(
+                              pageindex: 0,
+                            ));
                       },
                       child: Container(
                         color: ColorManager.primary,

@@ -6,14 +6,17 @@ import '../bottom_navigation/bottom_nav_view.dart';
 import 'drawer_menu_view.dart';
 
 class DrawerView extends StatelessWidget {
-  const DrawerView({super.key});
+  DrawerView({super.key, required this.pageindex});
+  int pageindex;
 
   @override
   Widget build(BuildContext context) {
     // final drawerController = ZoomDrawerController();
     return ZoomDrawer(
       menuScreenWidth: SizeConfig.screenWidth,
-      mainScreen: const BottomNavigationView(),
+      mainScreen: BottomNavigationView(
+        pageindexview: pageindex,
+      ),
       menuScreen: DrawerMenuView(),
       borderRadius: 24.0,
       //   showShadow: true,

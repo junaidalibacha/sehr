@@ -84,9 +84,15 @@ class RoutesGenerator {
 
       // Customer Side Views
       case Routes.drawerRoute:
-        return MaterialPageRoute(builder: (_) => const DrawerView());
+        return MaterialPageRoute(
+            builder: (_) => DrawerView(
+                  pageindex: 0,
+                ));
       case Routes.customerBottomNavRoute:
-        return MaterialPageRoute(builder: (_) => const BottomNavigationView());
+        return MaterialPageRoute(
+            builder: (_) => BottomNavigationView(
+                  pageindexview: 0,
+                ));
       case Routes.scannerRoute:
         return MaterialPageRoute(builder: (_) => const ScannerView());
 

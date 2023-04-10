@@ -18,7 +18,9 @@ class SplashServices {
       } else {
         // print(value.accessToken);
         await Future.delayed(const Duration(seconds: 3));
-        Get.offAll(() => const DrawerView());
+        Get.offAll(() => DrawerView(
+              pageindex: 0,
+            ));
       }
     }).onError((error, stackTrace) {
       if (kDebugMode) {

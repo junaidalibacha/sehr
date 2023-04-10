@@ -32,7 +32,9 @@ class AddBusinessDetailsView extends StatelessWidget {
                       left: getProportionateScreenWidth(25),
                     ),
                     child: InkWell(
-                      onTap: () => Get.offAll(() => const DrawerView()),
+                      onTap: () => Get.offAll(() => DrawerView(
+                            pageindex: 0,
+                          )),
                       borderRadius: BorderRadius.circular(
                         getProportionateScreenHeight(15),
                       ),

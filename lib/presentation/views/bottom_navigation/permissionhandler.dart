@@ -24,7 +24,9 @@ class PermissionHandler extends StatelessWidget {
           ),
           MaterialButton(
             onPressed: () {
-              Get.offAll(() => const DrawerView());
+              Get.offAll(() => DrawerView(
+                    pageindex: 0,
+                  ));
             },
             child: Container(
               color: ColorManager.primary,

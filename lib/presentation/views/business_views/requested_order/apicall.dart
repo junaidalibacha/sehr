@@ -49,20 +49,14 @@ class OrderApi {
 
     storedocs = await getadmintoken();
 
-    print(storedocs!["accessToken"]);
-    print("object seher");
-    print(sehrcode);
-
     final uri =
-        Uri.parse('http://3.133.0.29/api/shop/orders/$sehrcode?limit=500');
+        Uri.parse('http://3.133.0.29/api/shop/orders/$sehrcode?limit=1000');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${storedocs["accessToken"].toString()}'
+      'Authorization': 'Bearer ${storedocs!["accessToken"].toString()}'
     };
 
     var response = await http.get(uri, headers: headers);
-    print(response.statusCode);
-    print(response.body);
 
     return response;
   }

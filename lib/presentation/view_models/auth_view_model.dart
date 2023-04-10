@@ -153,7 +153,9 @@ class AuthViewModel extends ChangeNotifier {
 
         setLoading(false);
 
-        await Get.offAll(const DrawerView());
+        await Get.offAll(DrawerView(
+          pageindex: 0,
+        ));
       }).onError((error, stackTrace) {
         if (error
             .toString()
