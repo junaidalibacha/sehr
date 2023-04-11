@@ -61,12 +61,6 @@ class _ScannerViewState extends State<ScannerView> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            // viewModel.pageChange(0);
-          },
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-        ),
         title: kTextBentonSansBold(
           'Scan QR Code',
           color: ColorManager.white,

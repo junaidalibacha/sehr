@@ -3,6 +3,7 @@ import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/business_views/checkvalidate.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/ganeratercode.dart';
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
+import 'package:sehr/presentation/views/drawer/bussinessreward.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 import 'package:sehr/presentation/views/drawer/membership_view.dart';
 import 'package:sehr/presentation/views/drawer/reward_view.dart';
@@ -13,6 +14,12 @@ import '../../routes/routes.dart';
 import '../../src/index.dart';
 import '../../view_models/user_view_model.dart';
 
+class DrawerMenuModel {
+  String icon;
+  String text;
+  DrawerMenuModel({required this.icon, required this.text});
+}
+
 class DrawerMenuView extends StatefulWidget {
   const DrawerMenuView({super.key});
 
@@ -21,32 +28,36 @@ class DrawerMenuView extends StatefulWidget {
 }
 
 class _DrawerMenuViewState extends State<DrawerMenuView> {
-  @override
-  void initState() {
-    checkmethod();
-    // TODO: implement initState
-    super.initState();
-  }
-
   int indexstate = 0;
+
   String initialindex = "";
   String isbussinessVerified = "";
-  checkmethod() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    initialindex = prefs.getString("openbussiness").toString();
-    isbussinessVerified = prefs.getString("isverified").toString();
-    indexstate = initialindex == "true" ? 1 : 0;
+  final List<DrawerMenuModel> munuListbussiness = [
+    DrawerMenuModel(
+        icon: 'assets/icons/reward_icons.png', text: 'SEHR Rewards'),
+    DrawerMenuModel(icon: 'assets/icons/blog_icon.png', text: 'Blogs'),
+    DrawerMenuModel(icon: 'assets/icons/settings.png', text: 'Settings'),
+    DrawerMenuModel(
+        icon: 'assets/icons/membership_icon.png', text: 'Membership'),
+    DrawerMenuModel(
+        icon: 'assets/icons/terms_icons.png', text: 'Terms & Conditions'),
+    DrawerMenuModel(icon: 'assets/icons/help_icon.png', text: 'Help & Support'),
+  ];
+  final List<DrawerMenuModel> munuListcustomer = [
+    DrawerMenuModel(
+        icon: 'assets/icons/reward_icons.png', text: 'SEHR Rewards'),
+    DrawerMenuModel(icon: 'assets/icons/blog_icon.png', text: 'Blogs'),
+    DrawerMenuModel(icon: 'assets/icons/settings.png', text: 'Settings'),
+    DrawerMenuModel(
+        icon: 'assets/icons/terms_icons.png', text: 'Terms & Conditions'),
+    DrawerMenuModel(icon: 'assets/icons/help_icon.png', text: 'Help & Support'),
+  ];
 
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
+  final List<Widget> _pages = [
+    const RewardView(),
+    const BlogView(),
+    MemberShipView(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -210,33 +221,51 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                           shrinkWrap: true,
                           itemBuilder: (context, index) => InkWell(
                             onTap: () {
-                              index == 0
-                                  ? Get.to(() => const RewardView())
-                                  : index == 1
-                                      ? {
-                                          // value.blogApi(),
-                                          Get.to(() => const BlogView()),
-                                        }
-                                      : index == 2
-                                          ? {
-                                              // value.educationApi(),
-                                              // Get.to(() => const BlogView()),
-                                            }
-                                          : index == 3
-                                              ? Get.to(() => MemberShipView())
-                                              : const SizedBox();
+                              if (initialindex == "true") {
+                                index == 0
+                                    ? Get.to(() => const RewardViewBussiness())
+                                    : index == 1
+                                        ? {
+                                            // value.blogApi(),
+                                            Get.to(() => const BlogView()),
+                                          }
+                                        : index == 2
+                                            ? {
+                                                // value.educationApi(),
+                                                // Get.to(() => const BlogView()),
+                                              }
+                                            : index == 3
+                                                ? Get.to(() => MemberShipView())
+                                                : const SizedBox();
+                              } else {
+                                index == 0
+                                    ? Get.to(() => const RewardView())
+                                    : index == 1
+                                        ? {
+                                            // value.blogApi(),
+                                            Get.to(() => const BlogView()),
+                                          }
+                                        : {
+                                            // value.educationApi(),
+                                            // Get.to(() => const BlogView()),
+                                          };
+                              }
                             },
                             child: Row(
                               children: [
                                 Image.asset(
-                                  munuList[index].icon,
+                                  initialindex == "true"
+                                      ? munuListbussiness[index].icon
+                                      : munuListcustomer[index].icon,
                                   height: getProportionateScreenHeight(20),
                                 ),
                                 SizedBox(
                                   width: getProportionateScreenWidth(11),
                                 ),
                                 kTextBentonSansReg(
-                                  munuList[index].text,
+                                  initialindex == "true"
+                                      ? munuListbussiness[index].text
+                                      : munuListcustomer[index].text,
                                   fontSize: getProportionateScreenHeight(16),
                                 )
                               ],
@@ -244,7 +273,9 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                           ),
                           separatorBuilder: (context, index) =>
                               buildVerticleSpace(25),
-                          itemCount: munuList.length,
+                          itemCount: initialindex == "true"
+                              ? munuListbussiness.length
+                              : munuListcustomer.length,
                         ),
                         buildVerticleSpace(40),
                         InkWell(
@@ -287,27 +318,28 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
           );
   }
 
-  final List<DrawerMenuModel> munuList = [
-    DrawerMenuModel(
-        icon: 'assets/icons/reward_icons.png', text: 'SEHR Rewards'),
-    DrawerMenuModel(icon: 'assets/icons/blog_icon.png', text: 'Blogs'),
-    DrawerMenuModel(icon: 'assets/icons/settings.png', text: 'Settings'),
-    DrawerMenuModel(
-        icon: 'assets/icons/membership_icon.png', text: 'Membership'),
-    DrawerMenuModel(
-        icon: 'assets/icons/terms_icons.png', text: 'Terms & Conditions'),
-    DrawerMenuModel(icon: 'assets/icons/help_icon.png', text: 'Help & Support'),
-  ];
+  checkmethod() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    initialindex = prefs.getString("openbussiness").toString();
+    isbussinessVerified = prefs.getString("isverified").toString();
+    indexstate = initialindex == "true" ? 1 : 0;
 
-  final List<Widget> _pages = [
-    const RewardView(),
-    const BlogView(),
-    MemberShipView(),
-  ];
-}
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
-class DrawerMenuModel {
-  String icon;
-  String text;
-  DrawerMenuModel({required this.icon, required this.text});
+  @override
+  void dispose() {
+    DrawerMenuViewModel();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    checkmethod();
+    // TODO: implement initState
+    super.initState();
+  }
 }

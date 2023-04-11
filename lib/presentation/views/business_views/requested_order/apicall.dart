@@ -39,9 +39,15 @@ class OrderApi {
       'Authorization': 'Bearer $token'
     };
 
-    var response = await http.get(uri, headers: headers);
-
-    return response;
+    var response =
+        await http.get(uri, headers: headers).timeout(Duration(seconds: 10));
+    if (response.statusCode == 200) {
+      return response;
+    } else if (response.statusCode == 404) {
+      return response;
+    } else {
+      return null;
+    }
   }
 
   fetchorderrequest(String sehrcode) async {
