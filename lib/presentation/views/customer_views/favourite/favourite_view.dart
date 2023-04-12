@@ -220,7 +220,7 @@ class _FavouriteViewState extends State<FavouriteView> {
                                                       72),
                                               borderRadius:
                                                   getProportionateScreenHeight(
-                                                      18),
+                                                      9),
                                               text: 'Detail',
                                               textSize:
                                                   getProportionateScreenHeight(

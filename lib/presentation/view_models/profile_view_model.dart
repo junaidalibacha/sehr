@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/utils/utils.dart';
-import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/view_models/user_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -475,9 +474,9 @@ class ProfileViewModel extends ChangeNotifier {
 
     request.fields['firstName'] = prefs.getString('firstName').toString();
     request.fields['lastName'] = prefs.getString('lastName').toString();
-    request.fields['username'] = prefs.getString('username').toString();
-    request.fields['email'] =
-        ('${prefs.getString('firstName').toString()}${prefs.getString('mobileNo').toString()}@email.com');
+    // request.fields['username'] = prefs.getString('username').toString();
+    // request.fields['email'] =
+    //     ('${prefs.getString('firstName').toString()}${prefs.getString('mobileNo').toString()}@email.com');
     // request.fields['email'] = 'email@testmultipartapi2.com';
     request.fields['mobile'] = prefs.getString('mobileNo').toString();
     request.fields['password'] = prefs.getString('password').toString();

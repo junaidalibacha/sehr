@@ -4,7 +4,6 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/domain/models/business_model.dart';
 import 'package:sehr/getXcontroller/userpagecontroller.dart';
 import 'package:sehr/presentation/view_models/customer_view_models/home_view_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/app_button_widget.dart';
 import '../../../common/custom_chip_widget.dart';
@@ -445,7 +444,6 @@ class _HomeViewState extends State<HomeView> {
                                                   getProportionateScreenWidth(
                                                       0.5),
                                             ),
-                                            buildVerticleSpace(0),
                                           ],
                                         ),
                                       ),

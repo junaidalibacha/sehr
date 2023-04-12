@@ -49,10 +49,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // String? videoId(String url) {
   //   return YoutubePlayer.convertUrlToId(url);
   // }
-  int videoIndex = 0;
+  int pageIndex = 0;
   void next() {
     setState(() {
-      videoIndex = videoIndex + 1;
+      pageIndex = pageIndex + 1;
     });
   }
 
@@ -160,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       width: getProportionateScreenWidth(50),
                       margin: EdgeInsets.all(getProportionateScreenHeight(20)),
                       decoration: BoxDecoration(
-                        color: videoIndex == index
+                        color: pageIndex == index
                             ? ColorManager.ambar
                             : ColorManager.grey,
                         borderRadius: BorderRadius.circular(
@@ -179,7 +179,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     text: 'Next',
                     ontap: () {
                       next();
-                      videoIndex == 2
+                      pageIndex == 3
                           ? Get.offAndToNamed(Routes.loginRoute)
                           : (_isPlayerReady
                               ? _controller.load(_videoIds[(_videoIds.indexOf(
