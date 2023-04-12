@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/domain/models/user_model.dart';
 import 'package:sehr/domain/repository/auth_repository.dart';
@@ -43,52 +44,20 @@ class _ProfilePreviewViewState extends State<ProfilePreviewView> {
                 child: Container(
                   height: SizeConfig.screenHeight * 0.38,
                   width: SizeConfig.screenWidth,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(
-                        AppImages.profilePreview,
-                      ),
+                      image: NetworkImage(appUser.avatar.toString()),
                     ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const TopBackButtonWidget(),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: getProportionateScreenHeight(35),
-                          right: getProportionateScreenWidth(10),
-                        ),
-                        child: ActionChip(
-                          onPressed: () {},
-                          backgroundColor: ColorManager.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              getProportionateScreenHeight(5),
-                            ),
-                          ),
-                          visualDensity: VisualDensity.compact,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: getProportionateScreenHeight(5),
-                          ),
-                          labelPadding: EdgeInsets.zero,
-                          label: kTextBentonSansMed(
-                            'Change image',
-                            color: ColorManager.white,
-                          ),
-                        ),
-                      )
+                    children: const [
+                      TopBackButtonWidget(),
                     ],
                   ),
                 ),
-                //  Image.asset(
-                //   AppImages.profilePreview,
-                // height: SizeConfig.screenHeight * 0.5,
-                // width: SizeConfig.screenWidth,
-                // fit: BoxFit.cover,
-                // ),
               ),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -117,7 +86,7 @@ class _ProfilePreviewViewState extends State<ProfilePreviewView> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Get.to(() => ForgotPassView());
+                                Get.to(() => const ForgotPassView());
                               },
                               child: CustomChipWidget(
                                 width: getProportionateScreenWidth(110),
@@ -168,48 +137,43 @@ class _ProfilePreviewViewState extends State<ProfilePreviewView> {
                                         fontSize:
                                             getProportionateScreenHeight(27),
                                       ),
-                                      const Spacer(),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          right:
-                                              getProportionateScreenWidth(10),
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: () {},
-                                          child: Image.asset(
-                                            AppIcons.editIcon,
-                                            height:
-                                                getProportionateScreenHeight(
-                                                    24),
-                                            width: getProportionateScreenHeight(
-                                                24),
-                                          ),
-                                        ),
-                                      ),
                                     ],
                                   ),
                                   buildVerticleSpace(4),
                                   kTextBentonSansReg(
-                                    '${appUser.email}',
+                                    '${appUser.mobile}',
                                     color:
                                         ColorManager.textGrey.withOpacity(0.2),
                                   ),
                                   buildVerticleSpace(18),
                                   TextFieldWidget(
+                                    readOnly: true,
                                     controller: TextEditingController(
                                         text: '${appUser.cnic}'),
                                     hintText: '${appUser.cnic}',
                                   ),
                                   buildVerticleSpace(18),
                                   TextFieldWidget(
-                                    hintText: '${appUser.dob}',
+                                    readOnly: true,
+                                    controller: TextEditingController(
+                                        text: DateFormat("yyyy-MM-dd").format(
+                                            DateTime.parse(
+                                                appUser.dob.toString()))),
+                                    hintText: DateFormat("yyyy-MM-dd").format(
+                                        DateTime.parse(appUser.dob.toString())),
                                   ),
                                   buildVerticleSpace(18),
                                   TextFieldWidget(
+                                    readOnly: true,
                                     hintText: '${appUser.education}',
+                                    controller: TextEditingController(
+                                        text: '${appUser.education}'),
                                   ),
                                   buildVerticleSpace(18),
                                   TextFieldWidget(
+                                    readOnly: true,
+                                    controller: TextEditingController(
+                                        text: '${appUser.mobile}'),
                                     hintText: '${appUser.mobile}',
                                   ),
                                 ],
@@ -315,9 +279,7 @@ class _ProfilePreviewViewState extends State<ProfilePreviewView> {
                                       SharedPreferences prefs =
                                           await SharedPreferences.getInstance();
                                       Map<String, dynamic> body = {
-                                        'username': prefs
-                                            .getString("username")
-                                            .toString(),
+                                        'username': appUser.mobile,
                                         'password': prefs
                                             .getString("password")
                                             .toString(),

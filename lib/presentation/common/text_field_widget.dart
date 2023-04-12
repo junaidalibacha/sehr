@@ -5,6 +5,7 @@ class TextFieldWidget extends StatelessWidget {
   const TextFieldWidget({
     Key? key,
     this.controller,
+    this.maxlines,
     this.keyboardType,
     this.focusNode,
     this.hintText,
@@ -22,6 +23,7 @@ class TextFieldWidget extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final FocusNode? focusNode;
+  final int? maxlines;
   final String? hintText;
   final Widget? prefixIcon;
   final Widget? sufixIcon;

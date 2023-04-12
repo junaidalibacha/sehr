@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/business_views/checkvalidate.dart';
-import 'package:sehr/presentation/views/business_views/requested_order/ganeratercode.dart';
+
 import 'package:sehr/presentation/views/drawer/blog_view.dart';
 import 'package:sehr/presentation/views/drawer/bussinessreward.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
@@ -12,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../routes/routes.dart';
 import '../../src/index.dart';
+import 'package:http/http.dart' as http;
 import '../../view_models/user_view_model.dart';
 
 class DrawerMenuModel {
@@ -59,6 +64,13 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
     MemberShipView(),
   ];
 
+  Future loadpictur(String url) async {
+    http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return response.body;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userPrefs = Provider.of<UserViewModel>(context);
@@ -86,18 +98,36 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // FutureBuilder(
+                              //     future: loadpictur(appUser.avatar.toString()),
+                              //     builder: (context, snapshot) {
+                              //       if (snapshot.connectionState ==
+                              //           ConnectionState.done) {
+                              //         String source = snapshot.data;
+
+                              //         List<int> list = utf8.encode(source);
+                              //         Uint8List bytes =
+                              //             Uint8List.fromList(list);
+                              //         String outcome = utf8.decode(bytes);
+                              //         print(bytes);
+                              //         print(snapshot.data);
+                              //         return Container(
+                              //           height: 100,
+                              //           width: 100,
+                              //           child: Image.memory(bytes),
+                              //         );
+                              //       } else {
+                              //         return Container();
+                              //       }
+                              //     }),
                               Padding(
                                 padding: EdgeInsets.only(
                                     left: getProportionateScreenWidth(18)),
                                 child: CircleAvatar(
                                   backgroundColor: ColorManager.primary,
-                                  radius: getProportionateScreenHeight(40),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(
-                                        getProportionateScreenHeight(4)),
-                                    child: Image.asset(
-                                        'assets/images/profile.png'),
-                                  ),
+                                  radius: getProportionateScreenHeight(60),
+                                  backgroundImage:
+                                      NetworkImage(appUser.avatar.toString()),
                                 ),
                               ),
                               buildVerticleSpace(15),

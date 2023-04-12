@@ -28,22 +28,21 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
     await apicall();
     if (filterlist.isEmpty) {
       nodata = true;
-    } else {
-      filterlist.forEach((element) {
-        print(element);
-      });
+    } else {}
+    if (mounted) {
+      setState(() {});
     }
-
-    setState(() {});
   }
 
   bool nodata = false;
 
   Future apicall() async {
-    var responseofdata = await _orderApi.educationApi();
+    var responseofdata =
+        await _orderApi.adressdetailsApi("http://3.133.0.29/api/education");
     datatest = convert.jsonDecode(responseofdata.body);
     _list.add(datatest == null ? [] : datatest!.values.toList());
     _list[0][0].forEach((element) {
+      print(element);
       filterlist.add(element);
     });
 
