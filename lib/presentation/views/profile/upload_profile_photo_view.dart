@@ -14,9 +14,14 @@ import '../../common/top_back_button_widget.dart';
 import '../../src/index.dart';
 import '../../view_models/customer_view_models/home_view_model.dart';
 
-class UplaodProfilePhotoView extends StatelessWidget {
+class UplaodProfilePhotoView extends StatefulWidget {
   const UplaodProfilePhotoView({super.key});
 
+  @override
+  State<UplaodProfilePhotoView> createState() => _UplaodProfilePhotoViewState();
+}
+
+class _UplaodProfilePhotoViewState extends State<UplaodProfilePhotoView> {
   @override
   Widget build(BuildContext context) {
     // final profileType =
@@ -29,8 +34,8 @@ class UplaodProfilePhotoView extends StatelessWidget {
               AppImages.pattern2,
               color: ColorManager.primary.withOpacity(0.1),
             ),
-            Consumer<ProfileViewModel>(
-              builder: (context, viewModel, child) => Column(
+            Consumer<ProfileViewModel>(builder: (context, viewModel, child) {
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const TopBackButtonWidget(),
@@ -65,6 +70,7 @@ class UplaodProfilePhotoView extends StatelessWidget {
                   ),
                   // buildVerticleSpace(40),
                   const Spacer(),
+
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: getProportionateScreenWidth(118),
@@ -126,8 +132,8 @@ class UplaodProfilePhotoView extends StatelessWidget {
                   ),
                   buildVerticleSpace(50),
                 ],
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

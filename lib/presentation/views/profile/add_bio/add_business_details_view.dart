@@ -3,13 +3,57 @@ import 'package:sehr/presentation/common/drop_down_widget.dart';
 import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
+import 'package:sehr/presentation/views/profile/add_bio/apicalling.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert' as convert;
 
 import '../../../common/app_button_widget.dart';
-import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
 
-class AddBusinessDetailsView extends StatelessWidget {
+class AddBusinessDetailsView extends StatefulWidget {
   const AddBusinessDetailsView({super.key});
+
+  @override
+  State<AddBusinessDetailsView> createState() => _AddBusinessDetailsViewState();
+}
+
+class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
+  final BioApiCalls _orderApi = BioApiCalls();
+
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  List<dynamic> filterlist = [];
+  fetchorders() async {
+    await apicall();
+    if (filterlist.isEmpty) {
+      nodata = true;
+    } else {}
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  bool nodata = false;
+
+  Future apicall() async {
+    var responseofdata =
+        await _orderApi.adressdetailsApi("http://3.133.0.29/api/category");
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    _list[0][0].forEach((element) {
+      print(element);
+      filterlist.add(element);
+    });
+
+    return datatest;
+  }
+
+  @override
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,23 +161,40 @@ class AddBusinessDetailsView extends StatelessWidget {
                             ),
                             buildVerticleSpace(20),
                             DropDownWidget(
-                              lableText: 'Category',
-                              hintText: 'Select Category',
-                              selectedOption:
-                                  viewModel.selectedBusinessCategory,
-                              dropdownMenuItems: viewModel.businessOptions
-                                  .map<DropdownMenuItem<String>>(
-                                    (value) => DropdownMenuItem(
-                                      value: value,
-                                      child: kTextBentonSansReg(value),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChange: (value) =>
-                                  viewModel.setBusinessOption(value!),
+                                lableText: 'Category',
+                                hintText: 'Select Category',
+                                selectedOption:
+                                    viewModel.selectedBusinessCategory,
+                                dropdownMenuItems: filterlist
+                                    .map<DropdownMenuItem<String>>(
+                                      (value) => DropdownMenuItem(
+                                        value: value["id"].toString(),
+                                        child: kTextBentonSansReg(
+                                          value["title"],
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChange: (value) async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.remove("category");
+                                  prefs.setString("category", value.toString());
+                                }),
+                            buildVerticleSpace(20),
+                            TextFieldWidget(
+                              maxlines: 10,
+                              controller: viewModel.descriptioncontroller,
+                              hintText: 'Description About',
+                              keyboardType: TextInputType.text,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'description is required';
+                                }
+                                return null;
+                              },
                             ),
                             buildVerticleSpace(20),
-                            buildVerticleSpace(100),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: getProportionateScreenWidth(95),

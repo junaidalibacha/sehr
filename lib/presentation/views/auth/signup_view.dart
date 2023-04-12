@@ -41,31 +41,6 @@ class SignUpView extends StatelessWidget {
                   key: viewModel.signUpFormKey,
                   child: Column(
                     children: [
-                      // TextFieldWidget(
-                      //   controller: viewModel.signupUserNameController,
-                      //   focusNode: viewModel.signupUserNameFocusNode,
-                      //   keyboardType: TextInputType.name,
-                      //   hintText: 'username',
-                      //   prefixIcon: Icon(
-                      //     Icons.person_rounded,
-                      //     size: getProportionateScreenHeight(18),
-                      //     color: ColorManager.primaryLight,
-                      //   ),
-                      //   validator: (value) {
-                      //     if (value == null || value.isEmpty) {
-                      //       return 'username is required';
-                      //     }
-                      //     return null;
-                      //   },
-                      //   onFieldSubmit: (value) {
-                      //     Utils.fieldFocusChange(
-                      //       context,
-                      //       viewModel.signupUserNameFocusNode,
-                      //       viewModel.mobileFocusNode,
-                      //     );
-                      //   },
-                      // ),
-                      // buildVerticleSpace(12),
                       TextFieldWidget(
                         controller: viewModel.mobileNoTextController,
                         focusNode: viewModel.mobileFocusNode,

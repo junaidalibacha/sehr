@@ -118,6 +118,7 @@ class ProfileViewModel extends ChangeNotifier {
   final businessNameTextController = TextEditingController();
   final ownerNameTextController = TextEditingController();
   final shopKeeperMobileNoTextController = TextEditingController();
+  final descriptioncontroller = TextEditingController();
 
   final List<String> _businessOptions = [
     'Cloth House',
@@ -375,8 +376,6 @@ class ProfileViewModel extends ChangeNotifier {
       Utils.flushBarErrorMessage(context, 'Please select Tehsil');
     } else if (_selectedDistrict == null) {
       Utils.flushBarErrorMessage(context, 'Please select District');
-    } else if (_selectedDivision == null) {
-      Utils.flushBarErrorMessage(context, 'Please select Division');
     } else if (_selectedProvince == null) {
       Utils.flushBarErrorMessage(context, 'Please select Province');
     } else {
@@ -481,29 +480,32 @@ class ProfileViewModel extends ChangeNotifier {
     request.fields['mobile'] = prefs.getString('mobileNo').toString();
     request.fields['password'] = prefs.getString('password').toString();
     request.fields['re_password'] = prefs.getString('re_password').toString();
-    // request.fields['gender'] = prefs.getString('Usergender').toString();
-    request.fields['gender'] = _selectedGender.toString();
+    request.fields['gender'] = prefs.getString("Usergender").toString();
     request.fields['dob'] = prefs.getString('dob').toString();
     request.fields['cnic'] = prefs.getString('cnic').toString();
     request.fields['education'] = prefs.getString('education').toString();
     request.fields['address'] = prefs.getString('address').toString();
     request.fields['tehsil'] = prefs.getString('tehsil').toString();
     request.fields['district'] = prefs.getString('district').toString();
-    request.fields['division'] = prefs.getString('division').toString();
     request.fields['province'] = prefs.getString('province').toString();
     request.fields['city'] = prefs.getString('city').toString();
     request.fields['country'] = 'Pakistan';
     request.fields['role'] = 'user';
 
     if (_image != null) {
-      var profileImage = http.MultipartFile.fromString(
-        'profileImage',
-        base64.encode(base64Image.codeUnits),
-        filename: _image?.path.split("/").last,
-      );
+      // var profileImage = http.MultipartFile.fromString(
+      //   'profileImage',
+      //   base64.encode(base64Image.codeUnits),
+      //   filename: _image?.path.split("/").last,
+      // );
+
+      var profileImage = await http.MultipartFile.fromPath(
+          'profileImage', _image!.path,
+          filename: _image?.path.split("/").last);
 
       request.files.add(profileImage);
     }
+
     var response = await _authRepo.registerMultiPartApi(request);
 
     if (response != null) {
@@ -551,15 +553,12 @@ class ProfileViewModel extends ChangeNotifier {
     request.headers.addAll(headers);
 
     request.fields['documentType'] = documenttype;
-    if (_image != null) {
-      var profileImage = http.MultipartFile.fromString(
-        'document',
-        base64.encode(base64Image.codeUnits),
-        filename: kycfileimage.path.split("/").last,
-      );
 
-      request.files.add(profileImage);
-    }
+    var profileImage = await http.MultipartFile.fromPath(
+        'document', kycfileimage.path,
+        filename: kycfileimage.path.split("/").last);
+
+    request.files.add(profileImage);
     var response = await _authRepo.registerMultiPartApi(request);
 
     if (response.statusCode == 201) {
@@ -630,20 +629,20 @@ class ProfileViewModel extends ChangeNotifier {
       'Content-Type': 'multipart/form-data',
     });
 
-    int category = 1;
     request.fields['businessName'] = businessNameTextController.text;
     request.fields['ownerName'] = ownerNameTextController.text;
 
     request.fields['mobile'] = shopKeeperMobileNoTextController.text;
 
     request.fields['address'] = "deom address";
+    request.fields['about'] = descriptioncontroller.text;
     request.fields['tehsil'] = "deom tehsil";
     request.fields['district'] = "deom division";
     request.fields['division'] = "deom district";
     request.fields['province'] = "deom province";
     request.fields['city'] = "demo city";
     request.fields['country'] = "Pakistan";
-    request.fields['category'] = "$category";
+    request.fields['category'] = prefs.getString("category").toString();
     request.fields['lat'] = latitudes;
     request.fields['lon'] = longitudes;
 
@@ -651,13 +650,19 @@ class ProfileViewModel extends ChangeNotifier {
     // var length = await _image!.length();
     // var logoMediaFile = http.MultipartFile('logo', stream, length);
 
-    var logoMediaFile = http.MultipartFile.fromString(
-      'logoMedia',
-      base64.encode(base64Image.codeUnits),
-      filename: _image?.path.split("/").last,
-    );
+    if (_image != null) {
+      // var profileImage = http.MultipartFile.fromString(
+      //   'profileImage',
+      //   base64.encode(base64Image.codeUnits),
+      //   filename: _image?.path.split("/").last,
+      // );
 
-    request.files.add(logoMediaFile);
+      var profileImage = await http.MultipartFile.fromPath(
+          'logoMedia', _image!.path,
+          filename: _image?.path.split("/").last);
+
+      request.files.add(profileImage);
+    }
 
     var response = await _authRepo.registerMultiPartApi(request);
 
