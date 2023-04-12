@@ -4,6 +4,7 @@ import 'package:sehr/presentation/common/text_field_widget.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 import 'package:sehr/presentation/views/profile/add_bio/apicalling.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
 
 import '../../../common/app_button_widget.dart';
@@ -160,23 +161,26 @@ class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
                             ),
                             buildVerticleSpace(20),
                             DropDownWidget(
-                              lableText: 'Category',
-                              hintText: 'Select Category',
-                              selectedOption:
-                                  viewModel.selectedBusinessCategory,
-                              dropdownMenuItems: filterlist
-                                  .map<DropdownMenuItem<String>>(
-                                    (value) => DropdownMenuItem(
-                                      value: value["id"].toString(),
-                                      child: kTextBentonSansReg(
-                                        value["title"],
+                                lableText: 'Category',
+                                hintText: 'Select Category',
+                                selectedOption:
+                                    viewModel.selectedBusinessCategory,
+                                dropdownMenuItems: filterlist
+                                    .map<DropdownMenuItem<String>>(
+                                      (value) => DropdownMenuItem(
+                                        value: value["id"].toString(),
+                                        child: kTextBentonSansReg(
+                                          value["title"],
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChange: (value) => viewModel
-                                  .setBusinessOption(value!.toString()),
-                            ),
+                                    )
+                                    .toList(),
+                                onChange: (value) async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.remove("category");
+                                  prefs.setString("category", value.toString());
+                                }),
                             buildVerticleSpace(20),
                             TextFieldWidget(
                               maxlines: 10,

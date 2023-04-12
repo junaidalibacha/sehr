@@ -629,7 +629,6 @@ class ProfileViewModel extends ChangeNotifier {
       'Content-Type': 'multipart/form-data',
     });
 
-    int category = 1;
     request.fields['businessName'] = businessNameTextController.text;
     request.fields['ownerName'] = ownerNameTextController.text;
 
@@ -643,7 +642,7 @@ class ProfileViewModel extends ChangeNotifier {
     request.fields['province'] = "deom province";
     request.fields['city'] = "demo city";
     request.fields['country'] = "Pakistan";
-    request.fields['category'] = _selectedBusinessCategory.toString();
+    request.fields['category'] = prefs.getString("category").toString();
     request.fields['lat'] = latitudes;
     request.fields['lon'] = longitudes;
 
