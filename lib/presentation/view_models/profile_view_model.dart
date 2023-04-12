@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/utils/utils.dart';
-import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/view_models/user_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -475,9 +474,9 @@ class ProfileViewModel extends ChangeNotifier {
 
     request.fields['firstName'] = prefs.getString('firstName').toString();
     request.fields['lastName'] = prefs.getString('lastName').toString();
-    request.fields['username'] = prefs.getString('username').toString();
-    request.fields['email'] =
-        ('${prefs.getString('firstName').toString()}${prefs.getString('mobileNo').toString()}@email.com');
+    // request.fields['username'] = prefs.getString('username').toString();
+    // request.fields['email'] =
+    //     ('${prefs.getString('firstName').toString()}${prefs.getString('mobileNo').toString()}@email.com');
     // request.fields['email'] = 'email@testmultipartapi2.com';
     request.fields['mobile'] = prefs.getString('mobileNo').toString();
     request.fields['password'] = prefs.getString('password').toString();
@@ -563,10 +562,12 @@ class ProfileViewModel extends ChangeNotifier {
     }
     var response = await _authRepo.registerMultiPartApi(request);
 
-    if (response != null) {
+    if (response.statusCode == 201) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       if (prefs.getString("error").toString() == "null") {
+        prefs.setString("KYC", "true");
+        setLoading(false);
         Utils.flushBarErrorMessage(context, 'Register Successfully');
         Get.toNamed(Routes.businessVerificationProcesingRoute);
       } else {
@@ -592,27 +593,21 @@ class ProfileViewModel extends ChangeNotifier {
   void addBussinessDataAndGoNext(BuildContext context) async {
     if (!_businessFormKey.currentState!.validate()) {
       return;
-    } else if (_selectedBusinessCategory == null &&
-        _selectedBusinessGrade == null) {
-      Utils.flushBarErrorMessage(context, 'Please select Category & Grade');
     } else if (_selectedBusinessCategory == null) {
       Utils.flushBarErrorMessage(context, 'Please select Category');
-    } else if (_selectedBusinessGrade == null) {
-      Utils.flushBarErrorMessage(context, 'Please select Grade');
     } else {
-      _saveBussinessDetailsToPrefs();
+      await _saveBussinessDetailsToPrefs();
       Get.toNamed(Routes.photoSelectionRoute);
     }
   }
 
-  void _saveBussinessDetailsToPrefs() async {
+  _saveBussinessDetailsToPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString('businessName', businessNameTextController.text.trim());
     prefs.setString('ownerName', ownerNameTextController.text.trim());
     prefs.setString('mobileNo', shopKeeperMobileNoTextController.text.trim());
     prefs.setString('category', _selectedBusinessCategory!);
-    prefs.setString('grade', _selectedBusinessGrade!);
     prefs.setString('isBusiness', 'yes');
   }
 
@@ -635,7 +630,6 @@ class ProfileViewModel extends ChangeNotifier {
       'Content-Type': 'multipart/form-data',
     });
 
-    int grade = 1;
     int category = 1;
     request.fields['businessName'] = businessNameTextController.text;
     request.fields['ownerName'] = ownerNameTextController.text;
@@ -650,40 +644,54 @@ class ProfileViewModel extends ChangeNotifier {
     request.fields['city'] = "demo city";
     request.fields['country'] = "Pakistan";
     request.fields['category'] = "$category";
-    request.fields['grade'] = '$grade';
-    request.fields['email'] = appUser.email.toString();
     request.fields['lat'] = latitudes;
     request.fields['lon'] = longitudes;
 
-    var stream = http.ByteStream(_image!.openRead());
-    var length = await _image!.length();
-    var logoMediaFile = http.MultipartFile('logoMedia', stream, length);
+    // var stream = http.ByteStream(_image!.openRead());
+    // var length = await _image!.length();
+    // var logoMediaFile = http.MultipartFile('logo', stream, length);
 
-    // var logoMediaFile = http.MultipartFile.fromString(
-    //   'logoMedia',
-    //   base64.encode(base64Image.codeUnits),
-    //   filename: _image?.path.split("/").last,
-    // );
+    var logoMediaFile = http.MultipartFile.fromString(
+      'logoMedia',
+      base64.encode(base64Image.codeUnits),
+      filename: _image?.path.split("/").last,
+    );
 
     request.files.add(logoMediaFile);
 
-    await _authRepo.registerMultiPartApi(request).then((value) {
+    var response = await _authRepo.registerMultiPartApi(request);
+
+    if (response.statusCode == 201) {
       setLoading(false);
 
       Utils.flushBarErrorMessage(context, 'Register Successfully');
       Get.toNamed(Routes.businessVerificationRoute);
-      // Get.toNamed(Routes.verificationCodeRoute);
-      // Get.to(const DrawerView());
-      if (kDebugMode) {
-        print(value.toString());
-      }
-    }).onError((error, stackTrace) {
+    } else {
       setLoading(false);
-      Utils.flushBarErrorMessage(context, error.toString());
+      Utils.flushBarErrorMessage(context, response.body.toString());
       if (kDebugMode) {
-        print("MultiPart API Error=============> $error");
+        print("MultiPart API Error=============> ${response.body}");
       }
-    });
+    }
+
+    // .
+    // then((value) {
+    //   setLoading(false);
+
+    //   Utils.flushBarErrorMessage(context, 'Register Successfully');
+    //   Get.toNamed(Routes.businessVerificationRoute);
+    //   // Get.toNamed(Routes.verificationCodeRoute);
+    //   // Get.to(const DrawerView());
+    //   if (kDebugMode) {
+    //     print(value.toString());
+    //   }
+    // }).onError((error, stackTrace) {
+    //   setLoading(false);
+    //   Utils.flushBarErrorMessage(context, error.toString());
+    //   if (kDebugMode) {
+    //     print("MultiPart API Error=============> $error");
+    //   }
+    // });
   }
 
   init() async {

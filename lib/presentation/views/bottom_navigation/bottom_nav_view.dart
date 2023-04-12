@@ -5,58 +5,30 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/routes/routes.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
 import 'package:sehr/presentation/views/bottom_navigation/permissionhandler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../src/index.dart';
-
 import '../../view_models/customer_view_models/home_view_model.dart';
 
 class BottomNavigationView extends StatefulWidget {
-  BottomNavigationView({super.key, required this.pageindexview});
   int pageindexview = 0;
+  BottomNavigationView({super.key, required this.pageindexview});
 
   @override
   State<BottomNavigationView> createState() => _BottomNavigationViewState();
 }
 
 class _BottomNavigationViewState extends State<BottomNavigationView> {
-  @override
-  void initState() {
-    checklocation();
-    fetchscreen();
-    // TODO: implement initState
-    super.initState();
-  }
-
-  checklocation() {
-    Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
-      } else {
-        Get.offAll(() => const PermissionHandler());
-        timer.cancel();
-      }
-    });
-  }
+  Timer? _timer;
 
   String showbussinespages = "";
-  fetchscreen() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    showbussinespages = prefs.getString("openbussiness").toString();
-    _userRole = prefs.getString("userRole").toString();
-    if (_userRole == "null") {
-      _userRole = "user";
-    }
-
-    if (mounted) {
-      setState(() {});
-    }
-  }
 
   String _userRole = '';
+
+  int pageindex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +81,96 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
         }));
   }
 
-  int pageindex = 0;
+  checklocation() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
+      } else {
+        Get.offAll(() => const PermissionHandler());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer!.cancel();
+
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  fetchscreen() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    showbussinespages = prefs.getString("openbussiness").toString();
+    _userRole = prefs.getString("userRole").toString();
+    if (_userRole == "null") {
+      _userRole = "user";
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    checklocation();
+    fetchscreen();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: ColorManager.primary,
+      leadingWidth: getProportionateScreenWidth(30),
+      leading: IconButton(
+        onPressed: () {
+          if (ZoomDrawer.of(context)!.isOpen()) {
+            ZoomDrawer.of(context)!.close();
+          } else {
+            ZoomDrawer.of(context)!.open();
+          }
+          // final zoomDrawer = ZoomDrawer.of(context);
+          // if (zoomDrawer != null) {
+          //   if (zoomDrawer.isOpen()) {
+          //     zoomDrawer.close();
+          //   } else {
+          //     zoomDrawer.open();
+          //   }
+          // }
+        },
+        icon: const Icon(Icons.menu),
+      ),
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          kTextBentonSansMed(
+            'Current Location',
+            fontSize: getProportionateScreenHeight(16),
+            color: ColorManager.white,
+          ),
+          kTextBentonSansReg(
+            address.toString() == "null" ? "" : address.toString(),
+            fontSize: getProportionateScreenHeight(13),
+            color: ColorManager.white,
+          ),
+        ],
+      ),
+      actions: [
+        IconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.notifications_none_rounded,
+            size: getProportionateScreenHeight(30),
+            color: ColorManager.white,
+          ),
+          // iconSize: getProportionateScreenHeight(10),
+        ),
+      ],
+    );
+  }
 
   Widget _buildBottomNavigation(String userRole) {
     return Container(
@@ -172,59 +233,6 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
           ),
         ),
       ),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: ColorManager.primary,
-      leadingWidth: getProportionateScreenWidth(30),
-      leading: IconButton(
-        onPressed: () {
-          if (ZoomDrawer.of(context)!.isOpen()) {
-            ZoomDrawer.of(context)!.close();
-          } else {
-            ZoomDrawer.of(context)!.open();
-          }
-          // final zoomDrawer = ZoomDrawer.of(context);
-          // if (zoomDrawer != null) {
-          //   if (zoomDrawer.isOpen()) {
-          //     zoomDrawer.close();
-          //   } else {
-          //     zoomDrawer.open();
-          //   }
-          // }
-        },
-        icon: const Icon(Icons.menu),
-      ),
-      title: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          kTextBentonSansMed(
-            'Current Location',
-            fontSize: getProportionateScreenHeight(16),
-            color: ColorManager.white,
-          ),
-          kTextBentonSansReg(
-            address.toString() == "null" ? "" : address.toString(),
-            fontSize: getProportionateScreenHeight(13),
-            color: ColorManager.white,
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.notifications_none_rounded,
-            size: getProportionateScreenHeight(30),
-            color: ColorManager.white,
-          ),
-          // iconSize: getProportionateScreenHeight(10),
-        ),
-      ],
     );
   }
 }

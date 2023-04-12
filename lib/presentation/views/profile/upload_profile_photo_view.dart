@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/routes/routes.dart';
+
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

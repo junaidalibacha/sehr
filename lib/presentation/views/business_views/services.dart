@@ -11,11 +11,11 @@ Future<dynamic> getpaymentsdata() async {
   try {
     final response = await _orderApi.fetchMyorders();
 
-    if (response.statusCode == 200) {
+    if (response != null) {
       data = convert.jsonDecode(response.body);
     } else {
       // ignore: null_check_always_fails
-      return;
+      return null;
     }
   } on TimeoutException catch (_) {}
   return data;

@@ -13,6 +13,7 @@ import 'package:sehr/presentation/views/profile/varification_code_view.dart';
 import '../src/index.dart';
 import '../views/auth/login_view.dart';
 import '../views/auth/signup_view.dart';
+import '../views/onboarding/onboarding_view.dart';
 import '../views/profile/add_bio/business_verification/business_verification_processing_view.dart';
 import '../views/profile/add_bio/business_verification/business_verification_view.dart';
 import '../views/profile/add_bio/business_verification/qr_business_view.dart';
@@ -21,6 +22,7 @@ import '../views/splash/splash_view.dart';
 class Routes {
   static const String mainRoute = '/mainRoute';
   static const String splashRoute = '/';
+  static const String onboardingRoute = '/onboarding';
 
   // Auth views
   static const String loginRoute = '/login';
@@ -51,6 +53,8 @@ class RoutesGenerator {
     switch (routeSettings.name) {
       case Routes.splashRoute:
         return MaterialPageRoute(builder: (_) => const SplashView());
+      case Routes.onboardingRoute:
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
 
       // Auth Routes
       case Routes.loginRoute:

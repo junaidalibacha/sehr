@@ -171,6 +171,8 @@ class _BusinessVerificationViewState extends State<BusinessVerificationView> {
                       if (_fileImage != null) {
                         viewModel.registerMultiPartApiKYC(
                             context, selectedOption, _fileImage!);
+                      } else {
+                        print("File image  null");
                       }
                       // value.getuserRoleFromPrefs();
 

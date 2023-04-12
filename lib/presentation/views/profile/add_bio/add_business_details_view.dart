@@ -133,21 +133,6 @@ class AddBusinessDetailsView extends StatelessWidget {
                                   viewModel.setBusinessOption(value!),
                             ),
                             buildVerticleSpace(20),
-                            DropDownWidget(
-                              lableText: 'Grade',
-                              hintText: 'Select Grade',
-                              selectedOption: viewModel.selectedBusinessGrade,
-                              dropdownMenuItems: viewModel.businessGradeOptions
-                                  .map<DropdownMenuItem<String>>(
-                                    (value) => DropdownMenuItem(
-                                      value: value,
-                                      child: kTextBentonSansReg(value),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChange: (value) =>
-                                  viewModel.setBusinessGrade(value!),
-                            ),
                             buildVerticleSpace(100),
                             Padding(
                               padding: EdgeInsets.symmetric(

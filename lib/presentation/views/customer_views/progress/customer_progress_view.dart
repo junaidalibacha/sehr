@@ -1,17 +1,88 @@
-import 'package:sehr/app/index.dart';
+import 'dart:convert' as convert;
 
+import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'dart:convert' as convert;
 
 import '../../../src/index.dart';
 
-class SpendData {
-  SpendData(this.day, this.amount);
+class CustomCardWidget extends StatelessWidget {
+  final String titleText;
 
-  final String day;
-  final double amount;
+  final String valueText;
+  final String? description;
+  final Widget? child;
+  const CustomCardWidget({
+    Key? key,
+    required this.titleText,
+    required this.valueText,
+    this.description,
+    this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: getProportionateScreenHeight(15),
+      shadowColor: ColorManager.grey.withOpacity(0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          getProportionateScreenHeight(24),
+        ),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+              top: getProportionateScreenHeight(11),
+              left: getProportionateScreenWidth(20),
+              right: getProportionateScreenWidth(15),
+            ),
+            child: Row(
+              children: [
+                kTextBentonSansMed(
+                  titleText,
+                  fontSize: getProportionateScreenHeight(17),
+                ),
+                const Spacer(),
+                Container(
+                  height: getProportionateScreenHeight(31),
+                  width: getProportionateScreenWidth(145),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: ColorManager.primaryLight,
+                    borderRadius: BorderRadius.circular(
+                      getProportionateScreenHeight(24),
+                    ),
+                  ),
+                  child: kTextBentonSansReg(
+                    valueText,
+                    color: ColorManager.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // buildVerticleSpace(32),
+          child ??
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: getProportionateScreenWidth(15),
+                  vertical: getProportionateScreenHeight(20),
+                ),
+                child: kTextBentonSansReg(
+                  description ?? '',
+                  fontSize: getProportionateScreenHeight(12),
+                  lineHeight: getProportionateScreenHeight(2),
+                  textOverFlow: TextOverflow.ellipsis,
+                  maxLines: 4,
+                ),
+              ),
+        ],
+      ),
+    );
+  }
 }
 
 class ProgressView extends StatefulWidget {
@@ -21,54 +92,22 @@ class ProgressView extends StatefulWidget {
   State<ProgressView> createState() => _ProgressViewState();
 }
 
+class SpendData {
+  final String day;
+
+  final double amount;
+  SpendData(this.day, this.amount);
+}
+
 class _ProgressViewState extends State<ProgressView> {
   final OrderApi _orderApi = OrderApi();
 
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
   List<dynamic> filterlist = [];
-  fetchorders() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String gradekey = prefs.getString("RewardsTarget").toString();
-    await apicall();
-    if (gradekey == "null") {
-      nodata = true;
-    }
-    if (mounted) {
-      setState(() {
-        targetamount = gradekey;
-      });
-    }
-  }
-
   bool nodata = false;
+
   String targetamount = "";
-
-  Future apicall() async {
-    datatest = null;
-    filterlist.clear();
-    _list.clear();
-    if (mounted) {
-      setState(() {});
-    }
-    setState(() {});
-    var responseofdata = await _orderApi.fetchmyorderscustomers();
-    datatest = convert.jsonDecode(responseofdata.body);
-    _list.add(datatest == null ? [] : datatest!.values.toList());
-    _list[0][0].forEach((element) {
-      filterlist.add(element);
-    });
-
-    return datatest;
-  }
-
-  @override
-  void initState() {
-    fetchorders();
-    // TODO: implement initState
-    super.initState();
-  }
-
   late List<SpendData> data = filterlist
       .map((e) =>
           SpendData(e["id"].toString(), double.parse(e["amount"].toString())))
@@ -83,15 +122,25 @@ class _ProgressViewState extends State<ProgressView> {
         'Spend', filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))),
   ];
 
-  double percent() {
-    var per = (filterlist.fold(0, (t, e) => t + int.parse(e["amount"])) /
-            int.parse(targetamount)) *
-        100;
-    if (per > 100) {
-      return 100;
-    } else {
-      return per;
+  Future apicall() async {
+    datatest = null;
+    filterlist.clear();
+    _list.clear();
+    if (mounted) {
+      setState(() {});
     }
+    setState(() {});
+    var responseofdata = await _orderApi.fetchmyorderscustomers();
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    _list[0][0].forEach((element) {
+      if (element["status"].toString().toLowerCase().trim() ==
+          "accepted".toLowerCase().trim()) {
+        filterlist.add(element);
+      }
+    });
+
+    return datatest;
   }
 
   @override
@@ -210,82 +259,36 @@ class _ProgressViewState extends State<ProgressView> {
                 ),
               );
   }
-}
 
-class CustomCardWidget extends StatelessWidget {
-  const CustomCardWidget({
-    Key? key,
-    required this.titleText,
-    required this.valueText,
-    this.description,
-    this.child,
-  }) : super(key: key);
-
-  final String titleText;
-  final String valueText;
-  final String? description;
-  final Widget? child;
+  fetchorders() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String gradekey = prefs.getString("RewardsTarget").toString();
+    await apicall();
+    if (gradekey == "null") {
+      nodata = true;
+    }
+    if (mounted) {
+      setState(() {
+        targetamount = gradekey;
+      });
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: getProportionateScreenHeight(15),
-      shadowColor: ColorManager.grey.withOpacity(0.3),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          getProportionateScreenHeight(24),
-        ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(
-              top: getProportionateScreenHeight(11),
-              left: getProportionateScreenWidth(20),
-              right: getProportionateScreenWidth(15),
-            ),
-            child: Row(
-              children: [
-                kTextBentonSansMed(
-                  titleText,
-                  fontSize: getProportionateScreenHeight(17),
-                ),
-                const Spacer(),
-                Container(
-                  height: getProportionateScreenHeight(31),
-                  width: getProportionateScreenWidth(145),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: ColorManager.primaryLight,
-                    borderRadius: BorderRadius.circular(
-                      getProportionateScreenHeight(24),
-                    ),
-                  ),
-                  child: kTextBentonSansReg(
-                    valueText,
-                    color: ColorManager.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // buildVerticleSpace(32),
-          child ??
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: getProportionateScreenWidth(15),
-                  vertical: getProportionateScreenHeight(20),
-                ),
-                child: kTextBentonSansReg(
-                  description ?? '',
-                  fontSize: getProportionateScreenHeight(12),
-                  lineHeight: getProportionateScreenHeight(2),
-                  textOverFlow: TextOverflow.ellipsis,
-                  maxLines: 4,
-                ),
-              ),
-        ],
-      ),
-    );
+  void initState() {
+    fetchorders();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  double percent() {
+    var per = (filterlist.fold(0, (t, e) => t + int.parse(e["amount"])) /
+            int.parse(targetamount)) *
+        100;
+    if (per > 100) {
+      return 100;
+    } else {
+      return per;
+    }
   }
 }

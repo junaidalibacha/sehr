@@ -89,7 +89,7 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
               Row(
                 children: [
                   kTextBentonSansReg(
-                    appUser.email.toString(),
+                    appUser.mobile.toString(),
                     color: ColorManager.textGrey.withOpacity(0.3),
                   ),
                 ],

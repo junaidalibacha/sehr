@@ -1,12 +1,11 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:sehr/app/index.dart';
-import 'package:sehr/presentation/routes/routes.dart';
+
 import 'package:sehr/presentation/src/colors_manager.dart';
 import 'package:sehr/presentation/views/business_views/services.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 import 'package:sehr/presentation/views/profile/add_bio/add_business_details_view.dart';
 import 'package:sehr/presentation/views/profile/add_bio/business_verification/business_verification_processing_view.dart';
+import 'package:sehr/presentation/views/profile/add_bio/business_verification/business_verification_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckBussinessValidate extends StatefulWidget {
@@ -25,28 +24,45 @@ class _CheckBussinessValidateState extends State<CheckBussinessValidate> {
     data = await getpaymentsdata();
     prefs.remove("sehrCode");
     prefs.remove("isverified");
+    prefs.remove("gradeId");
 
     if (data != null) {
-      if (data!["sehrCode"].toString() != "null") {
-        String sehrcode = prefs.getString("sehrcode").toString();
-        if (sehrcode == "null") {
-          prefs.setString("sehrcode", data!["sehrCode"].toString());
-        }
-        prefs.remove("userRole");
-        prefs.setString("userRole", "business");
-        prefs.remove("isverified");
-        prefs.setString("isverified", "true");
+      if (data!["id"].toString() != "null") {
+        if (data!["sehrCode"].toString() != "null") {
+          String sehrcode = prefs.getString("sehrcode").toString();
+          if (sehrcode == "null") {
+            prefs.setString("sehrcode", data!["sehrCode"].toString());
+          }
+          String gradeid = prefs.getString("gradeId").toString();
+          if (gradeid == "null") {
+            prefs.setString("gradeId", data!["gradeId"].toString());
+          }
 
-        prefs.remove("openbussiness");
-        prefs.setString("openbussiness", "true");
-        Get.offAll(() => DrawerView(
-              pageindex: 0,
-            ));
+          prefs.remove("userRole");
+          prefs.setString("userRole", "business");
+          prefs.remove("isverified");
+          prefs.setString("isverified", "true");
+
+          prefs.remove("openbussiness");
+          prefs.setString("openbussiness", "true");
+          Get.offAll(() => DrawerView(
+                pageindex: 0,
+              ));
+        } else {
+          Get.offAll(() => const BusinessVerificationProcessingView());
+          // if (prefs.getString("KYC").toString() != "null") {
+
+          // } else {
+          //   Get.offAll(() => const BusinessVerificationView());
+          // }
+        }
       } else {
-        Get.offAll(() => const BusinessVerificationProcessingView());
+        Get.offAll(() => const AddBusinessDetailsView());
       }
     } else {
-      Get.offAll(() => const AddBusinessDetailsView());
+      setState(() {
+        notapprove = false;
+      });
     }
   }
 
@@ -75,8 +91,9 @@ class _CheckBussinessValidateState extends State<CheckBussinessValidate> {
                     const Padding(
                       padding: EdgeInsets.all(12.0),
                       child: Text(
-                        "Your Request is under review , is not accepted yet, Please Wait",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        "Error ! Please Try again Later",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.red),
                       ),
                     ),
                     MaterialButton(

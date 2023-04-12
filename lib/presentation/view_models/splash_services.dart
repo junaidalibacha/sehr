@@ -14,13 +14,12 @@ class SplashServices {
       if (value.accessToken == null || value.accessToken == '') {
         // print(value.accessToken);
         await Future.delayed(const Duration(seconds: 3));
-        Get.toNamed(Routes.loginRoute);
+        Get.toNamed(Routes.onboardingRoute);
       } else {
         // print(value.accessToken);
         await Future.delayed(const Duration(seconds: 3));
-        Get.offAll(() => DrawerView(
-              pageindex: 0,
-            ));
+        Get.offAll(() => DrawerView(pageindex: 0));
+        // Get.to(() => const VerificationCodeView());
       }
     }).onError((error, stackTrace) {
       if (kDebugMode) {

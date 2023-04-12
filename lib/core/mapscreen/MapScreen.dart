@@ -237,7 +237,7 @@ class _MapDirectionState extends State<MapDirection> {
                   bottom: 50,
                   left: 20,
                   right: 20,
-                  child: km < 0
+                  child: km > 0
                       ? Container(
                           height: 250,
                           decoration: BoxDecoration(
