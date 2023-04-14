@@ -316,9 +316,9 @@ class _SetLocationViewState extends State<SetLocationView> {
                                             dropdownMenuItems: filterlist
                                                 .map<DropdownMenuItem<String>>(
                                                   (value) => DropdownMenuItem(
-                                                    value: value[0].toString(),
+                                                    value: value[1].toString(),
                                                     child: kTextBentonSansReg(
-                                                        value[1].toString()),
+                                                        value[1]),
                                                   ),
                                                 )
                                                 .toList(),
@@ -368,6 +368,9 @@ class _SetLocationViewState extends State<SetLocationView> {
         await _orderApi.adressdetailsApi("http://3.133.0.29/api/cities/$id");
 
     datatest = convert.jsonDecode(responseofdata.body);
+    _list.clear();
+    filterlist.clear();
+    print(_list);
     _list.add(datatest == null ? [] : datatest!.values.toList());
 
     _list.forEach((element) {
