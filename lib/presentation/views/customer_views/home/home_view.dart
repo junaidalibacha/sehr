@@ -459,7 +459,10 @@ class _HomeViewState extends State<HomeView> {
                                           });
                                         },
                                         child: CustomListTileWidget(
-                                          leading: Image.asset(AppImages.menu),
+                                          leading: Image.network(
+                                              filterbussinessshops![index]
+                                                  .logo
+                                                  .toString()),
                                           title: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,

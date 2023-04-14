@@ -41,8 +41,8 @@ class _ShopDetailsViewState extends State<ShopDetailsView> {
                   children: [
                     Align(
                       alignment: Alignment.topCenter,
-                      child: Image.asset(
-                        AppImages.restourant,
+                      child: Image.network(
+                        widget.businessModel.logo.toString(),
                         height: SizeConfig.screenHeight * 0.5,
                         width: SizeConfig.screenWidth,
                         fit: BoxFit.cover,
@@ -258,7 +258,7 @@ contactusdialog(BuildContext context, String phone) {
               ButtonContact(
                   title: phone,
                   onPressed: () {
-                    UrlLauncher.launch("tel://+923092771719");
+                    UrlLauncher.launch("tel://$phone");
                   },
                   color: HexColor.fromHex('#15BE77')),
               Container(),
