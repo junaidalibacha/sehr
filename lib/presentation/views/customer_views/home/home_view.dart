@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/domain/models/business_model.dart';
 import 'package:sehr/getXcontroller/userpagecontroller.dart';
+
 import 'package:sehr/presentation/view_models/customer_view_models/home_view_model.dart';
 
 import '../../../common/app_button_widget.dart';
@@ -42,35 +43,39 @@ class _HomeViewState extends State<HomeView> {
 
   dataListener() {
     Timer.periodic(const Duration(milliseconds: 1), (timers) async {
-      if (getxcontroller.business.isEmpty) {
-        seconds++;
-        if (seconds == 10000) {
-          setState(() {
-            isloaded = true;
-            noshop = true;
-            timers.cancel();
-          });
-        }
-      } else {
-        if (getxcontroller.filterlistFavo.isNotEmpty) {
-          for (var business in getxcontroller.business) {
-            for (var favBusiness in getxcontroller.filterlistFavo) {
-              if (favBusiness["businessId"] == business.id) {
-                business.isFavourite = true;
-              }
+      if (mounted) {
+        if (getxcontroller.business.isEmpty) {
+          seconds++;
+          if (seconds == 10000) {
+            if (mounted) {
+              setState(() {
+                isloaded = true;
+                noshop = true;
+                timers.cancel();
+              });
             }
           }
-          getxcontroller.filterlistFavo.clear();
-        }
-        filterbussinessshops = getxcontroller.business;
+        } else {
+          if (getxcontroller.filterlistFavo.isNotEmpty) {
+            for (var business in getxcontroller.business) {
+              for (var favBusiness in getxcontroller.filterlistFavo) {
+                if (favBusiness["businessId"] == business.id) {
+                  business.isFavourite = true;
+                }
+              }
+            }
+            getxcontroller.filterlistFavo.clear();
+          }
+          filterbussinessshops = getxcontroller.business;
 
-        if (mounted) {
-          setState(() {
-            isloaded = true;
-          });
-        }
+          if (mounted) {
+            setState(() {
+              isloaded = true;
+            });
+          }
 
-        timers.cancel();
+          timers.cancel();
+        }
       }
     });
   }
@@ -119,13 +124,6 @@ class _HomeViewState extends State<HomeView> {
   //   var responseofdata = await fetchFav();
   //   _liste = convert.jsonDecode(responseofdata.body);
   //   return _liste;
-  // }
-
-  // @override
-  // void dispose() {
-  //   getxcontroller.dispose();
-  //   // TODO: implement dispose
-  //   super.dispose();
   // }
 
   @override

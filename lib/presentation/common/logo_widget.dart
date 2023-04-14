@@ -19,7 +19,7 @@ class LogoWidget extends StatelessWidget {
         ),
         buildVerticleSpace(10),
         Text(
-          'Sober Economic &\nHousing Revolution',
+          'SOBER Economic &\nHousing Revolution',
           style: GoogleFonts.libreFranklin(
             fontSize: getProportionateScreenHeight(20),
             fontWeight: FontWeight.bold,

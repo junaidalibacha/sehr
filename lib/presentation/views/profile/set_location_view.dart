@@ -159,6 +159,50 @@ class _SetLocationViewState extends State<SetLocationView> {
                                       key: viewModel.customerAddressFormKey,
                                       child: Column(
                                         children: [
+                                          buildVerticleSpace(12),
+                                          DropDownWidget(
+                                              bgColor: ColorManager.lightGrey,
+                                              dropdownColor: ColorManager.white,
+                                              blurRadius:
+                                                  getProportionateScreenHeight(
+                                                      3),
+                                              lableText: 'Province',
+                                              hintText: 'Select Your Province',
+                                              selectedOption:
+                                                  viewModel.selectedProvince,
+                                              dropdownMenuItems: filterlist2
+                                                  .map<
+                                                      DropdownMenuItem<String>>(
+                                                    (value) => DropdownMenuItem(
+                                                      value: value["title"],
+                                                      child: kTextBentonSansReg(
+                                                          value["title"]),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                              onChange: (value) async {
+                                                filterlist.clear();
+                                                var listdistrictId = filterlist2
+                                                    .where((element) =>
+                                                        (element["title"]
+                                                                .toString()
+                                                                .toLowerCase()
+                                                                .trim() ==
+                                                            value
+                                                                .toString()
+                                                                .toLowerCase()
+                                                                .trim()))
+                                                    .toList();
+                                                loadingshowdialog(context);
+                                                filterlist.clear();
+
+                                                await citycall(listdistrictId
+                                                    .first["id"]
+                                                    .toString());
+                                                viewModel.setProvince(value!);
+                                                Navigator.pop(context);
+                                              }),
+                                          buildVerticleSpace(12),
                                           TextFieldWidget(
                                             controller:
                                                 viewModel.addressTextController,
@@ -168,6 +212,7 @@ class _SetLocationViewState extends State<SetLocationView> {
                                                 getProportionateScreenHeight(3),
                                           ),
                                           buildVerticleSpace(12),
+
                                           DropDownWidget(
                                               bgColor: ColorManager.lightGrey,
                                               dropdownColor: ColorManager.white,
@@ -257,6 +302,7 @@ class _SetLocationViewState extends State<SetLocationView> {
                                           //   onChange: (value) =>
                                           //       viewModel.setDivision(value!),
                                           // ),
+
                                           buildVerticleSpace(12),
                                           DropDownWidget(
                                             bgColor: ColorManager.lightGrey,
@@ -270,40 +316,15 @@ class _SetLocationViewState extends State<SetLocationView> {
                                             dropdownMenuItems: filterlist
                                                 .map<DropdownMenuItem<String>>(
                                                   (value) => DropdownMenuItem(
-                                                    value: value["title"],
+                                                    value: value[0].toString(),
                                                     child: kTextBentonSansReg(
-                                                        value["title"]),
+                                                        value[1].toString()),
                                                   ),
                                                 )
                                                 .toList(),
                                             onChange: (value) =>
                                                 viewModel.setCity(value!),
                                           ),
-                                          buildVerticleSpace(12),
-                                          DropDownWidget(
-                                              bgColor: ColorManager.lightGrey,
-                                              dropdownColor: ColorManager.white,
-                                              blurRadius:
-                                                  getProportionateScreenHeight(
-                                                      3),
-                                              lableText: 'Province',
-                                              hintText: 'Select Your Province',
-                                              selectedOption:
-                                                  viewModel.selectedProvince,
-                                              dropdownMenuItems: filterlist2
-                                                  .map<
-                                                      DropdownMenuItem<String>>(
-                                                    (value) => DropdownMenuItem(
-                                                      value: value["title"],
-                                                      child: kTextBentonSansReg(
-                                                          value["title"]),
-                                                    ),
-                                                  )
-                                                  .toList(),
-                                              onChange: (value) {
-                                                viewModel.setProvince(value!);
-                                              }),
-                                          buildVerticleSpace(20),
                                         ],
                                       ),
                                     ),
@@ -341,12 +362,15 @@ class _SetLocationViewState extends State<SetLocationView> {
           );
   }
 
-  Future citycall() async {
+  Future citycall(String id) async {
+    filterlist.clear();
     var responseofdata =
-        await _orderApi.adressdetailsApi("http://3.133.0.29/api/cities");
+        await _orderApi.adressdetailsApi("http://3.133.0.29/api/cities/$id");
+
     datatest = convert.jsonDecode(responseofdata.body);
     _list.add(datatest == null ? [] : datatest!.values.toList());
-    _list[0][0].forEach((element) {
+
+    _list.forEach((element) {
       filterlist.add(element);
     });
 
@@ -367,7 +391,6 @@ class _SetLocationViewState extends State<SetLocationView> {
   }
 
   fetchorders() async {
-    await citycall();
     await proviencecall();
     await districtsdata();
     dataloading = true;

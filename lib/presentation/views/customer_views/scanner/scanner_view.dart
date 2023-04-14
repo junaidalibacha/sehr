@@ -5,9 +5,10 @@ import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
 import 'package:http/http.dart' as http;
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:sehr/app/index.dart';
+import 'package:sehr/getXcontroller/userpagecontroller.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/utils/utils.dart';
-import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
+
 import 'package:sehr/presentation/views/customer_views/scanner/orderplacing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,9 +24,10 @@ class ScannerView extends StatefulWidget {
 }
 
 class _ScannerViewState extends State<ScannerView> {
+  var getxcontroller = Get.put(AppController());
   Timer? _timer;
   Map<String, dynamic>? datatest;
-  final List<dynamic> _list = [];
+
   List<dynamic> filterlist = [];
   bool isloading = false;
   String apierror = "";
@@ -34,7 +36,7 @@ class _ScannerViewState extends State<ScannerView> {
   // late Size size;
   final GlobalKey _qrKey = GlobalKey(debugLabel: "QR");
 
-  TextEditingController Codecontroller = TextEditingController();
+  TextEditingController codecontroller = TextEditingController();
 
   QRViewController? _controller;
   bool isFlashOff = true;
@@ -43,7 +45,7 @@ class _ScannerViewState extends State<ScannerView> {
   bool isBuild = false;
   TextEditingController amountcontroller = TextEditingController();
   TextEditingController commentcontroller = TextEditingController();
-  final OrderApi _orderApi = OrderApi();
+
   @override
   Widget build(BuildContext context) {
     if (!isBuild && _controller != null) {
@@ -55,123 +57,129 @@ class _ScannerViewState extends State<ScannerView> {
     }
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: kTextBentonSansBold(
-          'Scan QR Code',
-          color: ColorManager.white,
-          fontSize: getProportionateScreenHeight(26),
+        extendBodyBehindAppBar: true,
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: kTextBentonSansBold(
+            'Scan QR Code',
+            color: ColorManager.white,
+            fontSize: getProportionateScreenHeight(26),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Stack(
-        children: [
-          SizedBox(
-            height: SizeConfig.screenHeight,
-            width: SizeConfig.screenWidth,
-            child: _buildQrView(context),
-          ),
-          Column(
-            children: [
-              buildVerticleSpace(120),
-              kTextBentonSansReg(
-                'Linking Customer to shop\nvia QR  Code or Enter\nSEHR Shop Code',
-                color: ColorManager.white,
-                fontSize: getProportionateScreenHeight(18),
-                textAlign: TextAlign.center,
-              ),
-              const Spacer(),
-              !qrstopped
-                  ? kTextBentonSansReg(
-                      'OR',
-                      color: ColorManager.white,
-                      fontSize: getProportionateScreenHeight(20),
-                    )
-                  : Container(),
-              buildVerticleSpace(12),
-              kTextBentonSansReg(
-                'SEHR Shop code',
-                color: ColorManager.white,
-                fontSize: getProportionateScreenHeight(18),
-              ),
-              buildVerticleSpace(26),
-              PinCodeFields(
-                length: 6,
-                // controller: newTextEditingController,
-                // focusNode: focusNode,
-                borderWidth: 1,
-                fieldHeight: getProportionateScreenHeight(60),
-                // fieldWidth: getProportionateScreenWidth(40),
-                margin: EdgeInsets.symmetric(
-                  horizontal: getProportionateScreenWidth(8),
-                ),
-                padding: EdgeInsets.zero,
-                autoHideKeyboard: false,
-                controller: Codecontroller,
-                keyboardType: TextInputType.number,
-                borderColor: ColorManager.lightGrey,
-                activeBorderColor: ColorManager.primary,
-                fieldBorderStyle: FieldBorderStyle.square,
-                textStyle: TextStyleManager.mediumTextStyle(
-                  fontSize: getProportionateScreenHeight(30),
-                  color: ColorManager.white,
-                ),
-                onComplete: (result) async {},
-              ),
-              buildVerticleSpace(27),
-              AppButtonWidget(
-                ontap: () async {
-                  if (Codecontroller.text.length == 6) {
-                    setState(() {
-                      isloading = true;
-                    });
+        body: Obx(() {
+          return getxcontroller.postloading.value
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Stack(
+                  children: [
+                    SizedBox(
+                      height: SizeConfig.screenHeight,
+                      width: SizeConfig.screenWidth,
+                      child: _buildQrView(context),
+                    ),
+                    Column(
+                      children: [
+                        buildVerticleSpace(120),
+                        kTextBentonSansReg(
+                          'Linking Customer to shop\nvia QR  Code or Enter\nSEHR Shop Code',
+                          color: ColorManager.white,
+                          fontSize: getProportionateScreenHeight(18),
+                          textAlign: TextAlign.center,
+                        ),
+                        const Spacer(),
+                        !qrstopped
+                            ? kTextBentonSansReg(
+                                'OR',
+                                color: ColorManager.white,
+                                fontSize: getProportionateScreenHeight(20),
+                              )
+                            : Container(),
+                        buildVerticleSpace(12),
+                        kTextBentonSansReg(
+                          'SEHR Shop code',
+                          color: ColorManager.white,
+                          fontSize: getProportionateScreenHeight(18),
+                        ),
+                        buildVerticleSpace(26),
+                        PinCodeFields(
+                          length: 6,
+                          // controller: newTextEditingController,
+                          // focusNode: focusNode,
+                          borderWidth: 1,
+                          fieldHeight: getProportionateScreenHeight(60),
+                          // fieldWidth: getProportionateScreenWidth(40),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: getProportionateScreenWidth(8),
+                          ),
+                          padding: EdgeInsets.zero,
+                          autoHideKeyboard: false,
+                          controller: codecontroller,
+                          keyboardType: TextInputType.number,
+                          borderColor: ColorManager.lightGrey,
+                          activeBorderColor: ColorManager.primary,
+                          fieldBorderStyle: FieldBorderStyle.square,
+                          textStyle: TextStyleManager.mediumTextStyle(
+                            fontSize: getProportionateScreenHeight(30),
+                            color: ColorManager.white,
+                          ),
+                          onComplete: (result) async {},
+                        ),
+                        buildVerticleSpace(27),
+                        AppButtonWidget(
+                          ontap: () async {
+                            if (codecontroller.text.length == 6) {
+                              setState(() {
+                                isloading = true;
+                              });
 
-                    var response =
-                        await checkvalidateBussinessShop(Codecontroller.text);
+                              var response = await checkvalidateBussinessShop(
+                                  codecontroller.text);
 
-                    if (response == null) {
-                      // ignore: use_build_context_synchronously
-                      Utils.flushBarErrorMessage(context, apierror);
-                    } else {
-                      datatest = convert.jsonDecode(response.body);
-                      // ignore: use_build_context_synchronously
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => OrderPlacingView(
-                                  datatest: datatest,
-                                )),
-                      );
-                    }
-                    if (mounted) {
-                      setState(() {
-                        isloading = false;
-                      });
-                    }
-                  }
-                },
-                height: getProportionateScreenHeight(46),
-                width: getProportionateScreenWidth(200),
-                borderRadius: getProportionateScreenHeight(23),
-                textSize: getProportionateScreenHeight(18),
-                child: isloading == false
-                    ? const Text(
-                        "Connect",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      )
-                    : const CircularProgressIndicator(),
-              ),
-              buildVerticleSpace(50),
-            ],
-          ),
-        ],
-      ),
-    );
+                              if (response == null) {
+                                // ignore: use_build_context_synchronously
+                                Utils.flushBarErrorMessage(context, apierror);
+                              } else {
+                                datatest = convert.jsonDecode(response.body);
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => OrderPlacingView(
+                                            datatest: datatest,
+                                          )),
+                                );
+                              }
+                              if (mounted) {
+                                setState(() {
+                                  isloading = false;
+                                });
+                              }
+                            }
+                          },
+                          height: getProportionateScreenHeight(46),
+                          width: getProportionateScreenWidth(200),
+                          borderRadius: getProportionateScreenHeight(23),
+                          textSize: getProportionateScreenHeight(18),
+                          child: isloading == false
+                              ? const Text(
+                                  "Connect",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : const CircularProgressIndicator(),
+                        ),
+                        buildVerticleSpace(50),
+                      ],
+                    ),
+                  ],
+                );
+        }));
   }
 
   checkvalidateBussinessShop(String sehercode) async {
@@ -217,6 +225,23 @@ class _ScannerViewState extends State<ScannerView> {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('No Permision')));
     }
+  }
+
+  timer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Timer.periodic(Duration(seconds: 1), (timer) async {
+      if (getxcontroller.rewardsdata!.isEmpty &&
+          getxcontroller.rewardslist[0].isEmpty) {
+        _controller?.pauseCamera();
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text("NOt Allow"),
+              );
+            });
+      }
+    });
   }
 
   timerlistener() {

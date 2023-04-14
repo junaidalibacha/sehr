@@ -12,7 +12,7 @@ class AppController extends GetxController {
   var business = <BusinessModel>[].obs;
   var filterbussiness = <BusinessModel>[].obs;
   var favBusinesses = <BusinessModel>[].obs;
-  var _liste = <dynamic>[].obs;
+  final _liste = <dynamic>[].obs;
   var listOfUserFavouriteBusiness = <UserFavouriteBusiness>[].obs;
 
   final NetworkApiService _networkApiService = NetworkApiService();
@@ -26,6 +26,7 @@ class AppController extends GetxController {
     // userFavouriteBusiness();
     getshops("10000");
     fetchorders();
+    fetchrewards();
 
     super.onInit();
   }
@@ -91,11 +92,11 @@ class AppController extends GetxController {
           }
         }
       }
-      business.forEach((element) {
+      for (var element in business) {
         if (element.isFavourite == true) {
           favBusinesses.assign(element);
         }
-      });
+      }
     } finally {
       postloading2.value = false;
     }
@@ -176,6 +177,48 @@ class AppController extends GetxController {
     try {
       postloading.value = true;
       await apicall();
+    } finally {
+      postloading.value = false;
+    }
+
+    update();
+  }
+
+  //usersrewards
+  var rewardslist = <dynamic>[].obs;
+  Map<String, dynamic>? rewardsdata;
+  fetchrewardsApi() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    var tokenofmy = prefs.get('accessToken').toString();
+
+    final uri = Uri.parse('http://3.133.0.29/api/user/my-rewards');
+    final headers = {'accept': '*/*', 'Authorization': 'Bearer $tokenofmy'};
+
+    var response = await http.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      return response;
+    } else {
+      print("object status code");
+      print(response.statusCode);
+
+      return response.body;
+    }
+  }
+
+  Future rewardscall() async {
+    var responseofdata = await fetchrewardsApi();
+
+    rewardsdata = convert.jsonDecode(responseofdata.body) as dynamic;
+    rewardslist.assign(rewardsdata == null ? [] : rewardsdata!.values.toList());
+  }
+
+  fetchrewards() async {
+    try {
+      postloading.value = true;
+      await rewardscall();
     } finally {
       postloading.value = false;
     }
