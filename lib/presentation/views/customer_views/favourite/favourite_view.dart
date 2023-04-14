@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/domain/models/business_model.dart';
 import 'package:sehr/getXcontroller/userpagecontroller.dart';
-import 'package:sehr/presentation/views/customer_views/shop/shop_details_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../common/app_button_widget.dart';
 import 'dart:convert' as convert;
 import '../../../common/custom_card_widget.dart';
 import '../../../src/index.dart';
 import "package:http/http.dart" as http;
+
+import '../shop/shop_details_view.dart';
 
 class FavouriteView extends StatefulWidget {
   const FavouriteView({super.key});
@@ -84,32 +84,48 @@ class _FavouriteViewState extends State<FavouriteView> {
               )
             : Column(
                 children: [
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(
+                  //     horizontal: getProportionateScreenWidth(23),
+                  //     vertical: getProportionateScreenHeight(13),
+                  //   ),
+                  //   child: Row(
+                  //     children: [
+                  //       _buildSearchField(),
+                  //       const Spacer(),
+                  //       _buildFilterButton(),
+                  //     ],
+                  //   ),
+                  // ),
+                  // Align(
+                  //   alignment: Alignment.centerLeft,
+                  //   child: Padding(
+                  //     padding: EdgeInsets.symmetric(
+                  //       horizontal: getProportionateScreenWidth(40),
+                  //       vertical: getProportionateScreenHeight(10),
+                  //     ),
+                  //     child: kTextBentonSansReg(
+                  //       'Favorite',
+                  //       fontSize: getProportionateScreenHeight(15),
+                  //     ),
+                  //   ),
+                  // ),
+                  buildVerticleSpace(20),
                   Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(23),
-                      vertical: getProportionateScreenHeight(13),
+                      horizontal: getProportionateScreenWidth(17),
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        _buildSearchField(),
-                        const Spacer(),
-                        _buildFilterButton(),
+                        kTextBentonSansReg(
+                          "Favorites",
+                          fontSize: getProportionateScreenHeight(27),
+                        ),
                       ],
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: getProportionateScreenWidth(40),
-                        vertical: getProportionateScreenHeight(10),
-                      ),
-                      child: kTextBentonSansReg(
-                        'Favorite',
-                        fontSize: getProportionateScreenHeight(15),
-                      ),
-                    ),
-                  ),
+                  buildVerticleSpace(20),
                   // buildVerticleSpace(10),
                   Expanded(
                     child: SingleChildScrollView(
@@ -139,98 +155,114 @@ class _FavouriteViewState extends State<FavouriteView> {
                                       physics:
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) =>
-                                          CustomListTileWidget(
-                                        leading: Image.asset(AppImages.menu),
-                                        // Image.asset(viewModel.favItems[index].shopImage),
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            kTextBentonSansMed(
-                                              favlist[index]
-                                                  .businessName
-                                                  .toString(),
-                                              overFlow: TextOverflow.ellipsis,
-                                              fontSize:
-                                                  getProportionateScreenHeight(
-                                                      15),
+                                          GestureDetector(
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            backgroundColor:
+                                                ColorManager.transparent,
+                                            builder: (ctx) => ShopDetailsView(
+                                              businessModel: favlist[index],
                                             ),
-                                            // buildVerticleSpace(3),
-                                            kTextBentonSansReg(
-                                              favlist[index].category?.title ??
-                                                  "Candy",
-                                              color: ColorManager.textGrey
-                                                  .withOpacity(0.8),
-                                              letterSpacing:
-                                                  getProportionateScreenWidth(
-                                                      0.5),
-                                            ),
-                                            // buildVerticleSpace(3),
-                                            kTextBentonSansReg(
-                                              '${double.parse("${favlist[index].distance}").toStringAsFixed(2)}km away',
-                                              color: ColorManager.textGrey
-                                                  .withOpacity(0.8),
-                                              fontSize:
-                                                  getProportionateScreenHeight(
-                                                      10),
-                                              letterSpacing:
-                                                  getProportionateScreenWidth(
-                                                      0.5),
-                                            ),
-                                          ],
-                                        ),
-                                        trailing: Column(
-                                          children: [
-                                            InkWell(
-                                              // onTap: () => viewModel.toggleFav(index),
-                                              splashColor:
-                                                  ColorManager.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(40),
-                                              child: Icon(
-                                                Icons.favorite_rounded,
-                                                size:
+                                          );
+                                        },
+                                        child: CustomListTileWidget(
+                                          leading: Image.asset(AppImages.menu),
+                                          // Image.asset(viewModel.favItems[index].shopImage),
+                                          title: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              kTextBentonSansMed(
+                                                favlist[index]
+                                                    .businessName
+                                                    .toString(),
+                                                overFlow: TextOverflow.ellipsis,
+                                                fontSize:
                                                     getProportionateScreenHeight(
-                                                        20),
-                                                color: ColorManager.error,
+                                                        15),
                                               ),
-                                            ),
-                                            const Spacer(),
-                                            AppButtonWidget(
-                                              ontap: () {
-                                                showModalBottomSheet(
-                                                  context: context,
-                                                  isScrollControlled: true,
-                                                  backgroundColor:
-                                                      ColorManager.transparent,
-                                                  builder: (ctx) =>
-                                                      ShopDetailsView(
-                                                    businessModel:
-                                                        favlist[index],
-                                                  ),
-                                                );
-                                              },
-                                              height:
-                                                  getProportionateScreenHeight(
-                                                      26),
-                                              width:
-                                                  getProportionateScreenWidth(
-                                                      72),
-                                              borderRadius:
-                                                  getProportionateScreenHeight(
-                                                      9),
-                                              text: 'Detail',
-                                              textSize:
-                                                  getProportionateScreenHeight(
-                                                      12),
-                                              letterSpacing:
-                                                  getProportionateScreenWidth(
-                                                      0.5),
-                                            ),
-                                            buildVerticleSpace(5),
-                                          ],
+                                              // buildVerticleSpace(3),
+                                              kTextBentonSansReg(
+                                                favlist[index]
+                                                        .category
+                                                        ?.title ??
+                                                    "Candy",
+                                                color: ColorManager.textGrey
+                                                    .withOpacity(0.8),
+                                                letterSpacing:
+                                                    getProportionateScreenWidth(
+                                                        0.5),
+                                              ),
+                                              // buildVerticleSpace(3),
+                                              kTextBentonSansReg(
+                                                '${double.parse("${favlist[index].distance}").toStringAsFixed(2)}km away',
+                                                color: ColorManager.textGrey
+                                                    .withOpacity(0.8),
+                                                fontSize:
+                                                    getProportionateScreenHeight(
+                                                        10),
+                                                letterSpacing:
+                                                    getProportionateScreenWidth(
+                                                        0.5),
+                                              ),
+                                            ],
+                                          ),
+                                          trailing: Column(
+                                            children: [
+                                              InkWell(
+                                                // onTap: () => viewModel.toggleFav(index),
+                                                splashColor:
+                                                    ColorManager.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(40),
+                                                child: Icon(
+                                                  Icons.favorite_rounded,
+                                                  size:
+                                                      getProportionateScreenHeight(
+                                                          20),
+                                                  color: ColorManager.error,
+                                                ),
+                                              ),
+                                              // const Spacer(),
+                                              // AppButtonWidget(
+                                              //   ontap: () {
+                                              //     showModalBottomSheet(
+                                              //       context: context,
+                                              //       isScrollControlled: true,
+                                              //       backgroundColor:
+                                              //           ColorManager.transparent,
+                                              //       builder: (ctx) =>
+                                              //           ShopDetailsView(
+                                              //         businessModel:
+                                              //             favlist[index],
+                                              //       ),
+                                              //     );
+
+                                              //   },
+                                              //   height:
+                                              //       getProportionateScreenHeight(
+                                              //           26),
+                                              //   width:
+                                              //       getProportionateScreenWidth(
+                                              //           72),
+                                              //   borderRadius:
+                                              //       getProportionateScreenHeight(
+                                              //           9),
+                                              //   text: 'Detail',
+                                              //   textSize:
+                                              //       getProportionateScreenHeight(
+                                              //           12),
+                                              //   letterSpacing:
+                                              //       getProportionateScreenWidth(
+                                              //           0.5),
+                                              // ),
+                                              // buildVerticleSpace(5),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     )),

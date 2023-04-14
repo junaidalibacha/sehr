@@ -7,6 +7,8 @@ import 'package:sehr/presentation/views/business_views/requested_order/ganerater
 import 'package:sehr/presentation/views/business_views/requested_order/verifyorder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../common/app_button_widget.dart';
+import '../../../common/custom_card_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
 
@@ -209,212 +211,322 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
                             horizontal: getProportionateScreenWidth(23),
                           ),
                           child: ListView.separated(
-                              shrinkWrap: true,
-                              itemCount: filterlist.length,
-                              separatorBuilder: (context, index) =>
-                                  buildVerticleSpace(8),
-                              padding: EdgeInsets.only(
-                                bottom: getProportionateScreenHeight(60),
+                            shrinkWrap: true,
+                            itemCount: filterlist.length,
+                            separatorBuilder: (context, index) =>
+                                buildVerticleSpace(8),
+                            padding: EdgeInsets.only(
+                              bottom: getProportionateScreenHeight(60),
+                            ),
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) =>
+                                CustomListTileWidget(
+                              leading: Image.asset(AppImages.menu),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  kTextBentonSansMed(
+                                    'customer name',
+                                    fontSize: getProportionateScreenHeight(15),
+                                  ),
+                                  kTextBentonSansReg(
+                                    DateFormat("yyyy-MM-dd")
+                                        .format(DateTime.parse(filterlist[index]
+                                                ["date"]
+                                            .toString()))
+                                        .toString(),
+                                    color:
+                                        ColorManager.textGrey.withOpacity(0.8),
+                                    letterSpacing:
+                                        getProportionateScreenWidth(0.5),
+                                  ),
+                                  kTextBentonSansMed(
+                                    'RS ${filterlist[index]["amount"]}',
+                                    color: ColorManager.primary,
+                                    fontSize: getProportionateScreenHeight(19),
+                                  ),
+                                ],
                               ),
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return Card(
-                                  child: SizedBox(
-                                      height: 100,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                              flex: 3,
-                                              child: Container(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      12.0),
-                                                  child: Image.asset(
-                                                      AppImages.menu),
-                                                ),
-                                              )),
-                                          Expanded(
-                                              flex: 4,
-                                              child: Container(
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      filterlist[index]["date"],
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 2,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          'RS ${filterlist[index]["amount"]}',
-                                                          style: TextStyle(
-                                                            color: ColorManager
-                                                                .primary,
-                                                            fontSize:
-                                                                getProportionateScreenHeight(
-                                                                    19),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              )),
-                                          Expanded(
-                                              flex: 3,
-                                              child: Container(
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    GestureDetector(
-                                                      onTap: () async {
-                                                        showdialogOrders(
-                                                            context, "Accept",
-                                                            () async {
-                                                          Navigator.pop(
-                                                              context);
-                                                          pleasewaitDIALOG(
-                                                              context);
-                                                          var response = await _orderApi
-                                                              .sendStatusOfOrders(
-                                                                  filterlist[index]
-                                                                          ["id"]
-                                                                      .toString(),
-                                                                  "accepted");
-                                                          if (response !=
-                                                              null) {
-                                                            // ignore: use_build_context_synchronously
-                                                            Navigator.pop(
-                                                                context);
-                                                            Map<String,
-                                                                    dynamic>?
-                                                                datatest;
-                                                            final List<dynamic>
-                                                                _list = [];
-                                                            List<dynamic>
-                                                                datafilterlist =
-                                                                [];
-                                                            _list.add(datatest ==
-                                                                    null
-                                                                ? []
-                                                                : datatest
-                                                                    .values
-                                                                    .toList());
-                                                            _list[0][0].forEach(
-                                                                (element) {
-                                                              if (element["status"]
-                                                                      .toString() !=
-                                                                  "pending") {
-                                                                filterlist.add(
-                                                                    element);
-                                                              }
-                                                            });
+                              trailing: Column(
+                                children: [
+                                  AppButtonWidget(
+                                    ontap: () async {
+                                      showdialogOrders(context, "Accept",
+                                          () async {
+                                        Navigator.pop(context);
+                                        pleasewaitDIALOG(context);
+                                        var response =
+                                            await _orderApi.sendStatusOfOrders(
+                                                filterlist[index]["id"]
+                                                    .toString(),
+                                                "accepted");
+                                        if (response != null) {
+                                          // ignore: use_build_context_synchronously
+                                          Navigator.pop(context);
+                                          Map<String, dynamic>? datatest;
+                                          final List<dynamic> list = [];
+                                          List<dynamic> datafilterlist = [];
+                                          list.add(datatest == null
+                                              ? []
+                                              : datatest.values.toList());
+                                          list[0][0].forEach((element) {
+                                            if (element["status"].toString() !=
+                                                "pending") {
+                                              filterlist.add(element);
+                                            }
+                                          });
 
-                                                            // ignore: use_build_context_synchronously
-                                                            _buildOrderDetails(
-                                                                    context,
-                                                                    datafilterlist[
-                                                                            index]
-                                                                        [
-                                                                        'status'],
-                                                                    datafilterlist[
-                                                                        index])
-                                                                .then(
-                                                                    (value) async {
-                                                              await fetchorders();
-                                                            });
-                                                          } else {
-                                                            Navigator.pop(
-                                                                context);
-                                                            errordialog(
-                                                                context);
-                                                          }
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        height: 30,
-                                                        decoration: BoxDecoration(
-                                                            color: ColorManager
-                                                                .primary,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        12)),
-                                                        width: 60,
-                                                        child: const Center(
-                                                            child: Text(
-                                                          "Accept",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        )),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        showdialogOrders(
-                                                            context, "Reject",
-                                                            () async {
-                                                          Navigator.pop(
-                                                              context);
-                                                          pleasewaitDIALOG(
-                                                              context);
+                                          // ignore: use_build_context_synchronously
+                                          _buildOrderDetails(
+                                                  context,
+                                                  datafilterlist[index]
+                                                      ['status'],
+                                                  datafilterlist[index])
+                                              .then((value) async {
+                                            await fetchorders();
+                                          });
+                                        } else {
+                                          Navigator.pop(context);
+                                          errordialog(context);
+                                        }
+                                      });
+                                    },
+                                    height: getProportionateScreenHeight(29),
+                                    width: getProportionateScreenWidth(80),
+                                    text: 'Accept',
+                                    textSize: getProportionateScreenHeight(12),
+                                    letterSpacing:
+                                        getProportionateScreenWidth(0.5),
+                                  ),
+                                  const Spacer(),
+                                  AppButtonWidget(
+                                    bgColor: Colors.transparent,
+                                    border: true,
+                                    ontap: () {
+                                      showdialogOrders(context, "Reject",
+                                          () async {
+                                        Navigator.pop(context);
+                                        pleasewaitDIALOG(context);
 
-                                                          var response = await _orderApi
-                                                              .sendStatusOfOrders(
-                                                                  filterlist[index]
-                                                                          ["id"]
-                                                                      .toString(),
-                                                                  "rejected");
+                                        var response =
+                                            await _orderApi.sendStatusOfOrders(
+                                                filterlist[index]["id"]
+                                                    .toString(),
+                                                "rejected");
 
-                                                          if (response !=
-                                                              null) {
-                                                            Navigator.pop(
-                                                                context);
-                                                            await fetchorders();
-                                                          } else {
-                                                            Navigator.pop(
-                                                                context);
-                                                            errordialog(
-                                                                context);
-                                                          }
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        height: 30,
-                                                        decoration: BoxDecoration(
-                                                            border: Border.all(
-                                                                color:
-                                                                    Colors.red),
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        12)),
-                                                        width: 60,
-                                                        child: const Center(
-                                                            child: Text(
-                                                          "Reject",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.red),
-                                                        )),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )),
-                                        ],
-                                      )),
-                                );
-                              }),
+                                        if (response != null) {
+                                          Navigator.pop(context);
+                                          await fetchorders();
+                                        } else {
+                                          Navigator.pop(context);
+                                          errordialog(context);
+                                        }
+                                      });
+                                    },
+                                    height: getProportionateScreenHeight(29),
+                                    width: getProportionateScreenWidth(80),
+                                    text: 'Reject',
+                                    textColor:
+                                        ColorManager.error.withOpacity(0.6),
+                                    textSize: getProportionateScreenHeight(12),
+                                    letterSpacing:
+                                        getProportionateScreenWidth(0.5),
+                                  ),
+                                ],
+                              ),
+
+                              // itemBuilder: (context, index) {
+                              //   return Card(
+                              //     child: SizedBox(
+                              //         height: 100,
+                              //         child: Row(
+                              //           children: [
+                              //             Expanded(
+                              //                 flex: 3,
+                              //                 child: Container(
+                              //                   child: Padding(
+                              //                     padding:
+                              //                         const EdgeInsets.all(12.0),
+                              //                     child:
+                              //                         Image.asset(AppImages.menu),
+                              //                   ),
+                              //                 )),
+                              //             Expanded(
+                              //                 flex: 4,
+                              //                 child: Container(
+                              //                   child: Column(
+                              //                     mainAxisAlignment:
+                              //                         MainAxisAlignment.center,
+                              //                     children: [
+                              //                       Text(
+                              //                         filterlist[index]["date"],
+                              //                         overflow:
+                              //                             TextOverflow.ellipsis,
+                              //                         maxLines: 2,
+                              //                       ),
+                              //                       Row(
+                              //                         children: [
+                              //                           Text(
+                              //                             'RS ${filterlist[index]["amount"]}',
+                              //                             style: TextStyle(
+                              //                               color: ColorManager
+                              //                                   .primary,
+                              //                               fontSize:
+                              //                                   getProportionateScreenHeight(
+                              //                                       19),
+                              //                             ),
+                              //                           ),
+                              //                         ],
+                              //                       ),
+                              //                     ],
+                              //                   ),
+                              //                 )),
+                              //             Expanded(
+                              //                 flex: 3,
+                              //                 child: Container(
+                              //                   child: Column(
+                              //                     mainAxisAlignment:
+                              //                         MainAxisAlignment.center,
+                              //                     children: [
+                              //                       GestureDetector(
+                              //                         onTap: () async {
+                              //                           showdialogOrders(
+                              //                               context, "Accept",
+                              //                               () async {
+                              //                             Navigator.pop(context);
+                              //                             pleasewaitDIALOG(
+                              //                                 context);
+                              //                             var response = await _orderApi
+                              //                                 .sendStatusOfOrders(
+                              //                                     filterlist[index]
+                              //                                             ["id"]
+                              //                                         .toString(),
+                              //                                     "accepted");
+                              //                             if (response != null) {
+                              //                               // ignore: use_build_context_synchronously
+                              //                               Navigator.pop(
+                              //                                   context);
+                              //                               Map<String, dynamic>?
+                              //                                   datatest;
+                              //                               final List<dynamic>
+                              //                                   list = [];
+                              //                               List<dynamic>
+                              //                                   datafilterlist =
+                              //                                   [];
+                              //                               list.add(datatest ==
+                              //                                       null
+                              //                                   ? []
+                              //                                   : datatest.values
+                              //                                       .toList());
+                              //                               list[0][0].forEach(
+                              //                                   (element) {
+                              //                                 if (element["status"]
+                              //                                         .toString() !=
+                              //                                     "pending") {
+                              //                                   filterlist
+                              //                                       .add(element);
+                              //                                 }
+                              //                               });
+
+                              //                               // ignore: use_build_context_synchronously
+                              //                               _buildOrderDetails(
+                              //                                       context,
+                              //                                       datafilterlist[
+                              //                                               index]
+                              //                                           [
+                              //                                           'status'],
+                              //                                       datafilterlist[
+                              //                                           index])
+                              //                                   .then(
+                              //                                       (value) async {
+                              //                                 await fetchorders();
+                              //                               });
+                              //                             } else {
+                              //                               Navigator.pop(
+                              //                                   context);
+                              //                               errordialog(context);
+                              //                             }
+                              //                           });
+                              //                         },
+                              //                         child: Container(
+                              //                           height: 30,
+                              //                           decoration: BoxDecoration(
+                              //                               color: ColorManager
+                              //                                   .primary,
+                              //                               borderRadius:
+                              //                                   BorderRadius
+                              //                                       .circular(
+                              //                                           12)),
+                              //                           width: 60,
+                              //                           child: const Center(
+                              //                               child: Text(
+                              //                             "Accept",
+                              //                             style: TextStyle(
+                              //                                 color:
+                              //                                     Colors.white),
+                              //                           )),
+                              //                         ),
+                              //                       ),
+                              //                       const SizedBox(
+                              //                         height: 10,
+                              //                       ),
+                              //                       GestureDetector(
+                              //                         onTap: () {
+                              //                           showdialogOrders(
+                              //                               context, "Reject",
+                              //                               () async {
+                              //                             Navigator.pop(context);
+                              //                             pleasewaitDIALOG(
+                              //                                 context);
+
+                              //                             var response = await _orderApi
+                              //                                 .sendStatusOfOrders(
+                              //                                     filterlist[index]
+                              //                                             ["id"]
+                              //                                         .toString(),
+                              //                                     "rejected");
+
+                              //                             if (response != null) {
+                              //                               Navigator.pop(
+                              //                                   context);
+                              //                               await fetchorders();
+                              //                             } else {
+                              //                               Navigator.pop(
+                              //                                   context);
+                              //                               errordialog(context);
+                              //                             }
+                              //                           });
+                              //                         },
+                              //                         child: Container(
+                              //                           height: 30,
+                              //                           decoration: BoxDecoration(
+                              //                               border: Border.all(
+                              //                                   color:
+                              //                                       Colors.red),
+                              //                               color: Colors.white,
+                              //                               borderRadius:
+                              //                                   BorderRadius
+                              //                                       .circular(
+                              //                                           12)),
+                              //                           width: 60,
+                              //                           child: const Center(
+                              //                               child: Text(
+                              //                             "Reject",
+                              //                             style: TextStyle(
+                              //                                 color: Colors.red),
+                              //                           )),
+                              //                         ),
+                              //                       ),
+                              //                     ],
+                              //                   ),
+                              //                 )),
+                              //           ],
+                              //         )),
+                              //   );
+                            ),
+                          ),
                         ),
                       ),
                     ],

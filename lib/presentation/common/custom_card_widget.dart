@@ -30,35 +30,29 @@ class CustomListTileWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(18),
-                horizontal: getProportionateScreenWidth(15),
-              ),
-              child: leading,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: getProportionateScreenHeight(18),
+              horizontal: getProportionateScreenWidth(15),
             ),
+            child: leading,
           ),
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(18),
-              ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: getProportionateScreenHeight(18),
+            ),
+            child: SizedBox(
+              width: getProportionateScreenWidth(140),
               child: title,
             ),
           ),
           const Spacer(),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(15),
-                horizontal: getProportionateScreenWidth(15),
-              ),
-              child: trailing,
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: getProportionateScreenHeight(15),
+              horizontal: getProportionateScreenWidth(15),
             ),
+            child: trailing,
           ),
         ],
       ),
