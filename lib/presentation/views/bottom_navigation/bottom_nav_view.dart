@@ -1,17 +1,22 @@
 import 'dart:async';
+import 'dart:convert' as convert;
 
 import 'package:flutter/services.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sehr/app/index.dart';
+import 'package:sehr/presentation/notifications/notifications.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
 import 'package:sehr/presentation/view_models/bottom_nav_view_model.dart';
 import 'package:sehr/presentation/views/bottom_navigation/permissionhandler.dart';
+import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../src/index.dart';
 import '../../view_models/customer_view_models/home_view_model.dart';
+
+var notificationcontrollers = Get.put(NotificationController());
 
 class BottomNavigationView extends StatefulWidget {
   int pageindexview = 0;
@@ -23,12 +28,43 @@ class BottomNavigationView extends StatefulWidget {
 
 class _BottomNavigationViewState extends State<BottomNavigationView> {
   Timer? _timer;
+  Timer? _notificatintimer;
 
   String showbussinespages = "";
 
   String _userRole = '';
 
   int pageindex = 0;
+
+  final OrderApi _orderApi = OrderApi();
+
+  Map<String, dynamic>? datatest;
+  final List<dynamic> _list = [];
+  List<dynamic> filterlist = [];
+  bool nodata = false;
+
+  Future apicall() async {
+    print("object checkinh");
+    datatest = null;
+    filterlist.clear();
+    _list.clear();
+    if (mounted) {
+      setState(() {});
+    }
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var responseofdata = await _orderApi
+        .fetchorderrequest(prefs.getString("sehrcode").toString());
+    datatest = convert.jsonDecode(responseofdata.body);
+    _list.add(datatest == null ? [] : datatest!.values.toList());
+    _list[0][0].forEach((element) {
+      if (element["status"].toString() == "pending") {
+        filterlist.add(element);
+      }
+    });
+
+    return datatest;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +118,7 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
   }
 
   checklocation() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
       } else {
         Get.offAll(() => const PermissionHandler());
@@ -115,8 +151,22 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
   void initState() {
     checklocation();
     fetchscreen();
+    notificationInitialize();
     // TODO: implement initState
     super.initState();
+  }
+
+  notificationInitialize() {
+    _notificatintimer =
+        Timer.periodic(const Duration(seconds: 10), (timer) async {
+      if (_userRole == 'business') {
+        await apicall();
+        // ignore: use_build_context_synchronously
+        notificationcontrollers.callNotifications(filterlist, context);
+      } else {
+        _notificatintimer!.cancel();
+      }
+    });
   }
 
   AppBar _buildAppBar(BuildContext context) {
@@ -203,10 +253,12 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
                 : viweModel.businessPages.length,
             (index) => InkWell(
               onTap: () {
-                setState(() {
-                  pageindex = index;
-                });
-                viweModel.pageChange(index);
+                if (mounted) {
+                  setState(() {
+                    pageindex = index;
+                  });
+                  viweModel.pageChange(index);
+                }
               },
               child: userRole == 'user'
                   ? index == 2

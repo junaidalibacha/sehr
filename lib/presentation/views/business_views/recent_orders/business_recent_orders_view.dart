@@ -6,6 +6,7 @@ import 'package:sehr/presentation/views/business_views/requested_order/apicall.d
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../common/app_button_widget.dart';
+import '../../../common/custom_card_widget.dart';
 import '../../../common/custom_chip_widget.dart';
 import '../../../src/index.dart';
 
@@ -239,55 +240,132 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
                             // vertical: getProportionateScreenHeight(15),
                           ),
                           child: ListView.separated(
-                              shrinkWrap: true,
-                              itemCount: searchfilterlist.length,
-                              separatorBuilder: (context, index) =>
-                                  buildVerticleSpace(20),
-                              padding: EdgeInsets.only(
-                                bottom: getProportionateScreenHeight(50),
+                            shrinkWrap: true,
+                            itemCount: searchfilterlist.length,
+                            separatorBuilder: (context, index) =>
+                                buildVerticleSpace(20),
+                            padding: EdgeInsets.only(
+                              bottom: getProportionateScreenHeight(50),
+                            ),
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) =>
+                                CustomListTileWidget(
+                              leading: Image.asset(AppImages.menu),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  kTextBentonSansMed(
+                                    'Customer name',
+                                    fontSize: getProportionateScreenHeight(15),
+                                  ),
+                                  kTextBentonSansReg(
+                                    DateFormat("yyyy-MM-dd")
+                                        .format(DateTime.parse(
+                                            searchfilterlist[index]["date"]
+                                                .toString()))
+                                        .toString(),
+
+                                    // searchfilterlist[index]["date"],
+                                    color:
+                                        ColorManager.textGrey.withOpacity(0.8),
+                                    letterSpacing:
+                                        getProportionateScreenWidth(0.5),
+                                  ),
+                                  kTextBentonSansMed(
+                                    'RS ${searchfilterlist[index]["amount"]}',
+                                    color: searchfilterlist[index]["status"] ==
+                                            'accepted'
+                                        ? ColorManager.primary
+                                        : ColorManager.textGrey
+                                            .withOpacity(0.3),
+                                    fontSize: getProportionateScreenHeight(19),
+                                  ),
+                                ],
                               ),
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) => GestureDetector(
-                                    onTap: () {
-                                      _buildOrderDetails(
-                                          context,
-                                          searchfilterlist[index]["status"]
-                                              .toString(),
-                                          searchfilterlist[index]);
-                                    },
-                                    child: Card(
-                                      elevation: 0,
-                                      child: ListTile(
-                                        trailing: Text(
-                                          "RS ${searchfilterlist[index]["amount"]}",
-                                          style: const TextStyle(),
-                                        ),
-                                        subtitle: AppButtonWidget(
-                                          bgColor: searchfilterlist[index]
-                                                      ["status"] ==
-                                                  "accepted"
-                                              ? null
-                                              : Colors.red,
-                                          ontap: () {},
-                                          height:
-                                              getProportionateScreenHeight(29),
-                                          width:
-                                              getProportionateScreenWidth(85),
-                                          text: searchfilterlist[index]
-                                              ["status"],
-                                          textSize:
-                                              getProportionateScreenHeight(12),
-                                          letterSpacing:
-                                              getProportionateScreenWidth(0.5),
-                                        ),
-                                        leading: Image.asset(AppImages.menu),
-                                        title: Text(
-                                          searchfilterlist[index]["date"],
-                                          style: const TextStyle(fontSize: 10),
-                                        ),
-                                      ),
+                              trailing: Column(
+                                children: [
+                                  AppButtonWidget(
+                                    bgColor: searchfilterlist[index]
+                                                ["status"] ==
+                                            'accepted'
+                                        ? null
+                                        : ColorManager.textGrey
+                                            .withOpacity(0.2),
+                                    ontap: () {},
+                                    height: getProportionateScreenHeight(29),
+                                    width: getProportionateScreenWidth(85),
+                                    text: searchfilterlist[index]["status"],
+                                    textSize: getProportionateScreenHeight(12),
+                                    letterSpacing:
+                                        getProportionateScreenWidth(0.5),
+                                  ),
+                                  const Spacer(),
+                                  InkWell(
+                                    onTap: searchfilterlist[index]["status"] ==
+                                            'accepted'
+                                        ? () => _buildOrderDetails(
+                                            context,
+                                            searchfilterlist[index]["status"]
+                                                .toString(),
+                                            searchfilterlist[index])
+                                        : null,
+                                    child: kTextBentonSansReg(
+                                      'Detail',
+                                      color: searchfilterlist[index]
+                                                  ["status"] ==
+                                              'accepted'
+                                          ? ColorManager.blue
+                                          : ColorManager.textGrey
+                                              .withOpacity(0.3),
                                     ),
-                                  )),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // itemBuilder: (context, index) => GestureDetector(
+                          //       onTap: () {
+                          //         _buildOrderDetails(
+                          //             context,
+                          //             searchfilterlist[index]["status"]
+                          //                 .toString(),
+                          //             searchfilterlist[index]);
+                          //       },
+                          //       child: Card(
+                          //         elevation: 0,
+                          //         child: ListTile(
+                          //           trailing: Text(
+                          //             "RS ${searchfilterlist[index]["amount"]}",
+                          //             style: const TextStyle(),
+                          //           ),
+                          //           subtitle: AppButtonWidget(
+                          //             bgColor: searchfilterlist[index]
+                          //                         ["status"] ==
+                          //                     "accepted"
+                          //                 ? null
+                          //                 : Colors.red,
+                          //             ontap: () {},
+                          //             height:
+                          //                 getProportionateScreenHeight(29),
+                          //             width:
+                          //                 getProportionateScreenWidth(85),
+                          //             text: searchfilterlist[index]
+                          //                 ["status"],
+                          //             textSize:
+                          //                 getProportionateScreenHeight(12),
+                          //             letterSpacing:
+                          //                 getProportionateScreenWidth(0.5),
+                          //           ),
+                          //           leading: Image.asset(AppImages.menu),
+                          //           title: Text(
+                          //             searchfilterlist[index]["date"],
+                          //             style: const TextStyle(fontSize: 10),
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     )),
                         ),
                       ),
       ],

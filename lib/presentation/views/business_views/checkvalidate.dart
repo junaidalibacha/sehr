@@ -5,7 +5,7 @@ import 'package:sehr/presentation/views/business_views/services.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 import 'package:sehr/presentation/views/profile/add_bio/add_business_details_view.dart';
 import 'package:sehr/presentation/views/profile/add_bio/business_verification/business_verification_processing_view.dart';
-import 'package:sehr/presentation/views/profile/add_bio/business_verification/business_verification_view.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckBussinessValidate extends StatefulWidget {

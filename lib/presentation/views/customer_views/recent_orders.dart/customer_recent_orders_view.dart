@@ -1,13 +1,13 @@
+import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 
 import 'package:sehr/presentation/common/custom_chip_widget.dart';
 import 'package:sehr/presentation/utils/utils.dart';
 
-import 'package:sehr/presentation/view_models/blog_view_model.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'dart:convert' as convert;
 
-import '../../../common/app_button_widget.dart';
+import '../../../common/custom_card_widget.dart';
 import '../../../src/index.dart';
 
 class CustomerRecentOrdersView extends StatefulWidget {
@@ -77,23 +77,29 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
           ),
           child: Column(
             children: [
-              buildVerticleSpace(37),
-              Row(
-                children: [
-                  kTextBentonSansReg(
-                    "${appUser.firstName.toString()}${appUser.lastName.toString()}",
-                    fontSize: getProportionateScreenHeight(27),
-                  ),
-                ],
+              buildVerticleSpace(20),
+              kTextBentonSansReg(
+                "Recent Orders",
+                fontSize: getProportionateScreenHeight(27),
               ),
-              Row(
-                children: [
-                  kTextBentonSansReg(
-                    appUser.mobile.toString(),
-                    color: ColorManager.textGrey.withOpacity(0.3),
-                  ),
-                ],
-              )
+              buildVerticleSpace(20),
+              // buildVerticleSpace(37),
+              // Row(
+              //   children: [
+              //     kTextBentonSansReg(
+              //       "${appUser.firstName.toString()}${appUser.lastName.toString()}",
+              //       fontSize: getProportionateScreenHeight(27),
+              //     ),
+              //   ],
+              // ),
+              // Row(
+              //   children: [
+              //     kTextBentonSansReg(
+              //       appUser.mobile.toString(),
+              //       color: ColorManager.textGrey.withOpacity(0.3),
+              //     ),
+              //   ],
+              // )
             ],
           ),
         ),
@@ -195,10 +201,13 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
         ),
         nodata == true
             ? Container(
-                child: const Text(
-                "No Recent Completed Orders",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ))
+                child: const Center(
+                  child: Text(
+                    "No Recent Completed Orders",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
             : filterlist.isEmpty
                 ? const Center(
                     child: CircularProgressIndicator(),
@@ -209,56 +218,131 @@ class _CustomerRecentOrdersViewState extends State<CustomerRecentOrdersView> {
                         horizontal: getProportionateScreenWidth(24),
                       ),
                       child: ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: filterlisttype.length,
-                          separatorBuilder: (context, index) =>
-                              buildVerticleSpace(20),
-                          padding: EdgeInsets.only(
-                            bottom: getProportionateScreenHeight(50),
+                        shrinkWrap: true,
+                        itemCount: filterlisttype.length,
+                        separatorBuilder: (context, index) =>
+                            buildVerticleSpace(20),
+                        padding: EdgeInsets.only(
+                          bottom: getProportionateScreenHeight(50),
+                        ),
+                        physics: const NeverScrollableScrollPhysics(),
+
+                        itemBuilder: (context, index) => CustomListTileWidget(
+                          leading: Image.asset(AppImages.menu),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              kTextBentonSansMed(
+                                // filterlisttype[index]['name'],
+                                'Business Name',
+                                fontSize: getProportionateScreenHeight(15),
+                                overFlow: TextOverflow.ellipsis,
+                              ),
+                              // buildVerticleSpace(4),
+                              kTextBentonSansReg(
+                                DateFormat("yyyy-MM-dd")
+                                    .format(DateTime.parse(filterlisttype[index]
+                                            ["date"]
+                                        .toString()))
+                                    .toString(),
+                                // filterlisttype[index]["date"],
+                                color: ColorManager.textGrey.withOpacity(0.8),
+                                letterSpacing: getProportionateScreenWidth(0.5),
+                              ),
+                              // buildVerticleSpace(8),
+                              kTextBentonSansReg(
+                                'RS ${filterlisttype[index]["amount"]}',
+                                color: ColorManager.primary,
+                                fontSize: getProportionateScreenHeight(19),
+                                letterSpacing: getProportionateScreenWidth(0.5),
+                              ),
+                            ],
                           ),
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) => Card(
-                                elevation: 0,
-                                child: ListTile(
-                                  trailing: Text(
-                                    "RS ${filterlisttype[index]["amount"]}",
-                                    style: const TextStyle(),
-                                  ),
-                                  subtitle: AppButtonWidget(
-                                    bgColor: filterlisttype[index]["status"] ==
-                                            "accepted"
-                                        ? ColorManager.primary.withOpacity(0.2)
-                                        : filterlisttype[index]["status"] ==
-                                                "rejected"
-                                            ? Colors.redAccent.withOpacity(0.2)
-                                            : Colors.amberAccent
-                                                .withOpacity(0.2),
-                                    ontap: () {
-                                      _buildOrderDetails(
-                                          context, filterlisttype[index]);
-                                    },
-                                    height: getProportionateScreenHeight(29),
-                                    width: getProportionateScreenWidth(85),
-                                    textColor: filterlisttype[index]
-                                                ["status"] ==
-                                            "accepted"
-                                        ? ColorManager.primary
-                                        : filterlisttype[index]["status"] ==
-                                                "rejected"
-                                            ? Colors.redAccent
-                                            : Colors.amberAccent,
-                                    text: filterlisttype[index]["status"],
-                                    textSize: getProportionateScreenHeight(12),
-                                    letterSpacing:
-                                        getProportionateScreenWidth(0.5),
-                                  ),
-                                  leading: Image.asset(AppImages.menu),
-                                  title: Text(
-                                    filterlisttype[index]["date"],
-                                    style: const TextStyle(fontSize: 10),
-                                  ),
-                                ),
-                              )),
+                          trailing: Column(
+                            children: [
+                              // AppButtonWidget(
+                              //   ontap: () {},
+                              //   height: getProportionateScreenHeight(29),
+                              //   width: getProportionateScreenWidth(85),
+                              //   text: 'Buy Again',
+                              //   textSize: getProportionateScreenHeight(12),
+                              //   letterSpacing: getProportionateScreenWidth(0.5),
+                              // ),
+                              // buildVerticleSpace(11),
+                              CustomChipWidget(
+                                  width: getProportionateScreenWidth(70),
+                                  bgColor: filterlist[index]["status"] ==
+                                          "accepted"
+                                      ? ColorManager.primary.withOpacity(0.2)
+                                      : filterlist[index]["status"] ==
+                                              "rejected"
+                                          ? Colors.redAccent.withOpacity(0.2)
+                                          : Colors.amberAccent.withOpacity(0.2),
+                                  text: filterlist[index]["status"],
+                                  textColor:
+                                      filterlist[index]["status"] == "accepted"
+                                          ? ColorManager.primary
+                                          : filterlist[index]["status"] ==
+                                                  "rejected"
+                                              ? Colors.redAccent
+                                              : Colors.amberAccent),
+                              const Spacer(),
+                              // InkWell(
+                              //   onTap: () => _buildOrderDetails(
+                              //       context, filterlisttype[index]),
+                              //   child: kTextBentonSansReg(
+                              //     'Detail',
+                              //     color: ColorManager.blue,
+                              //   ),
+                              // ),
+                            ],
+                          ),
+                        ),
+
+                        // itemBuilder: (context, index) => Card(
+                        //       elevation: 0,
+                        //       child: ListTile(
+                        //         trailing: Text(
+                        //           "RS ${filterlisttype[index]["amount"]}",
+                        //           style: const TextStyle(),
+                        //         ),
+                        //         subtitle: AppButtonWidget(
+                        //           bgColor: filterlisttype[index]["status"] ==
+                        //                   "accepted"
+                        //               ? ColorManager.primary.withOpacity(0.2)
+                        //               : filterlisttype[index]["status"] ==
+                        //                       "rejected"
+                        //                   ? Colors.redAccent.withOpacity(0.2)
+                        //                   : Colors.amberAccent
+                        //                       .withOpacity(0.2),
+                        //           ontap: () {
+                        //             _buildOrderDetails(
+                        //                 context, filterlisttype[index]);
+                        //           },
+                        //           height: getProportionateScreenHeight(29),
+                        //           width: getProportionateScreenWidth(85),
+                        //           textColor: filterlisttype[index]
+                        //                       ["status"] ==
+                        //                   "accepted"
+                        //               ? ColorManager.primary
+                        //               : filterlisttype[index]["status"] ==
+                        //                       "rejected"
+                        //                   ? Colors.redAccent
+                        //                   : Colors.amberAccent,
+                        //           text: filterlisttype[index]["status"],
+                        //           textSize: getProportionateScreenHeight(12),
+                        //           letterSpacing:
+                        //               getProportionateScreenWidth(0.5),
+                        //         ),
+                        //         leading: Image.asset(AppImages.menu),
+                        //         title: Text(
+                        //           filterlisttype[index]["date"],
+                        //           style: const TextStyle(fontSize: 10),
+                        //         ),
+                        //       ),
+                        //     )),
+                      ),
                     ),
                   ),
       ],
