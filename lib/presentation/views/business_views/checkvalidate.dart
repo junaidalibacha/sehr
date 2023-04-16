@@ -29,15 +29,12 @@ class _CheckBussinessValidateState extends State<CheckBussinessValidate> {
     if (data != null) {
       if (data!["id"].toString() != "null") {
         if (data!["sehrCode"].toString() != "null") {
+          print(data!["gradeId"]);
           String sehrcode = prefs.getString("sehrcode").toString();
           if (sehrcode == "null") {
             prefs.setString("sehrcode", data!["sehrCode"].toString());
           }
-          String gradeid = prefs.getString("gradeId").toString();
-          if (gradeid == "null") {
-            prefs.setString("gradeId", data!["gradeId"].toString());
-          }
-
+          prefs.setString("gradeId", data!["gradeId"].toString());
           prefs.remove("userRole");
           prefs.setString("userRole", "business");
           prefs.remove("isverified");
@@ -60,9 +57,11 @@ class _CheckBussinessValidateState extends State<CheckBussinessValidate> {
         Get.offAll(() => const AddBusinessDetailsView());
       }
     } else {
-      setState(() {
-        notapprove = false;
-      });
+      if (mounted) {
+        setState(() {
+          notapprove = false;
+        });
+      }
     }
   }
 

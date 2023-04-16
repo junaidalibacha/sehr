@@ -250,14 +250,19 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) =>
                                 CustomListTileWidget(
-                              leading: Image.asset(AppImages.menu),
+                              leading: filterlist[index]["customer"]["logo"]
+                                          .toString() !=
+                                      "null"
+                                  ? Image.network(
+                                      filterlist[index]["customer"]["logo"])
+                                  : Image.asset(AppImages.menu),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   kTextBentonSansMed(
-                                    'Customer name',
+                                    "${filterlist[index]["customer"]["firstName"]} ${filterlist[index]["customer"]["lastName"]}",
                                     fontSize: getProportionateScreenHeight(15),
                                   ),
                                   kTextBentonSansReg(
@@ -454,7 +459,7 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
                   text: 'Pervious Customer'),
               buildVerticleSpace(20),
               kTextBentonSansMed(
-                'Customer Name',
+                "${orderdata["customer"]["firstName"]} ${orderdata["customer"]["lastName"]}",
                 fontSize: getProportionateScreenHeight(27),
               ),
               buildVerticleSpace(65),

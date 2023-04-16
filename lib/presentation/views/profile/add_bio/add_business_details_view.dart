@@ -175,11 +175,8 @@ class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
                                       ),
                                     )
                                     .toList(),
-                                onChange: (value) async {
-                                  SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
-                                  prefs.remove("category");
-                                  prefs.setString("category", value.toString());
+                                onChange: (value) {
+                                  viewModel.setBusinessOption(value!);
                                 }),
                             buildVerticleSpace(20),
                             TextFieldWidget(

@@ -110,32 +110,25 @@ class _RewardViewState extends State<RewardView> {
                               ],
                             )
                           : Container(),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: getProportionateScreenHeight(10),
-                            horizontal: getProportionateScreenWidth(30)),
-                        child: kTextBentonSansBold("Others Rewards",
-                            fontSize: getProportionateScreenHeight(20)),
-                      ),
-                      Expanded(
-                        child: ListView.separated(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(25)),
-                            shrinkWrap: true,
-                            itemCount: filterlist.length,
-                            separatorBuilder: (context, index) =>
-                                buildVerticleSpace(15),
-                            itemBuilder: (context, index) {
-                              // if (activatedReward[0]["id"] ==
-                              //     filterlist[index]["id"]) {
-                              //   return null;
-                              // } else {
+                      activatedReward.length != 0
+                          ? Container()
+                          : Expanded(
+                              child: ListView.separated(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          getProportionateScreenWidth(25)),
+                                  shrinkWrap: true,
+                                  itemCount: filterlist.length,
+                                  separatorBuilder: (context, index) =>
+                                      buildVerticleSpace(15),
+                                  itemBuilder: (context, index) {
+                                    // if (activatedReward[0]["id"] ==
+                                    //     filterlist[index]["id"]) {
+                                    //   return null;
+                                    // } else {
 
-                              // }
-                              return activatedReward[0]["id"] ==
-                                      filterlist[index]["id"]
-                                  ? Container()
-                                  : GestureDetector(
+                                    // }
+                                    return GestureDetector(
                                       onTap: () {
                                         showDialog(
                                             context: context,
@@ -153,12 +146,6 @@ class _RewardViewState extends State<RewardView> {
                                                                         ["id"]
                                                                     .toString());
                                                         if (response != null) {
-                                                          getxcontroller
-                                                              .rewardsdata!
-                                                              .clear();
-                                                          getxcontroller
-                                                              .rewardslist
-                                                              .clear();
                                                           await getxcontroller
                                                               .fetchrewards();
                                                           Navigator.pop(
@@ -179,8 +166,8 @@ class _RewardViewState extends State<RewardView> {
                                             ["description"],
                                       ),
                                     );
-                            }),
-                      )
+                                  }),
+                            )
                     ],
                   );
       })),
@@ -192,11 +179,15 @@ class _RewardViewState extends State<RewardView> {
     if (filterlist.isEmpty) {
       nodata = true;
     } else {
-      activatedReward = filterlist
-          .where((element) =>
-              element["id"].toString().trim() ==
-              getxcontroller.rewardslist[0][0]["id"].toString().trim())
-          .toList();
+      if (getxcontroller.rewardslist.isEmpty) {
+        activatedReward = [];
+      } else {
+        activatedReward = filterlist
+            .where((element) =>
+                element["id"].toString().trim() ==
+                getxcontroller.rewardslist[0][0]["id"].toString().trim())
+            .toList();
+      }
     }
 
     if (mounted) {

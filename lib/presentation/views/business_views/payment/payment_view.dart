@@ -1,5 +1,6 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/business_view_models/payment_view_model.dart';
+import 'package:sehr/presentation/views/payment/paymentpage.dart';
 
 import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
@@ -63,12 +64,14 @@ class PaymentView extends StatelessWidget {
             onTap: () =>
                 viewModel.selecPayment(viewModel.paymentTypeList[index]),
             child: PaymentWidget(
-              value: viewModel.paymentTypeList[index],
-              groupValue: viewModel.paymentType,
-              label: viewModel.paymentImages[index],
-              text: viewModel.paymentNumber[index],
-              onChanged: (value) => viewModel.selecPayment(value!),
-            )),
+                value: viewModel.paymentTypeList[index],
+                groupValue: viewModel.paymentType,
+                label: viewModel.paymentImages[index],
+                text: viewModel.paymentNumber[index],
+                onChanged: (value) {
+                  viewModel.selecPayment(value!);
+                  Get.to(() => const PaymentPage());
+                })),
       ),
     );
   }

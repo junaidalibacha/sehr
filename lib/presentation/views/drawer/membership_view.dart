@@ -15,6 +15,15 @@ class MemberShipView extends StatefulWidget {
 }
 
 class _MemberShipViewState extends State<MemberShipView> {
+  checkdrade() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    membership = prefs.getString("gradeId").toString();
+
+    print(membership);
+    setState(() {});
+  }
+
+  String membership = "";
   final Rewardapi _apicall = Rewardapi();
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
@@ -69,6 +78,7 @@ class _MemberShipViewState extends State<MemberShipView> {
 
   @override
   void initState() {
+    checkdrade();
     checkinformation();
     // TODO: implement initState
     super.initState();
@@ -98,49 +108,50 @@ class _MemberShipViewState extends State<MemberShipView> {
                   isactivated == false
                       ? Expanded(
                           child: ListView.separated(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(25)),
-                            shrinkWrap: true,
-                            itemCount: filterlist.length,
-                            separatorBuilder: (context, index) =>
-                                buildVerticleSpace(15),
-                            itemBuilder: (context, index) => GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text("Sure"),
-                                        content: Text(
-                                            "sure to activate ${filterlist[index]["title"]}"),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () async {
-                                                SharedPreferences prefs =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                prefs.setString(
-                                                    "Grade",
-                                                    filterlist[index]["title"]
-                                                        .toString());
-                                                if (mounted) {
-                                                  setState(() {});
-                                                }
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text("Ok"))
-                                        ],
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: getProportionateScreenWidth(25)),
+                              shrinkWrap: true,
+                              itemCount: filterlist.length,
+                              separatorBuilder: (context, index) =>
+                                  buildVerticleSpace(15),
+                              itemBuilder: (context, index) {
+                                return membership.toLowerCase() ==
+                                        filterlist[index]["id"]
+                                            .toString()
+                                            .toLowerCase()
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: ColorManager.primary)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                              Text("Activated Membership"),
+                                              GestureDetector(
+                                                onTap: () {},
+                                                child: CustomCardWidget(
+                                                  titleText: filterlist[index]
+                                                      ["title"],
+                                                  valueText: 'Activate',
+                                                  description:
+                                                      'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole . . . .',
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {},
+                                        child: CustomCardWidget(
+                                          titleText: filterlist[index]["title"],
+                                          valueText: 'Activate',
+                                          description:
+                                              'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole . . . .',
+                                        ),
                                       );
-                                    });
-                              },
-                              child: CustomCardWidget(
-                                titleText: filterlist[index]["title"],
-                                valueText: 'Activate',
-                                description:
-                                    'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole . . . .',
-                              ),
-                            ),
-                          ),
+                              }),
                         )
                       : CustomCardWidget(
                           titleText: gradename,

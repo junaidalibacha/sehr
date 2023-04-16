@@ -19,11 +19,25 @@ class NotificationController extends GetxController {
               builder: (context) {
                 return AlertDialog(
                   title: const Text("New Order"),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Ok"))
+                  ],
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
+                      SizedBox(
                         height: 60,
+                        child: Row(
+                          children: const [
+                            Expanded(
+                                child: Text(
+                                    "You received a new order, check out")),
+                          ],
+                        ),
                       )
                     ],
                   ),

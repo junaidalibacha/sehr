@@ -168,7 +168,8 @@ class _FavouriteViewState extends State<FavouriteView> {
                                           );
                                         },
                                         child: CustomListTileWidget(
-                                          leading: Image.asset(AppImages.menu),
+                                          leading: Image.network(
+                                              favlist[index].logo.toString()),
                                           // Image.asset(viewModel.favItems[index].shopImage),
                                           title: Column(
                                             crossAxisAlignment:

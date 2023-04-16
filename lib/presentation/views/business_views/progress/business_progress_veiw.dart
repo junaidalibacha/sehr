@@ -1,6 +1,10 @@
 import 'dart:convert' as convert;
 
+import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
+import 'package:sehr/presentation/common/app_button_widget.dart';
+import 'package:sehr/presentation/common/custom_card_widget.dart';
+import 'package:sehr/presentation/views/business_views/progress/mypayments.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -107,21 +111,6 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
   List<dynamic> filterlist = [];
   bool nodata = false;
 
-  String targetamount = "";
-  late List<SpendData> data = filterlist
-      .map((e) =>
-          SpendData(e["id"].toString(), double.parse(e["amount"].toString())))
-      .toList();
-
-  late double remainingAmount = int.parse(targetamount) -
-      filterlist.fold(0, (t, e) => t + int.parse(e["amount"]));
-
-  late List<SpendData> data2 = [
-    SpendData('Remaing', remainingAmount < 0 ? 0 : remainingAmount),
-    SpendData(
-        'Spend', filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))),
-  ];
-
   Future apicall() async {
     datatest = null;
     filterlist.clear();
@@ -131,15 +120,11 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
     }
     setState(() {});
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    var responseofdata = await _orderApi
-        .fetchorderrequest(prefs.getString("sehrcode").toString());
+    var responseofdata = await sendStatusOfPayments();
     datatest = convert.jsonDecode(responseofdata.body);
     _list.add(datatest == null ? [] : datatest!.values.toList());
-    _list[0][0].forEach((element) {
-      if (element["status"].toString().toLowerCase().trim() ==
-          "accepted".toLowerCase().trim()) {
-        filterlist.add(element);
-      }
+    _list[0][1].forEach((element) {
+      filterlist.add(element);
     });
 
     return datatest;
@@ -150,7 +135,7 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
     return nodata == true
         ? Container(
             child: const Center(
-              child: Text("No Any reward is activated"),
+              child: Text("No Any payment to submitted"),
             ),
           )
         : filterlist.isEmpty
@@ -160,119 +145,126 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
                 ),
               )
             : SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: getProportionateScreenWidth(25),
-                    vertical: getProportionateScreenHeight(25),
-                  ),
-                  child: Column(
-                    children: [
-                      CustomCardWidget(
-                        titleText: 'Target Amount',
-                        valueText: 'Rs: $targetamount/-',
-                        description:
-                            'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole ',
-                      ),
-                      buildVerticleSpace(22),
-                      CustomCardWidget(
-                        titleText: 'Spend Amount',
-                        valueText: filterlist
-                            .fold(0, (t, e) => t + int.parse(e["amount"]))
-                            .toString(),
-                        child: SizedBox(
-                          height: getProportionateScreenHeight(150),
-                          child: SfCartesianChart(
-                            primaryXAxis: CategoryAxis(),
-                            // primaryXAxis: CategoryAxis(),
-                            primaryYAxis: NumericAxis(
-                              minimum: 0,
-                              maximum: 1000,
-                              interval: 10000,
-                            ),
-                            series: [
-                              ColumnSeries(
-                                color: ColorManager.primaryLight,
-                                dataSource: data,
-                                xValueMapper: (SpendData sales, _) => sales.day,
-                                yValueMapper: (SpendData sales, _) =>
-                                    sales.amount,
-                              ),
-                            ],
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: getProportionateScreenWidth(27),
+                          ),
+                          child: kTextBentonSansMed(
+                            'Payment History',
+                            fontSize: getProportionateScreenHeight(25),
                           ),
                         ),
-                      ),
-                      buildVerticleSpace(22),
-                      CustomCardWidget(
-                        titleText: remainingAmount < 0
-                            ? "Target Archieved"
-                            : 'Remaining',
-                        valueText:
-                            'Rs: ${(int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))) < 0 ? "0" : int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))}',
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: getProportionateScreenHeight(130),
-                              child: SfCircularChart(
-                                palette: [
-                                  ColorManager.primaryLight,
-                                  ColorManager.error,
-                                ],
-                                series: [
-                                  DoughnutSeries<SpendData, String>(
-                                    radius: '50',
-                                    innerRadius: '40',
-                                    dataSource: data2,
-                                    xValueMapper: (SpendData data, _) =>
-                                        data.day,
-                                    yValueMapper: (SpendData data, _) =>
-                                        data.amount,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: percent().truncate().toString(),
-                                    style: GoogleFonts.libreFranklin(
-                                      fontSize:
-                                          getProportionateScreenHeight(12),
-                                      color: ColorManager.black,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: '/100%',
-                                    style: GoogleFonts.libreFranklin(
-                                      fontSize:
-                                          getProportionateScreenHeight(14),
-                                      color: ColorManager.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            buildVerticleSpace(10),
-                          ],
+                      ],
+                    ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(25),
+                          vertical: getProportionateScreenHeight(25),
                         ),
-                      ),
-                    ],
-                  ),
+                        child: SizedBox(
+                          height: 1000,
+                          child: ListView.builder(
+                              itemCount: filterlist.length,
+                              itemBuilder: (context, index) {
+                                return CustomListTileWidget(
+                                  leading: SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: Image.network(
+                                        filterlist[index]['screenshot'],
+                                        fit: BoxFit.cover,
+                                      )),
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      kTextBentonSansMed(
+                                        DateFormat("yyyy-MM-dd")
+                                            .format(DateTime.parse(
+                                                filterlist[index]["paidAt"]
+                                                    .toString()))
+                                            .toString(),
+                                        fontSize:
+                                            getProportionateScreenHeight(15),
+                                      ),
+                                      kTextBentonSansReg(
+                                        filterlist[index]["description"],
+
+                                        // searchfilterlist[index]["date"],
+                                        color: ColorManager.textGrey
+                                            .withOpacity(0.8),
+                                        letterSpacing:
+                                            getProportionateScreenWidth(0.5),
+                                      ),
+                                      kTextBentonSansMed(
+                                        '',
+                                        color: filterlist[index]["status"] ==
+                                                'accepted'
+                                            ? ColorManager.primary
+                                            : ColorManager.textGrey
+                                                .withOpacity(0.3),
+                                        fontSize:
+                                            getProportionateScreenHeight(19),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Column(
+                                    children: [
+                                      AppButtonWidget(
+                                        bgColor: filterlist[index]["status"] ==
+                                                'accepted'
+                                            ? null
+                                            : ColorManager.textGrey
+                                                .withOpacity(0.2),
+                                        ontap: () {},
+                                        height:
+                                            getProportionateScreenHeight(29),
+                                        width: getProportionateScreenWidth(85),
+                                        text: filterlist[index]["status"],
+                                        textSize:
+                                            getProportionateScreenHeight(12),
+                                        letterSpacing:
+                                            getProportionateScreenWidth(0.5),
+                                      ),
+                                      const Spacer(),
+                                      InkWell(
+                                        onTap: () {},
+                                        child: kTextBentonSansReg(
+                                          'RS ${filterlist[index]["amount"]}',
+                                          color: filterlist[index]["status"] ==
+                                                  'accepted'
+                                              ? ColorManager.blue
+                                              : ColorManager.textGrey
+                                                  .withOpacity(0.3),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                        )),
+                  ],
                 ),
               );
   }
 
   fetchorders() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String gradekey = prefs.getString("RewardsTargetBussiness").toString();
     await apicall();
-    if (gradekey == "null") {
+    if (filterlist.isEmpty) {
       nodata = true;
     }
+    print(filterlist);
     if (mounted) {
-      setState(() {
-        targetamount = gradekey;
-      });
+      setState(() {});
     }
   }
 
@@ -281,16 +273,5 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
     fetchorders();
     // TODO: implement initState
     super.initState();
-  }
-
-  double percent() {
-    var per = (filterlist.fold(0, (t, e) => t + int.parse(e["amount"])) /
-            int.parse(targetamount)) *
-        100;
-    if (per > 100) {
-      return 100;
-    } else {
-      return per;
-    }
   }
 }
