@@ -89,8 +89,10 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var responseofdata = await _orderApi
         .fetchorderrequest(prefs.getString("sehrcode").toString());
+    print(prefs.getString("sehrcode").toString());
     datatest = convert.jsonDecode(responseofdata.body) as dynamic;
     _list.add(datatest == null ? [] : datatest!.values.toList());
+    print(_list);
     _list[0][0].forEach((element) {
       if (element["status"].toString() != "pending") {
         filterlist.add(element);
@@ -250,12 +252,39 @@ class _BusinessRecentOrdersViewState extends State<BusinessRecentOrdersView> {
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) =>
                                 CustomListTileWidget(
-                              leading: filterlist[index]["customer"]["logo"]
-                                          .toString() !=
-                                      "null"
-                                  ? Image.network(
-                                      filterlist[index]["customer"]["logo"])
-                                  : Image.asset(AppImages.menu),
+                              leading: Container(
+                                height: 50,
+                                width: 50,
+                                child: Image.network(
+                                  filterlist[index]["customer"]["avatar"]
+                                      .toString(),
+                                  fit: BoxFit.fill,
+                                  errorBuilder: (context,
+                                          e,
+                                          // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                                          StackTrace) =>
+                                      Image.asset(AppImages.menu),
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:

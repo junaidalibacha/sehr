@@ -190,23 +190,19 @@ class _ProfilePreviewViewState extends State<ProfilePreviewView> {
                                     controller: namecontroller,
                                     hintText: 'first name',
                                   ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
                                   TextFieldWidget(
                                     controller: lastnamecontroller,
                                     hintText: 'last name',
                                   ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
                                   TextFieldWidget(
                                     controller: emailcontroller,
                                     hintText: 'email',
-                                  ),
-                                  TextFieldWidget(
-                                    keyboardType: TextInputType.number,
-                                    controller: cniccontroller,
-                                    hintText: 'cnic',
-                                  ),
-                                  TextFieldWidget(
-                                    keyboardType: TextInputType.number,
-                                    controller: mobilecontroller,
-                                    hintText: 'mobile',
                                   ),
                                   const SizedBox(
                                     height: 10,

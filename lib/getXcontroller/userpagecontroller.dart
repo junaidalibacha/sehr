@@ -198,12 +198,8 @@ class AppController extends GetxController {
     var response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
-      print("object masheNai");
-      print(response.statusCode);
       return response;
     } else if (response.statusCode == 400) {
-      print("object masheNai");
-      print(response.statusCode);
       return null;
     } else {
       return response.body;

@@ -160,9 +160,11 @@ class _BottomNavigationViewState extends State<BottomNavigationView> {
     _notificatintimer =
         Timer.periodic(const Duration(seconds: 10), (timer) async {
       if (_userRole == 'business') {
-        await apicall();
-        // ignore: use_build_context_synchronously
-        notificationcontrollers.callNotifications(filterlist, context);
+        if (mounted) {
+          await apicall();
+          // ignore: use_build_context_synchronously
+          notificationcontrollers.callNotifications(filterlist, context);
+        }
       } else {
         _notificatintimer!.cancel();
       }

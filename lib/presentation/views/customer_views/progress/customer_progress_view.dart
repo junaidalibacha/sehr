@@ -123,6 +123,9 @@ class _ProgressViewState extends State<ProgressView> {
         'Spend', filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))),
   ];
 
+  var getxcontroller = Get.put(AppController());
+
+  bool isloading = true;
   Future apicall() async {
     datatest = null;
     filterlist.clear();
@@ -146,8 +149,6 @@ class _ProgressViewState extends State<ProgressView> {
     return datatest;
   }
 
-  var getxcontroller = Get.put(AppController());
-
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -161,113 +162,128 @@ class _ProgressViewState extends State<ProgressView> {
                     child: Text("No Any reward is activated"),
                   ),
                 )
-              : filterlist.isEmpty
+              : isloading == true
                   ? Container(
-                      child: const Center(child: CircularProgressIndicator()))
-                  : SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(25),
-                          vertical: getProportionateScreenHeight(25),
-                        ),
-                        child: Column(
-                          children: [
-                            CustomCardWidget(
-                              titleText: 'Target Amount',
-                              valueText: 'Rs: $targetamount/-',
-                              description:
-                                  'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole ',
-                            ),
-                            buildVerticleSpace(22),
-                            CustomCardWidget(
-                              titleText: 'Spend Amount',
-                              valueText: filterlist
-                                  .fold(0, (t, e) => t + int.parse(e["amount"]))
-                                  .toString(),
-                              child: SizedBox(
-                                height: getProportionateScreenHeight(150),
-                                child: SfCartesianChart(
-                                  primaryXAxis: CategoryAxis(),
-                                  // primaryXAxis: CategoryAxis(),
-                                  primaryYAxis: NumericAxis(
-                                    minimum: 0,
-                                    maximum: 1000,
-                                    interval: 10000,
-                                  ),
-                                  series: [
-                                    ColumnSeries(
-                                      color: ColorManager.primaryLight,
-                                      dataSource: data,
-                                      xValueMapper: (SpendData sales, _) =>
-                                          sales.day,
-                                      yValueMapper: (SpendData sales, _) =>
-                                          sales.amount,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            buildVerticleSpace(22),
-                            CustomCardWidget(
-                              titleText: remainingAmount < 0
-                                  ? "Target Archieved"
-                                  : 'Remaining',
-                              valueText:
-                                  'Rs: ${(int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))) < 0 ? "0" : int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))}',
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: getProportionateScreenHeight(130),
-                                    child: SfCircularChart(
-                                      palette: [
-                                        ColorManager.primaryLight,
-                                        ColorManager.error,
-                                      ],
-                                      series: [
-                                        DoughnutSeries<SpendData, String>(
-                                          radius: '50',
-                                          innerRadius: '40',
-                                          dataSource: data2,
-                                          xValueMapper: (SpendData data, _) =>
-                                              data.day,
-                                          yValueMapper: (SpendData data, _) =>
-                                              data.amount,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: percent().truncate().toString(),
-                                          style: GoogleFonts.libreFranklin(
-                                            fontSize:
-                                                getProportionateScreenHeight(
-                                                    12),
-                                            color: ColorManager.black,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: '/100%',
-                                          style: GoogleFonts.libreFranklin(
-                                            fontSize:
-                                                getProportionateScreenHeight(
-                                                    14),
-                                            color: ColorManager.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  buildVerticleSpace(10),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
                       ),
-                    );
+                    )
+                  : filterlist.isEmpty
+                      ? Container(
+                          child: const Center(
+                            child: Text("No Any order is Completed"),
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: getProportionateScreenWidth(25),
+                              vertical: getProportionateScreenHeight(25),
+                            ),
+                            child: Column(
+                              children: [
+                                CustomCardWidget(
+                                  titleText: 'Target Amount',
+                                  valueText: 'Rs: $targetamount/-',
+                                  description:
+                                      'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole ',
+                                ),
+                                buildVerticleSpace(22),
+                                CustomCardWidget(
+                                  titleText: 'Spend Amount',
+                                  valueText: filterlist
+                                      .fold(0,
+                                          (t, e) => t + int.parse(e["amount"]))
+                                      .toString(),
+                                  child: SizedBox(
+                                    height: getProportionateScreenHeight(150),
+                                    child: SfCartesianChart(
+                                      primaryXAxis: CategoryAxis(),
+                                      // primaryXAxis: CategoryAxis(),
+                                      primaryYAxis: NumericAxis(
+                                        minimum: 0,
+                                        maximum: 1000,
+                                        interval: 10000,
+                                      ),
+                                      series: [
+                                        ColumnSeries(
+                                          color: ColorManager.primaryLight,
+                                          dataSource: data,
+                                          xValueMapper: (SpendData sales, _) =>
+                                              sales.day,
+                                          yValueMapper: (SpendData sales, _) =>
+                                              sales.amount,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                buildVerticleSpace(22),
+                                CustomCardWidget(
+                                  titleText: remainingAmount < 0
+                                      ? "Target Archieved"
+                                      : 'Remaining',
+                                  valueText:
+                                      'Rs: ${(int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))) < 0 ? "0" : int.parse(targetamount) - filterlist.fold(0, (t, e) => t + int.parse(e["amount"]))}',
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height:
+                                            getProportionateScreenHeight(130),
+                                        child: SfCircularChart(
+                                          palette: [
+                                            ColorManager.primaryLight,
+                                            ColorManager.error,
+                                          ],
+                                          series: [
+                                            DoughnutSeries<SpendData, String>(
+                                              radius: '50',
+                                              innerRadius: '40',
+                                              dataSource: data2,
+                                              xValueMapper:
+                                                  (SpendData data, _) =>
+                                                      data.day,
+                                              yValueMapper:
+                                                  (SpendData data, _) =>
+                                                      data.amount,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: percent()
+                                                  .truncate()
+                                                  .toString(),
+                                              style: GoogleFonts.libreFranklin(
+                                                fontSize:
+                                                    getProportionateScreenHeight(
+                                                        12),
+                                                color: ColorManager.black,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: '/100%',
+                                              style: GoogleFonts.libreFranklin(
+                                                fontSize:
+                                                    getProportionateScreenHeight(
+                                                        14),
+                                                color: ColorManager.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      buildVerticleSpace(10),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
     });
   }
 
@@ -286,6 +302,9 @@ class _ProgressViewState extends State<ProgressView> {
       }
       print(getxcontroller.rewardslist.first[0]["salesTarget"]);
     }
+    setState(() {
+      isloading = false;
+    });
   }
 
   @override

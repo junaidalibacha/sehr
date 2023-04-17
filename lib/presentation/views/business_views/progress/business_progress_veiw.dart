@@ -165,22 +165,49 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
                     ),
                     Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(25),
+                          horizontal: getProportionateScreenWidth(10),
                           vertical: getProportionateScreenHeight(25),
                         ),
                         child: SizedBox(
                           height: 1000,
                           child: ListView.builder(
+                              padding: EdgeInsets.all(0),
                               itemCount: filterlist.length,
                               itemBuilder: (context, index) {
                                 return CustomListTileWidget(
-                                  leading: SizedBox(
-                                      height: 50,
-                                      width: 50,
-                                      child: Image.network(
-                                        filterlist[index]['screenshot'],
-                                        fit: BoxFit.cover,
-                                      )),
+                                  leading: Container(
+                                    height: 50,
+                                    width: 50,
+                                    child: Image.network(
+                                      filterlist[index]["screenshot"]
+                                          .toString(),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context,
+                                              e,
+                                              // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                                              StackTrace) =>
+                                          Image.asset(AppImages.menu),
+                                      loadingBuilder: (BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    loadingProgress
+                                                        .expectedTotalBytes!
+                                                : null,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                                   title: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -198,6 +225,8 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
                                       ),
                                       kTextBentonSansReg(
                                         filterlist[index]["description"],
+                                        textOverFlow: TextOverflow.ellipsis,
+                                        maxLines: 1,
 
                                         // searchfilterlist[index]["date"],
                                         color: ColorManager.textGrey
@@ -208,7 +237,7 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
                                       kTextBentonSansMed(
                                         '',
                                         color: filterlist[index]["status"] ==
-                                                'accepted'
+                                                'paid'
                                             ? ColorManager.primary
                                             : ColorManager.textGrey
                                                 .withOpacity(0.3),
@@ -221,7 +250,7 @@ class _BusinessProgresViewState extends State<BusinessProgresView> {
                                     children: [
                                       AppButtonWidget(
                                         bgColor: filterlist[index]["status"] ==
-                                                'accepted'
+                                                'paid'
                                             ? null
                                             : ColorManager.textGrey
                                                 .withOpacity(0.2),

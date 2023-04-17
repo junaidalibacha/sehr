@@ -24,7 +24,7 @@ class ScannerView extends StatefulWidget {
 
 class _ScannerViewState extends State<ScannerView> {
   var getxcontroller = Get.put(AppController());
-  Timer? _timer;
+  late Timer _timer;
   Map<String, dynamic>? datatest;
 
   List<dynamic> filterlist = [];
@@ -254,7 +254,7 @@ class _ScannerViewState extends State<ScannerView> {
     rewardsvalidatyTimer!.cancel();
     _qrKey;
     _timer;
-    _timer!.cancel();
+    _timer.cancel();
     // TODO: implement dispose
     super.dispose();
   }
@@ -279,7 +279,6 @@ class _ScannerViewState extends State<ScannerView> {
   timer() async {
     rewardsvalidatyTimer =
         Timer.periodic(const Duration(seconds: 1), (timer) async {
-      print("object testing");
       if (getxcontroller.rewardsdata == null &&
           getxcontroller.rewardslist.isEmpty) {
         // _timer!.cancel();
@@ -304,27 +303,27 @@ class _ScannerViewState extends State<ScannerView> {
   }
 
   timerlistener() {
-    // _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-    //   if (WidgetsBinding.instance.window.viewInsets.bottom > 0.0) {
-    //     if (qrstopped == false) {
-    //       _controller?.pauseCamera();
-    //       if (mounted) {
-    //         setState(() {
-    //           qrstopped = true;
-    //         });
-    //       }
-    //     }
-    //   } else {
-    //     if (qrstopped == true) {
-    //       if (mounted) {
-    //         _controller?.resumeCamera();
-    //         setState(() {
-    //           qrstopped = false;
-    //         });
-    //       }
-    //     }
-    //   }
-    // });
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (WidgetsBinding.instance.window.viewInsets.bottom > 0.0) {
+        if (qrstopped == false) {
+          _controller?.pauseCamera();
+          if (mounted) {
+            setState(() {
+              qrstopped = true;
+            });
+          }
+        }
+      } else {
+        if (qrstopped == true) {
+          if (mounted) {
+            _controller?.resumeCamera();
+            setState(() {
+              qrstopped = false;
+            });
+          }
+        }
+      }
+    });
   }
 
   Widget _buildQrView(BuildContext context) {

@@ -1,7 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
+import 'package:sehr/presentation/utils/utils.dart';
 import 'package:sehr/presentation/view_models/business_view_models/total_sales_view_model.dart';
+import 'package:sehr/presentation/views/business_views/payment/payment_view.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'package:sehr/presentation/views/business_views/total_sales/fetchcomission.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,8 +24,10 @@ class _TotalSalesViewState extends State<TotalSalesView> {
 
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
+  String comissionAmount = "0";
   fetchorders(String datetimerange) async {
     await apicall(datetimerange);
+    comissionAmount = _list[0][2].toString();
     if (mounted) {
       setState(() {});
     }
@@ -65,35 +69,11 @@ class _TotalSalesViewState extends State<TotalSalesView> {
 
   fetchallorders() async {
     await orderscall();
-    if (filterlist.isNotEmpty) {
-      fetchcomissionids();
-    }
+    if (filterlist.isNotEmpty) {}
 
     if (mounted) {
       setState(() {});
     }
-  }
-
-  fetchcomissionids() {
-    DateTime dt1 = DateFormat("yyyy-MM-dd").parse(datetimerange);
-    DateTime dt2 = DateFormat("yyyy-MM-dd").parse(DateTime.now().toString());
-    filterlistofordersbydate = filterlist
-        .where((e) => (dt1.compareTo(
-                        DateFormat("yyyy-MM-dd").parse(e["date"].toString())) <=
-                    0
-                //     //DateTime.parse(e.date!)) <= 0
-                &&
-                dt2.compareTo(
-                        DateFormat("yyyy-MM-dd").parse(e["date"].toString())) >=
-                    0
-
-            // // DateTime.parse(e.date!)) >= 0
-            ))
-        .toList();
-    for (var element in filterlistofordersbydate) {
-      commissionsids.add(element["id"]);
-    }
-    print(commissionsids);
   }
 
   @override
@@ -188,7 +168,15 @@ class _TotalSalesViewState extends State<TotalSalesView> {
                             buildVerticleSpace(28),
                             AppButtonWidget(
                               ontap: () {
-                                Get.toNamed(Routes.paymentRoute);
+                                if (comissionAmount != "0") {
+                                  Get.to(() => PaymentView(
+                                        datetime: datetimerange,
+                                        amount: comissionAmount,
+                                      ));
+                                } else {
+                                  Utils.flushBarErrorMessage(context,
+                                      "No Amount Record Found for the time period");
+                                }
                               },
                               text: 'Pay Online',
                             ),

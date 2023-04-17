@@ -176,7 +176,12 @@ class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
                                     )
                                     .toList(),
                                 onChange: (value) {
-                                  viewModel.setBusinessOption(value!);
+                                  var _list = filterlist
+                                      .where((element) =>
+                                          element["id"].toString() == value)
+                                      .toList();
+                                  viewModel.setBusinessOption(
+                                      value!, _list.first["title"]);
                                 }),
                             buildVerticleSpace(20),
                             TextFieldWidget(

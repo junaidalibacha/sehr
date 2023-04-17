@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/top_back_button_widget.dart';
@@ -18,6 +19,13 @@ class VerificationCodeView extends StatefulWidget {
 
 class _VerificationCodeViewState extends State<VerificationCodeView> {
   int seconds = 60;
+  String phonenumber = "";
+  fetchpgonenumber() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    phonenumber = prefs.getString("mobileNo").toString();
+    setState(() {});
+  }
+
   starttimer() => Timer.periodic(const Duration(seconds: 1), (timer) {
         if (mounted) {
           setState(() {
@@ -32,6 +40,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
 
   @override
   void initState() {
+    fetchpgonenumber();
     starttimer();
     // TODO: implement initState
     super.initState();
@@ -71,7 +80,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
                       child: kTextBentonSansMed(
                         seconds == 0
                             ? 'OTP code is expired'
-                            : 'Code send to +6282045**** . This code will \nexpired in $seconds Seconds',
+                            : 'Code send to $phonenumber . This code will \nexpired in $seconds Seconds',
                         fontSize: getProportionateScreenHeight(12),
                       ),
                     ),
@@ -122,21 +131,32 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
                         horizontal: getProportionateScreenWidth(118),
                       ),
                       child: AppButtonWidget(
-                        ontap: () {
+                        ontap: () async {
+                          setState(() {
+                            isloading = true;
+                          });
                           // value.getuserRoleFromPrefs();
-                          if (model.otpController.text.isNotEmpty) {
-                            model.verifyPhoneNo(context);
+                          if (seconds != 0) {
+                            if (model.otpController.text.length == 6) {
+                              await model.verifyPhoneNo(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("Enter 6 digits OTP")));
+                            }
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Enter OTP")));
+                            seconds = 60;
+                            starttimer();
                           }
 
-                          Get.toNamed(Routes.profileCompleteRoute);
+                          setState(() {
+                            isloading = false;
+                          });
                         },
                         text: seconds == 0 ? 'Resend' : 'Next',
-                        // child: model.isLoading
-                        //     ? const CircularProgressIndicator()
-                        //     : null,
+                        child: isloading == true
+                            ? const CircularProgressIndicator()
+                            : null,
                       ),
                     ),
                     buildVerticleSpace(50),
@@ -149,6 +169,8 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
       );
     });
   }
+
+  bool isloading = false;
 }
 
 class CountdownTimerDemo extends StatefulWidget {

@@ -225,12 +225,39 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) =>
                                 CustomListTileWidget(
-                              leading: filterlist[index]["customer"]["logo"]
-                                          .toString() !=
-                                      "null"
-                                  ? Image.network(
-                                      filterlist[index]["customer"]["logo"])
-                                  : Image.asset(AppImages.menu),
+                              leading: Container(
+                                height: 70,
+                                width: 50,
+                                child: Image.network(
+                                  filterlist[index]["customer"]["avatar"]
+                                      .toString(),
+                                  fit: BoxFit.fill,
+                                  errorBuilder: (context,
+                                          e,
+                                          // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                                          StackTrace) =>
+                                      Image.asset(AppImages.menu),
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:

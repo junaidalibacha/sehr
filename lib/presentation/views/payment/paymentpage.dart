@@ -1,63 +1,37 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sehr/app/index.dart';
+import 'package:sehr/domain/repository/auth_repository.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
-import 'package:sehr/presentation/common/drop_down_widget.dart';
-import 'package:sehr/presentation/common/text_field_widget.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:sehr/presentation/src/assets_manager.dart';
 import 'package:sehr/presentation/src/colors_manager.dart';
 import 'package:sehr/presentation/src/size_config.dart';
 import 'package:sehr/presentation/src/styles_manager.dart';
+import 'package:sehr/presentation/utils/utils.dart';
 import 'package:sehr/presentation/view_models/profile_view_model.dart';
-import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
-import 'package:sehr/presentation/views/profile/add_bio/apicalling.dart';
+import 'package:sehr/presentation/views/profile/add_bio/business_verification/business_verification_processing_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert' as convert;
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({super.key});
+  PaymentPage({super.key, required this.datetime, required this.amount});
+  String datetime;
+  String amount;
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  final BioApiCalls _orderApi = BioApiCalls();
-
-  Map<String, dynamic>? datatest;
-  final List<dynamic> _list = [];
-  List<dynamic> filterlist = [];
-  fetchorders() async {
-    await apicall();
-    if (filterlist.isEmpty) {
-      nodata = true;
-    } else {}
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  bool nodata = false;
-
-  Future apicall() async {
-    var responseofdata =
-        await _orderApi.adressdetailsApi("http://3.133.0.29/api/category");
-    datatest = convert.jsonDecode(responseofdata.body);
-    _list.add(datatest == null ? [] : datatest!.values.toList());
-    _list[0][0].forEach((element) {
-      print(element);
-      filterlist.add(element);
-    });
-
-    return datatest;
-  }
-
   @override
-  void initState() {
-    fetchorders();
-    // TODO: implement initState
-    super.initState();
+  void dispose() {
+    amountcontroller.clear();
+    trxidController.clear();
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -124,31 +98,6 @@ class _PaymentPageState extends State<PaymentPage> {
                         ),
                         child: Column(
                           children: [
-                            TextFieldWidget(
-                              controller: viewModel.businessNameTextController,
-                              hintText: 'Paid at (date)',
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Business/Company name is required';
-                                } else if (value.length < 3) {
-                                  return 'Invalid Business/Company name';
-                                }
-                                return null;
-                              },
-                            ),
-                            buildVerticleSpace(20),
-                            TextFieldWidget(
-                              controller: viewModel.ownerNameTextController,
-                              hintText: 'Amount',
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Owner name is required';
-                                } else if (value.length < 3) {
-                                  return 'Invalid Owner name';
-                                }
-                                return null;
-                              },
-                            ),
                             buildVerticleSpace(20),
                             Container(
                               decoration: BoxDecoration(
@@ -164,7 +113,9 @@ class _PaymentPageState extends State<PaymentPage> {
                                 ],
                               ),
                               child: TextField(
-                                maxLines: 5,
+                                controller: amountcontroller
+                                  ..text = widget.amount,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                   errorStyle: TextStyleManager.regularTextStyle(
                                     fontSize: getProportionateScreenHeight(12),
@@ -173,7 +124,7 @@ class _PaymentPageState extends State<PaymentPage> {
                                   // errorText: null,
                                   filled: true,
                                   fillColor: ColorManager.white,
-                                  hintText: 'Description',
+                                  labelText: 'Amount',
                                   hintStyle: TextStyleManager.regularTextStyle(
                                     fontSize: getProportionateScreenHeight(14),
                                     color:
@@ -203,6 +154,70 @@ class _PaymentPageState extends State<PaymentPage> {
                                 ),
                               ),
                             ),
+                            buildVerticleSpace(20),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  getProportionateScreenHeight(15),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: ColorManager.black.withOpacity(0.1),
+                                    blurRadius:
+                                        getProportionateScreenHeight(15),
+                                  ),
+                                ],
+                              ),
+                              child: TextField(
+                                controller: trxidController,
+                                decoration: InputDecoration(
+                                  errorStyle: TextStyleManager.regularTextStyle(
+                                    fontSize: getProportionateScreenHeight(12),
+                                    color: ColorManager.error,
+                                  ),
+                                  // errorText: null,
+                                  filled: true,
+                                  fillColor: ColorManager.white,
+                                  labelText: 'TRX.ID',
+                                  hintStyle: TextStyleManager.regularTextStyle(
+                                    fontSize: getProportionateScreenHeight(14),
+                                    color:
+                                        ColorManager.textGrey.withOpacity(0.3),
+                                  ),
+
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenHeight(15),
+                                    ),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: getProportionateScreenWidth(20),
+                                  ),
+                                  // errorBorder: OutlineInputBorder(
+                                  //   borderSide: BorderSide(
+                                  //     color: ColorManager.error,
+                                  //   ),
+                                  //   borderRadius: BorderRadius.circular(
+                                  //     getProportionateScreenHeight(15),
+                                  //   ),
+                                  // ),
+                                  // constraints: BoxConstraints(
+                                  //   maxHeight: getProportionateScreenHeight(60),
+                                  // ),
+                                ),
+                              ),
+                            ),
+                            buildVerticleSpace(20),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: getProportionateScreenWidth(00),
+                              ),
+                              child: kTextBentonSansMed(
+                                'Share The ScreenShot                           ',
+                                fontSize: getProportionateScreenHeight(25),
+                              ),
+                            ),
                             viewModel.image == null
                                 ? Column(
                                     children: [
@@ -215,15 +230,6 @@ class _PaymentPageState extends State<PaymentPage> {
                                               ImageSource.gallery);
                                         },
                                       ),
-                                      buildVerticleSpace(10),
-                                      _buildCard(
-                                        icon: AppIcons.cameraIcon,
-                                        label: 'Take Photo',
-                                        ontap: () {
-                                          viewModel
-                                              .setImageFrom(ImageSource.camera);
-                                        },
-                                      ),
                                     ],
                                   )
                                 : _buildImagePreview(viewModel),
@@ -233,13 +239,40 @@ class _PaymentPageState extends State<PaymentPage> {
                                 horizontal: getProportionateScreenWidth(95),
                               ),
                               child: AppButtonWidget(
-                                ontap: () {
-                                  viewModel.addBussinessDataAndGoNext(context);
-                                  // Get.toNamed(Routes.photoSelectionRoute);
-                                  // print(value.selectedProfileType);
-                                },
-                                text: 'Next',
-                              ),
+                                  ontap: () async {
+                                    viewModel.setLoading(true);
+                                    if (viewModel.image == null) {
+                                      Utils.flushBarErrorMessage(context,
+                                          "Please Make sure to attach Screenshot of Payment");
+                                    } else if (trxidController.text.isEmpty) {
+                                      Utils.flushBarErrorMessage(context,
+                                          "Please Provide TRX ID of payment");
+                                    } else {
+                                      await registerpayment(
+                                          context,
+                                          viewModel.image!,
+                                          trxidController.text,
+                                          amountcontroller.text,
+                                          widget.datetime);
+                                      viewModel.setLoading(false);
+                                    }
+
+                                    // viewModel.addBussinessDataAndGoNext(context);
+                                    // Get.toNamed(Routes.photoSelectionRoute);
+                                    // print(value.selectedProfileType);
+                                  },
+                                  child: !viewModel.isLoading
+                                      ? const Center(
+                                          child: Text(
+                                            "Next",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      : const Center(
+                                          child: CircularProgressIndicator(),
+                                        )),
                             ),
                           ],
                         ),
@@ -254,6 +287,9 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
     );
   }
+
+  var trxidController = TextEditingController();
+  var amountcontroller = TextEditingController();
 
   Widget _buildCard({
     required String icon,
@@ -338,3 +374,44 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 }
+
+Future registerpayment(
+    context, File image, String descrption, amount, fromdate) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  var token = prefs.get('accessToken');
+  var sehercode = prefs.get("sehrcode").toString();
+
+  http.MultipartRequest request = http.MultipartRequest(
+      'POST', Uri.parse("http://3.133.0.29/api/shop/$sehercode/payment"));
+  request.headers.addAll({
+    'accept': '*/*',
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'multipart/form-data',
+  });
+
+  request.fields['description'] = descrption;
+  request.fields['amount'] = amount;
+  request.fields['paidAt'] = DateTime.now().toString();
+  request.fields['fromDate'] = "$fromdate 00:00:00.000000+00:00";
+  request.fields['toDate'] = DateTime.now().toString();
+  var profileImage = await http.MultipartFile.fromPath('screenshot', image.path,
+      filename: image.path.split("/").last);
+  request.files.add(profileImage);
+
+  var response = await _authRepo.registerMultiPartApi(request);
+
+  if (response.statusCode == 201) {
+    Utils.flushBarErrorMessage(
+        context, 'Payment Added, wait and check out the status of Payment');
+    Get.offAll(() => const BusinessVerificationProcessingView());
+
+    // Get.toNamed(Routes.businessVerificationRoute);
+  } else {
+    Utils.flushBarErrorMessage(context, response.body.toString());
+    if (kDebugMode) {
+      print("MultiPart API Error=============> ${response.body}");
+    }
+  }
+}
+
+final _authRepo = AuthRepository();

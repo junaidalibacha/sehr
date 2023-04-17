@@ -317,132 +317,6 @@ class _HomeViewState extends State<HomeView> {
                                       physics:
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) =>
-                                          //     CustomListTileWidget(
-                                          //   leading: Image.asset(AppImages.menu),
-                                          //   title: Column(
-                                          //     crossAxisAlignment:
-                                          //         CrossAxisAlignment.start,
-                                          //     mainAxisAlignment:
-                                          //         MainAxisAlignment.spaceBetween,
-                                          //     children: [
-                                          //       kTextBentonSansMed(
-                                          //         "${filterbussinessshops![index].businessName}",
-                                          //         fontSize:
-                                          //             getProportionateScreenHeight(
-                                          //                 15),
-                                          //         overFlow: TextOverflow.ellipsis,
-                                          //       ),
-                                          //       // buildVerticleSpace(3),
-                                          //       kTextBentonSansReg(
-                                          //         filterbussinessshops![index]
-                                          //                 .category
-                                          //                 ?.title ??
-                                          //             "Candy",
-                                          //         color: ColorManager.textGrey
-                                          //             .withOpacity(0.8),
-                                          //         letterSpacing:
-                                          //             getProportionateScreenWidth(
-                                          //                 0.5),
-                                          //       ),
-                                          //       // buildVerticleSpace(3),
-                                          //       kTextBentonSansReg(
-                                          //         '${double.parse("${filterbussinessshops![index].distance}").toStringAsFixed(2)}km away',
-                                          //         color: ColorManager.textGrey
-                                          //             .withOpacity(0.8),
-                                          //         fontSize:
-                                          //             getProportionateScreenHeight(
-                                          //                 10),
-                                          //         letterSpacing:
-                                          //             getProportionateScreenWidth(
-                                          //                 0.5),
-                                          //       ),
-                                          //     ],
-                                          //   ),
-                                          //   trailing: Column(
-                                          //     children: [
-                                          //       InkWell(
-                                          //         onTap: () {
-                                          //           filterbussinessshops![index]
-                                          //                       .isFavourite !=
-                                          //                   true
-                                          //               ? getxcontroller
-                                          //                   .addToFavourite(
-                                          //                       filterbussinessshops![
-                                          //                               index]
-                                          //                           .id)
-                                          //               : getxcontroller
-                                          //                   .deleteFromFavourite(
-                                          //                       filterbussinessshops![
-                                          //                               index]
-                                          //                           .id);
-                                          //           var bools =
-                                          //               filterbussinessshops![index]
-                                          //                           .isFavourite ==
-                                          //                       true
-                                          //                   ? false
-                                          //                   : true;
-                                          //           // getxcontroller.toggleFav(
-                                          //           //     filterbussinessshops![index].id
-                                          //           //         as int,
-                                          //           //     filterbussinessshops![index]
-                                          //           //         .isFavourite as bool);
-                                          //           filterbussinessshops![index]
-                                          //               .isFavourite = bools;
-                                          //           if (mounted) {
-                                          //             setState(() {});
-                                          //           }
-                                          //         },
-                                          //         splashColor:
-                                          //             ColorManager.transparent,
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(40),
-                                          //         child: Icon(
-                                          //             filterbussinessshops![index]
-                                          //                     .isFavourite!
-                                          //                 ? Icons.favorite_rounded
-                                          //                 : Icons
-                                          //                     .favorite_border_rounded,
-                                          //             size:
-                                          //                 getProportionateScreenHeight(
-                                          //                     20),
-                                          //             color: ColorManager.error),
-                                          //       ),
-                                          //       const Spacer(),
-                                          //       AppButtonWidget(
-                                          //         ontap: () {
-                                          //           showModalBottomSheet(
-                                          //             context: context,
-                                          //             isScrollControlled: true,
-                                          //             backgroundColor:
-                                          //                 ColorManager.transparent,
-                                          //             builder: (ctx) => ShopDetailsView(
-                                          //                 businessModel:
-                                          //                     filterbussinessshops![
-                                          //                         index]),
-                                          //           ).then((value) {
-                                          //             setState(() {});
-                                          //           });
-                                          //         },
-                                          //         height:
-                                          //             getProportionateScreenHeight(
-                                          //                 26),
-                                          //         width:
-                                          //             getProportionateScreenWidth(
-                                          //                 72),
-                                          //         borderRadius:
-                                          //             getProportionateScreenHeight(
-                                          //                 9),
-                                          //         text: 'Detail',
-                                          //         textSize:
-                                          //             getProportionateScreenHeight(
-                                          //                 10),
-                                          //         letterSpacing:
-                                          //             getProportionateScreenWidth(
-                                          //                 0.5),
-                                          //       ),
-                                          //     ],
-                                          //   ),
-                                          // ),
                                           GestureDetector(
                                         onTap: () {
                                           showModalBottomSheet(
@@ -459,10 +333,43 @@ class _HomeViewState extends State<HomeView> {
                                           });
                                         },
                                         child: CustomListTileWidget(
-                                          leading: Image.network(
+                                          leading: SizedBox(
+                                            height: 50,
+                                            width: 50,
+                                            child: Image.network(
                                               filterbussinessshops![index]
                                                   .logo
-                                                  .toString()),
+                                                  .toString(),
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context,
+                                                      e,
+                                                      // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                                                      StackTrace) =>
+                                                  Image.asset(AppImages.menu),
+                                              loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent?
+                                                          loadingProgress) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
                                           title: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -479,8 +386,7 @@ class _HomeViewState extends State<HomeView> {
                                               // buildVerticleSpace(3),
                                               kTextBentonSansReg(
                                                 filterbussinessshops![index]
-                                                        .category
-                                                        ?.title ??
+                                                        .district ??
                                                     "Candy",
                                                 color: ColorManager.textGrey
                                                     .withOpacity(0.8),

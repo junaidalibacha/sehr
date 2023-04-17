@@ -29,7 +29,6 @@ class _CheckBussinessValidateState extends State<CheckBussinessValidate> {
     if (data != null) {
       if (data!["id"].toString() != "null") {
         if (data!["sehrCode"].toString() != "null") {
-          print(data!["gradeId"]);
           String sehrcode = prefs.getString("sehrcode").toString();
           if (sehrcode == "null") {
             prefs.setString("sehrcode", data!["sehrCode"].toString());

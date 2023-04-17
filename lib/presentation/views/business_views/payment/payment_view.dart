@@ -6,7 +6,13 @@ import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
 
 class PaymentView extends StatelessWidget {
-  const PaymentView({super.key});
+  PaymentView({
+    super.key,
+    required this.datetime,
+    required this.amount,
+  });
+  String datetime;
+  String amount;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +47,7 @@ class PaymentView extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        _buildPaymentCard(),
+                        _buildPaymentCard(datetime),
                       ],
                     ),
                   ),
@@ -54,7 +60,7 @@ class PaymentView extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentCard() {
+  Widget _buildPaymentCard(String datetime) {
     return Consumer<PayementViewModel>(
       builder: (context, viewModel, child) => ListView.separated(
         shrinkWrap: true,
@@ -70,7 +76,10 @@ class PaymentView extends StatelessWidget {
                 text: viewModel.paymentNumber[index],
                 onChanged: (value) {
                   viewModel.selecPayment(value!);
-                  Get.to(() => const PaymentPage());
+                  Get.to(() => PaymentPage(
+                        datetime: datetime,
+                        amount: amount,
+                      ));
                 })),
       ),
     );
