@@ -8,7 +8,6 @@ import 'package:sehr/app/index.dart';
 import 'package:sehr/getXcontroller/userpagecontroller.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/utils/utils.dart';
-
 import 'package:sehr/presentation/views/customer_views/scanner/orderplacing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,7 +24,7 @@ class ScannerView extends StatefulWidget {
 
 class _ScannerViewState extends State<ScannerView> {
   var getxcontroller = Get.put(AppController());
-  Timer? _timer;
+  late Timer _timer;
   Map<String, dynamic>? datatest;
 
   List<dynamic> filterlist = [];
@@ -45,6 +44,10 @@ class _ScannerViewState extends State<ScannerView> {
   bool isBuild = false;
   TextEditingController amountcontroller = TextEditingController();
   TextEditingController commentcontroller = TextEditingController();
+
+  Timer? rewardsvalidatyTimer;
+
+  bool? notallow;
 
   @override
   Widget build(BuildContext context) {
@@ -77,11 +80,17 @@ class _ScannerViewState extends State<ScannerView> {
                 )
               : Stack(
                   children: [
-                    SizedBox(
-                      height: SizeConfig.screenHeight,
-                      width: SizeConfig.screenWidth,
-                      child: _buildQrView(context),
-                    ),
+                    notallow == false
+                        ? SizedBox(
+                            height: SizeConfig.screenHeight,
+                            width: SizeConfig.screenWidth,
+                            child: _buildQrView(context),
+                          )
+                        : Container(
+                            height: SizeConfig.screenHeight,
+                            width: SizeConfig.screenWidth,
+                            color: Colors.black,
+                          ),
                     notallow == true
                         ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -110,92 +119,107 @@ class _ScannerViewState extends State<ScannerView> {
                               ),
                               const Spacer(),
                               !qrstopped
-                                  ? kTextBentonSansReg(
-                                      'OR',
-                                      color: ColorManager.white,
-                                      fontSize:
-                                          getProportionateScreenHeight(20),
-                                    )
+                                  ? notallow == false
+                                      ? kTextBentonSansReg(
+                                          'OR',
+                                          color: ColorManager.white,
+                                          fontSize:
+                                              getProportionateScreenHeight(20),
+                                        )
+                                      : Container()
                                   : Container(),
                               buildVerticleSpace(12),
-                              kTextBentonSansReg(
-                                'SEHR Shop code',
-                                color: ColorManager.white,
-                                fontSize: getProportionateScreenHeight(18),
-                              ),
+                              notallow == false
+                                  ? kTextBentonSansReg(
+                                      'SEHR Shop code',
+                                      color: ColorManager.white,
+                                      fontSize:
+                                          getProportionateScreenHeight(18),
+                                    )
+                                  : Container(),
                               buildVerticleSpace(26),
-                              PinCodeFields(
-                                length: 6,
-                                // controller: newTextEditingController,
-                                // focusNode: focusNode,
-                                borderWidth: 1,
-                                fieldHeight: getProportionateScreenHeight(60),
-                                // fieldWidth: getProportionateScreenWidth(40),
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: getProportionateScreenWidth(8),
-                                ),
-                                padding: EdgeInsets.zero,
-                                autoHideKeyboard: false,
-                                controller: codecontroller,
-                                keyboardType: TextInputType.number,
-                                borderColor: ColorManager.lightGrey,
-                                activeBorderColor: ColorManager.primary,
-                                fieldBorderStyle: FieldBorderStyle.square,
-                                textStyle: TextStyleManager.mediumTextStyle(
-                                  fontSize: getProportionateScreenHeight(30),
-                                  color: ColorManager.white,
-                                ),
-                                onComplete: (result) async {},
-                              ),
+                              notallow == false
+                                  ? PinCodeFields(
+                                      length: 6,
+                                      // controller: newTextEditingController,
+                                      // focusNode: focusNode,
+                                      borderWidth: 1,
+                                      fieldHeight:
+                                          getProportionateScreenHeight(60),
+                                      // fieldWidth: getProportionateScreenWidth(40),
+                                      margin: EdgeInsets.symmetric(
+                                        horizontal:
+                                            getProportionateScreenWidth(8),
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      autoHideKeyboard: false,
+                                      controller: codecontroller,
+                                      keyboardType: TextInputType.number,
+                                      borderColor: ColorManager.lightGrey,
+                                      activeBorderColor: ColorManager.primary,
+                                      fieldBorderStyle: FieldBorderStyle.square,
+                                      textStyle:
+                                          TextStyleManager.mediumTextStyle(
+                                        fontSize:
+                                            getProportionateScreenHeight(30),
+                                        color: ColorManager.white,
+                                      ),
+                                      onComplete: (result) async {},
+                                    )
+                                  : Container(),
                               buildVerticleSpace(27),
-                              AppButtonWidget(
-                                ontap: () async {
-                                  if (codecontroller.text.length == 6) {
-                                    setState(() {
-                                      isloading = true;
-                                    });
+                              notallow == false
+                                  ? AppButtonWidget(
+                                      ontap: () async {
+                                        if (codecontroller.text.length == 6) {
+                                          setState(() {
+                                            isloading = true;
+                                          });
 
-                                    var response =
-                                        await checkvalidateBussinessShop(
-                                            codecontroller.text);
+                                          var response =
+                                              await checkvalidateBussinessShop(
+                                                  codecontroller.text);
 
-                                    if (response == null) {
-                                      // ignore: use_build_context_synchronously
-                                      Utils.flushBarErrorMessage(
-                                          context, apierror);
-                                    } else {
-                                      datatest =
-                                          convert.jsonDecode(response.body);
-                                      // ignore: use_build_context_synchronously
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                OrderPlacingView(
-                                                  datatest: datatest,
-                                                )),
-                                      );
-                                    }
-                                    if (mounted) {
-                                      setState(() {
-                                        isloading = false;
-                                      });
-                                    }
-                                  }
-                                },
-                                height: getProportionateScreenHeight(46),
-                                width: getProportionateScreenWidth(200),
-                                borderRadius: getProportionateScreenHeight(23),
-                                textSize: getProportionateScreenHeight(18),
-                                child: isloading == false
-                                    ? const Text(
-                                        "Connect",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    : const CircularProgressIndicator(),
-                              ),
+                                          if (response == null) {
+                                            // ignore: use_build_context_synchronously
+                                            Utils.flushBarErrorMessage(
+                                                context, apierror);
+                                          } else {
+                                            datatest = convert
+                                                .jsonDecode(response.body);
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      OrderPlacingView(
+                                                        datatest: datatest,
+                                                      )),
+                                            );
+                                          }
+                                          if (mounted) {
+                                            setState(() {
+                                              isloading = false;
+                                            });
+                                          }
+                                        }
+                                      },
+                                      height: getProportionateScreenHeight(46),
+                                      width: getProportionateScreenWidth(200),
+                                      borderRadius:
+                                          getProportionateScreenHeight(23),
+                                      textSize:
+                                          getProportionateScreenHeight(18),
+                                      child: isloading == false
+                                          ? const Text(
+                                              "Connect",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            )
+                                          : const CircularProgressIndicator(),
+                                    )
+                                  : Container(),
                               buildVerticleSpace(50),
                             ],
                           ),
@@ -227,17 +251,19 @@ class _ScannerViewState extends State<ScannerView> {
 
   @override
   void dispose() {
+    rewardsvalidatyTimer!.cancel();
     _qrKey;
     _timer;
-    _timer!.cancel();
+    _timer.cancel();
     // TODO: implement dispose
     super.dispose();
   }
 
   @override
   void initState() {
-    timerlistener();
     timer();
+    timerlistener();
+
     // TODO: implement initState
     super.initState();
   }
@@ -251,22 +277,23 @@ class _ScannerViewState extends State<ScannerView> {
   }
 
   timer() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Timer.periodic(Duration(seconds: 1), (timer) async {
-      if (getxcontroller.rewardsdata!.isEmpty &&
-          getxcontroller.rewardslist[0].isEmpty) {
-        _controller?.pauseCamera();
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text("NOt Allow"),
-              );
-            });
-        timer.cancel();
+    rewardsvalidatyTimer =
+        Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (getxcontroller.rewardsdata == null &&
+          getxcontroller.rewardslist.isEmpty) {
+        // _timer!.cancel();
+        rewardsvalidatyTimer!.cancel();
         setState(() {
           notallow = true;
         });
+        showDialog(
+            context: context,
+            builder: (context) {
+              return const AlertDialog(
+                title: Text("Activate any reward first"),
+              );
+            });
+        _controller?.pauseCamera();
       } else {
         setState(() {
           notallow = false;
@@ -275,10 +302,8 @@ class _ScannerViewState extends State<ScannerView> {
     });
   }
 
-  bool notallow = false;
-
   timerlistener() {
-    _timer = Timer.periodic(const Duration(milliseconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (WidgetsBinding.instance.window.viewInsets.bottom > 0.0) {
         if (qrstopped == false) {
           _controller?.pauseCamera();

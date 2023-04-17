@@ -11,7 +11,11 @@ import 'package:sehr/presentation/views/drawer/bussinessreward.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
 import 'package:sehr/presentation/views/drawer/membership_view.dart';
 import 'package:sehr/presentation/views/drawer/reward_view.dart';
+import 'package:sehr/presentation/views/drawer/settings.dart';
+import 'package:sehr/presentation/views/drawer/terms_condition_view.dart';
+import 'package:sehr/presentation/views/drawer/terms_conditions.dart';
 import 'package:sehr/presentation/views/profile/profile_preview_view.dart';
+import 'package:sehr/presentation/views/helpandsupport.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../routes/routes.dart';
@@ -38,12 +42,8 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
   String initialindex = "";
   String isbussinessVerified = "";
   final List<DrawerMenuModel> munuListbussiness = [
-    DrawerMenuModel(
-        icon: 'assets/icons/reward_icons.png', text: 'SEHR Rewards'),
     DrawerMenuModel(icon: 'assets/icons/blog_icon.png', text: 'Blogs'),
     DrawerMenuModel(icon: 'assets/icons/settings.png', text: 'Settings'),
-    DrawerMenuModel(
-        icon: 'assets/icons/membership_icon.png', text: 'Membership'),
     DrawerMenuModel(
         icon: 'assets/icons/terms_icons.png', text: 'Terms & Conditions'),
     DrawerMenuModel(icon: 'assets/icons/help_icon.png', text: 'Help & Support'),
@@ -61,15 +61,8 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
   final List<Widget> _pages = [
     const RewardView(),
     const BlogView(),
-    MemberShipView(),
+    const MemberShipView(),
   ];
-
-  Future loadpictur(String url) async {
-    http.Response response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      return response.body;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +190,9 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                                       if (indexstate != value) {
                                         if (value == 0) {
                                           indexstate = value;
-                                          setState(() {});
+                                          if (mounted) {
+                                            setState(() {});
+                                          }
                                           final SharedPreferences prefs =
                                               await SharedPreferences
                                                   .getInstance();
@@ -253,32 +248,27 @@ class _DrawerMenuViewState extends State<DrawerMenuView> {
                             onTap: () {
                               if (initialindex == "true") {
                                 index == 0
-                                    ? Get.to(() => const RewardViewBussiness())
+                                    ? Get.to(() => const BlogView())
                                     : index == 1
-                                        ? {
-                                            // value.blogApi(),
-                                            Get.to(() => const BlogView()),
-                                          }
+                                        ? Get.to(() => const settingsPage())
                                         : index == 2
-                                            ? {
-                                                // value.educationApi(),
-                                                // Get.to(() => const BlogView()),
-                                              }
-                                            : index == 3
-                                                ? Get.to(() => MemberShipView())
-                                                : const SizedBox();
+                                            ? // value.educationApi(),
+                                            Get.to(() =>
+                                                const TermsConditionView())
+                                            : Get.to(
+                                                () => const helpAndSupport());
                               } else {
                                 index == 0
                                     ? Get.to(() => const RewardView())
                                     : index == 1
-                                        ? {
-                                            // value.blogApi(),
-                                            Get.to(() => const BlogView()),
-                                          }
-                                        : {
-                                            // value.educationApi(),
-                                            // Get.to(() => const BlogView()),
-                                          };
+                                        ? Get.to(() => const BlogView())
+                                        : index == 2
+                                            ? Get.to(() => const settingsPage())
+                                            : index == 3
+                                                ? Get.to(() =>
+                                                    const TermsConditionView())
+                                                : Get.to(() =>
+                                                    const helpAndSupport());
                               }
                             },
                             child: Row(

@@ -110,7 +110,11 @@ class RoutesGenerator {
       case Routes.qrBusinessRoute:
         return MaterialPageRoute(builder: (_) => const QrBusinessView());
       case Routes.paymentRoute:
-        return MaterialPageRoute(builder: (_) => const PaymentView());
+        return MaterialPageRoute(
+            builder: (_) => PaymentView(
+                  datetime: "",
+                  amount: "",
+                ));
     }
     return _unDefinedRoute();
   }

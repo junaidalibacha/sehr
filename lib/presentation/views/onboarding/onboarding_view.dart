@@ -3,6 +3,7 @@ import 'package:sehr/presentation/common/app_button_widget.dart';
 import 'package:sehr/presentation/common/logo_widget.dart';
 import 'package:sehr/presentation/routes/routes.dart';
 import 'package:sehr/presentation/src/index.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../app/index.dart';
@@ -176,6 +177,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     horizontal: getProportionateScreenWidth(20),
                   ),
                   child: AppButtonWidget(
+                    bgColor: Colors.white,
+                    text: 'For More Details  |  Visit Our Website Now',
+                    textColor: Colors.black,
+                    ontap: () {
+                      launchUrl(Uri.parse("https://sehr.pk/"));
+                    },
+                  ),
+                ),
+                const Spacer(flex: 2),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(20),
+                  ),
+                  child: AppButtonWidget(
                     text: 'Next',
                     ontap: () {
                       next();
@@ -197,5 +212,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
       ),
     );
+  }
+}
+
+_launchURL() async {
+  const url = 'https://sehr.pk/';
+  final uri = Uri.parse(url);
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri);
+  } else {
+    throw 'Could not launch $url';
   }
 }

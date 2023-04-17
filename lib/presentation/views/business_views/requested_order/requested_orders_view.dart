@@ -149,7 +149,10 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
     datatest = null;
     filterlist.clear();
     _list.clear();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var responseofdata = await _orderApi
         .fetchorderrequest(prefs.getString("sehrcode").toString());
@@ -158,6 +161,7 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
     _list[0][0].forEach((element) {
       if (element["status"].toString() == "pending") {
         filterlist.add(element);
+        print(element);
       }
     });
 
@@ -221,14 +225,46 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) =>
                                 CustomListTileWidget(
-                              leading: Image.asset(AppImages.menu),
+                              leading: Container(
+                                height: 70,
+                                width: 50,
+                                child: Image.network(
+                                  filterlist[index]["customer"]["avatar"]
+                                      .toString(),
+                                  fit: BoxFit.fill,
+                                  errorBuilder: (context,
+                                          e,
+                                          // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                                          StackTrace) =>
+                                      Image.asset(AppImages.menu),
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   kTextBentonSansMed(
-                                    'customer name',
+                                    "${filterlist[index]["customer"]["firstName"]} ${filterlist[index]["customer"]["lastName"]}",
                                     fontSize: getProportionateScreenHeight(15),
                                   ),
                                   kTextBentonSansReg(
@@ -263,30 +299,28 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
                                                     .toString(),
                                                 "accepted");
                                         if (response != null) {
+                                          _list.clear();
+                                          filterlist.clear();
                                           // ignore: use_build_context_synchronously
                                           Navigator.pop(context);
-                                          Map<String, dynamic>? datatest;
-                                          final List<dynamic> list = [];
-                                          List<dynamic> datafilterlist = [];
-                                          list.add(datatest == null
-                                              ? []
-                                              : datatest.values.toList());
-                                          list[0][0].forEach((element) {
-                                            if (element["status"].toString() !=
-                                                "pending") {
-                                              filterlist.add(element);
-                                            }
-                                          });
+                                          // Map<String, dynamic>? datatest;
+                                          // final List<dynamic> list = [];
+                                          // List<dynamic> datafilterlist = [];
+                                          // list.add(datatest == null
+                                          //     ? []
+                                          //     : datatest.values.toList());
+                                          // list[0][0].forEach((element) {
+                                          //   if (element["status"].toString() !=
+                                          //       "pending") {
+                                          //     filterlist.add(element);
+                                          //   }
+                                          // });
+                                          await fetchorders();
 
                                           // ignore: use_build_context_synchronously
-                                          _buildOrderDetails(
-                                                  context,
-                                                  datafilterlist[index]
-                                                      ['status'],
-                                                  datafilterlist[index])
-                                              .then((value) async {
-                                            await fetchorders();
-                                          });
+                                          if (mounted) {
+                                            setState(() {});
+                                          }
                                         } else {
                                           Navigator.pop(context);
                                           errordialog(context);
@@ -547,7 +581,9 @@ class _RequestedOrdersViewState extends State<RequestedOrdersView> {
       nodata = true;
     }
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

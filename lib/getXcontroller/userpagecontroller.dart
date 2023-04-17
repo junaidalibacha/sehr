@@ -198,21 +198,23 @@ class AppController extends GetxController {
     var response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
-      print(response.statusCode);
       return response;
+    } else if (response.statusCode == 400) {
+      return null;
     } else {
-      print("object status code");
-      print(response.statusCode);
-
       return response.body;
     }
   }
 
   Future rewardscall() async {
     var responseofdata = await fetchrewardsApi();
-
-    rewardsdata = convert.jsonDecode(responseofdata.body) as dynamic;
-    rewardslist.assign(rewardsdata == null ? [] : rewardsdata!.values.toList());
+    if (responseofdata == null) {
+      rewardslist.clear();
+    } else {
+      rewardsdata = convert.jsonDecode(responseofdata.body) as dynamic;
+      rewardslist
+          .assign(rewardsdata == null ? [] : rewardsdata!.values.toList());
+    }
   }
 
   fetchrewards() async {

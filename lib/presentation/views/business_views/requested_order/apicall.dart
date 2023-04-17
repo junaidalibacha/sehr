@@ -51,15 +51,15 @@ class OrderApi {
   }
 
   fetchorderrequest(String sehrcode) async {
-    Map<String, dynamic>? storedocs;
+    final prefs = await SharedPreferences.getInstance();
 
-    storedocs = await getadmintoken();
+    var tokenofmy = prefs.get('accessToken');
 
     final uri =
         Uri.parse('http://3.133.0.29/api/shop/orders/$sehrcode?limit=1000');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${storedocs!["accessToken"].toString()}'
+      'Authorization': 'Bearer $tokenofmy'
     };
 
     var response = await http.get(uri, headers: headers);
@@ -88,8 +88,6 @@ class OrderApi {
     } else {
       return;
     }
-
-    return response;
   }
 
   getadmintoken() async {

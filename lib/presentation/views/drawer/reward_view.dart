@@ -1,9 +1,11 @@
 import 'dart:convert' as convert;
+import 'dart:convert';
 
 import 'package:sehr/app/index.dart';
 import 'package:sehr/getXcontroller/userpagecontroller.dart';
 import 'package:sehr/presentation/common/top_back_button_widget.dart';
 import 'package:sehr/presentation/views/drawer/rewardAPI.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../src/index.dart';
@@ -108,32 +110,25 @@ class _RewardViewState extends State<RewardView> {
                               ],
                             )
                           : Container(),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: getProportionateScreenHeight(10),
-                            horizontal: getProportionateScreenWidth(30)),
-                        child: kTextBentonSansBold("Others Rewards",
-                            fontSize: getProportionateScreenHeight(20)),
-                      ),
-                      Expanded(
-                        child: ListView.separated(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(25)),
-                            shrinkWrap: true,
-                            itemCount: filterlist.length,
-                            separatorBuilder: (context, index) =>
-                                buildVerticleSpace(15),
-                            itemBuilder: (context, index) {
-                              // if (activatedReward[0]["id"] ==
-                              //     filterlist[index]["id"]) {
-                              //   return null;
-                              // } else {
+                      activatedReward.length != 0
+                          ? Container()
+                          : Expanded(
+                              child: ListView.separated(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          getProportionateScreenWidth(25)),
+                                  shrinkWrap: true,
+                                  itemCount: filterlist.length,
+                                  separatorBuilder: (context, index) =>
+                                      buildVerticleSpace(15),
+                                  itemBuilder: (context, index) {
+                                    // if (activatedReward[0]["id"] ==
+                                    //     filterlist[index]["id"]) {
+                                    //   return null;
+                                    // } else {
 
-                              // }
-                              return activatedReward[0]["id"] ==
-                                      filterlist[index]["id"]
-                                  ? Container()
-                                  : GestureDetector(
+                                    // }
+                                    return GestureDetector(
                                       onTap: () {
                                         showDialog(
                                             context: context,
@@ -145,25 +140,19 @@ class _RewardViewState extends State<RewardView> {
                                                 actions: [
                                                   TextButton(
                                                       onPressed: () async {
-                                                        SharedPreferences
-                                                            prefs =
-                                                            await SharedPreferences
-                                                                .getInstance();
-                                                        prefs.setString(
-                                                            "RewardsTarget",
-                                                            filterlist[index][
-                                                                    "salesTarget"]
-                                                                .toString());
-                                                        prefs.setString(
-                                                            "RewardsTitle",
-                                                            filterlist[index]
-                                                                    ["title"]
-                                                                .toString());
-                                                        if (mounted) {
-                                                          setState(() {});
+                                                        var response =
+                                                            await verifyreward(
+                                                                filterlist[index]
+                                                                        ["id"]
+                                                                    .toString());
+                                                        if (response != null) {
+                                                          await getxcontroller
+                                                              .fetchrewards();
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
                                                         }
-                                                        Navigator.pop(context);
-                                                        Navigator.pop(context);
                                                       },
                                                       child: const Text("Ok"))
                                                 ],
@@ -177,8 +166,8 @@ class _RewardViewState extends State<RewardView> {
                                             ["description"],
                                       ),
                                     );
-                            }),
-                      )
+                                  }),
+                            )
                     ],
                   );
       })),
@@ -190,11 +179,15 @@ class _RewardViewState extends State<RewardView> {
     if (filterlist.isEmpty) {
       nodata = true;
     } else {
-      activatedReward = filterlist
-          .where((element) =>
-              element["id"].toString().trim() ==
-              getxcontroller.rewardslist[0][0]["id"].toString().trim())
-          .toList();
+      if (getxcontroller.rewardslist.isEmpty) {
+        activatedReward = [];
+      } else {
+        activatedReward = filterlist
+            .where((element) =>
+                element["id"].toString().trim() ==
+                getxcontroller.rewardslist[0][0]["id"].toString().trim())
+            .toList();
+      }
     }
 
     if (mounted) {
@@ -207,5 +200,34 @@ class _RewardViewState extends State<RewardView> {
     fetchorders();
     // TODO: implement initState
     super.initState();
+  }
+}
+
+activatereward(String id) async {
+  final uri = Uri.parse('http://3.133.0.29/api/user/subscribe-reward/$id');
+  final headers = {"accept": "*/*"};
+
+  var response = await http.post(uri, headers: headers);
+
+  return response;
+}
+
+verifyreward(String id) async {
+  final prefs = await SharedPreferences.getInstance();
+
+  var token = prefs.get('accessToken');
+  final uri = Uri.parse('http://3.133.0.29/api/user/subscribe-reward/$id');
+  final headers = {'accept': '*/*', 'Authorization': 'Bearer $token'};
+  Map body = {};
+  String jsonBody = json.encode(body);
+  final encoding = Encoding.getByName('utf-8');
+
+  var response = await http.post(uri,
+      headers: headers, body: jsonBody, encoding: encoding);
+  print(response.body);
+  if (response.statusCode == 201) {
+    return response;
+  } else {
+    return null;
   }
 }

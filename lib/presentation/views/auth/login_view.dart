@@ -1,9 +1,11 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/data/network/network_api_services.dart';
 import 'package:sehr/presentation/common/logo_widget.dart';
+import 'package:http/http.dart' as http;
 import 'package:sehr/presentation/utils/utils.dart';
 // import 'package:sehr/presentation/index.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
+import 'package:sehr/presentation/views/profile/forgotpassword.dart';
 
 import '../../common/app_button_widget.dart';
 import '../../common/text_field_widget.dart';
@@ -98,45 +100,34 @@ class LoginView extends StatelessWidget {
                     },
                   ),
                   buildVerticleSpace(20),
-                  // kTextBentonSansMed(
-                  //   'Or Continue With',
-                  //   fontSize: getProportionateScreenHeight(12),
-                  // ),
-                  // buildVerticleSpace(20),
-                  // Row(
-                  //   children: [
-                  //     SocialButtonWidget(
-                  //       onTap: () {
-                  //         // viewModel.facebookSignIn();
-                  //       },
-                  //       icon: AppIcons.facebookIcon,
-                  //       text: 'facebook',
-                  //     ),
-                  //     const Spacer(),
-                  //     SocialButtonWidget(
-                  //       onTap: () {},
-                  //       icon: AppIcons.googleIcon,
-                  //       text: 'Google',
-                  //     ),
-                  //   ],
-                  // ),
-                  // buildVerticleSpace(10),
                   TextButton(
-                    onPressed: () {},
-                    child: kTextBentonSansMed(
-                      'Forgot Your Password?',
-                      color: ColorManager.primary,
-                      fontSize: getProportionateScreenHeight(12),
-                      textDecoration: TextDecoration.underline,
-                    ),
-                  ),
+                      onPressed: () {
+                        Get.to(() => const ForgotPassView());
+                      },
+                      child: const Text("Forgot Password?")),
+                  buildVerticleSpace(10),
                   buildVerticleSpace(20),
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: getProportionateScreenWidth(90),
                     ),
                     child: AppButtonWidget(
-                      ontap: () {
+                      ontap: () async {
+                        viewModel.setLoading(true);
+                        final uri = Uri.parse(
+                            'http://3.133.0.29/api/user/send-otp/${viewModel.loginUserNameController.text}');
+                        final headers = {'accept': '*/*'};
+                        var response =
+                            await http.get(uri, headers: headers).timeout(
+                                  const Duration(seconds: 10),
+                                );
+                        if (response.statusCode == 200) {
+                          await viewModel.loginApi(context);
+                        } else {
+                          viewModel.setLoading(false);
+                          Utils.flushBarErrorMessage(
+                              context, 'Invalid mobile number');
+                        }
                         // Get.toNamed(Routes.signUpRoute);
                         // if (viewModel.userNameController.text.isEmpty &&
                         //     viewModel.passwordController.text.isEmpty) {
@@ -155,7 +146,7 @@ class LoginView extends StatelessWidget {
                         //   Utils.flushBarErrorMessage(
                         //       context, 'Password must be 8 charactors');
                         // } else {
-                        viewModel.loginApi(context);
+
                         // }
                       },
                       text: 'Login',
@@ -186,6 +177,8 @@ class LoginView extends StatelessWidget {
       // ),
     );
   }
+
+  checkvalidationOfUser(phonenumber) async {}
 }
 
 class BgPatternWidget extends StatelessWidget {

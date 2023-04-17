@@ -130,7 +130,9 @@ class ProfileViewModel extends ChangeNotifier {
   String? _selectedBusinessCategory;
   String? get selectedBusinessCategory => _selectedBusinessCategory;
 
-  void setBusinessOption(String option) {
+  void setBusinessOption(String option, String categorytitle) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("catTitle", categorytitle);
     _selectedBusinessCategory = option;
     notifyListeners();
   }
@@ -152,7 +154,10 @@ class ProfileViewModel extends ChangeNotifier {
   String? _selectedCity;
   String? get selectedCity => _selectedCity;
 
-  void setCity(String city) {
+  void setCity(String city) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("cityaccess", city);
+
     _selectedCity = city;
     notifyListeners();
   }
@@ -201,7 +206,10 @@ class ProfileViewModel extends ChangeNotifier {
   String? _selectedProvince;
   String? get selectedProvince => _selectedProvince;
 
-  void setProvince(String province) {
+  void setProvince(String province) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("provienceaccess", province);
+
     _selectedProvince = province;
     notifyListeners();
   }
@@ -392,8 +400,6 @@ class ProfileViewModel extends ChangeNotifier {
     prefs.setString('tehsil', _selectedTehsil!);
     prefs.setString('district', _selectedDistrict!);
     prefs.setString('division', _selectedDivision!);
-    prefs.setString('province', _selectedProvince!);
-    prefs.setString('city', _selectedCity!);
     prefs.setString('isBusiness', 'no');
     // prefs.setString('country', 'Pakistan');
   }
@@ -455,6 +461,9 @@ class ProfileViewModel extends ChangeNotifier {
   Future<void> registerMultiPartApi(BuildContext context) async {
     setLoading(true);
     final prefs = await SharedPreferences.getInstance();
+    print("Mahwani khan masheani");
+    print(prefs.getString('cityaccess').toString());
+    print(prefs.getString('provienceaccess').toString());
 
     // var stream = File(_image!.path).readAsBytes().asStream();
     // File(_image!.path).readAsBytes().asStream();
@@ -487,8 +496,8 @@ class ProfileViewModel extends ChangeNotifier {
     request.fields['address'] = prefs.getString('address').toString();
     request.fields['tehsil'] = prefs.getString('tehsil').toString();
     request.fields['district'] = prefs.getString('district').toString();
-    request.fields['province'] = prefs.getString('province').toString();
-    request.fields['city'] = prefs.getString('city').toString();
+    request.fields['province'] = prefs.getString('provienceaccess').toString();
+    request.fields['city'] = prefs.getString('cityaccess').toString();
     request.fields['country'] = 'Pakistan';
     request.fields['role'] = 'user';
 
@@ -637,12 +646,12 @@ class ProfileViewModel extends ChangeNotifier {
     request.fields['address'] = "deom address";
     request.fields['about'] = descriptioncontroller.text;
     request.fields['tehsil'] = "deom tehsil";
-    request.fields['district'] = "deom division";
+    request.fields['district'] = prefs.getString("catTitle").toString();
     request.fields['division'] = "deom district";
     request.fields['province'] = "deom province";
     request.fields['city'] = "demo city";
     request.fields['country'] = "Pakistan";
-    request.fields['category'] = prefs.getString("category").toString();
+    request.fields['category'] = _selectedBusinessCategory.toString();
     request.fields['lat'] = latitudes;
     request.fields['lon'] = longitudes;
 
@@ -721,24 +730,35 @@ class ProfileViewModel extends ChangeNotifier {
   Future verifyPhoneNo(context) async {
     setLoading(true);
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await _networkApiService
-        .getGetApiResponse(
-      "${AppUrls.verifyPhoneNo}?mobile=${prefs.getString('mobileNo')}&otp=123456",
-    )
-        .then((value) async {
-      final userPreference = Provider.of<UserViewModel>(context, listen: false);
-      userPreference.saveUser(
-        UserModel(accessToken: value['accessToken'].toString()),
-      );
+    final uri = Uri.parse(
+        'http://3.133.0.29/api/user/send-otp/${prefs.getString('mobileNo').toString()}');
+    final headers = {'accept': '*/*'};
+    var response = await http.get(uri, headers: headers).timeout(
+          const Duration(seconds: 10),
+        );
+    if (response.statusCode == 200) {
+      String phonenumber = prefs.getString('mobileNo').toString();
+      await _networkApiService
+          .getGetApiResponse(
+        "${AppUrls.verifyPhoneNo}?mobile=$phonenumber&otp=123456",
+      )
+          .then((value) async {
+        final userPreference =
+            Provider.of<UserViewModel>(context, listen: false);
+        userPreference.saveUser(
+          UserModel(accessToken: value['accessToken'].toString()),
+        );
 
-      Utils.flushBarErrorMessage(context, 'Login Successfully');
-      await init();
+        Utils.flushBarErrorMessage(context, 'Login Successfully');
+        await init();
+
+        setLoading(false);
+        Get.toNamed(Routes.profileCompleteRoute);
+      });
+    } else {
       setLoading(false);
-
-      Get.offAll(DrawerView(
-        pageindex: 0,
-      ));
-    });
+      Utils.flushBarErrorMessage(context, 'Error Please Try again');
+    }
   }
 
 //! OTP verification

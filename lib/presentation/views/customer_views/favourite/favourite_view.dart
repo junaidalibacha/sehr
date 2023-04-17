@@ -168,7 +168,41 @@ class _FavouriteViewState extends State<FavouriteView> {
                                           );
                                         },
                                         child: CustomListTileWidget(
-                                          leading: Image.asset(AppImages.menu),
+                                          leading: SizedBox(
+                                            height: 50,
+                                            width: 50,
+                                            child: Image.network(
+                                              favlist[index].logo.toString(),
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context,
+                                                      e,
+                                                      // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                                                      StackTrace) =>
+                                                  Image.asset(AppImages.menu),
+                                              loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent?
+                                                          loadingProgress) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
                                           // Image.asset(viewModel.favItems[index].shopImage),
                                           title: Column(
                                             crossAxisAlignment:
@@ -187,9 +221,7 @@ class _FavouriteViewState extends State<FavouriteView> {
                                               ),
                                               // buildVerticleSpace(3),
                                               kTextBentonSansReg(
-                                                favlist[index]
-                                                        .category
-                                                        ?.title ??
+                                                favlist[index].district ??
                                                     "Candy",
                                                 color: ColorManager.textGrey
                                                     .withOpacity(0.8),

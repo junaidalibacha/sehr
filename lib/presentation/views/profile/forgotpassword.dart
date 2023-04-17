@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/utils/utils.dart';
 import 'package:sehr/presentation/view_models/auth_view_model.dart';
-import 'package:sehr/presentation/view_models/blog_view_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert' as convert;
 
 import '../../common/app_button_widget.dart';
 import '../../common/text_field_widget.dart';
@@ -21,6 +20,9 @@ class ForgotPassView extends StatefulWidget {
 
 class _ForgotPassViewState extends State<ForgotPassView> {
   TextEditingController newpasscontroller = TextEditingController();
+  TextEditingController oldpassword = TextEditingController();
+  TextEditingController phonecontroller = TextEditingController();
+
   bool isloading = false;
 
   TextEditingController confirmnewpasscontroller = TextEditingController();
@@ -55,6 +57,58 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                             fontSize: getProportionateScreenHeight(20),
                           ),
                           buildVerticleSpace(40),
+                          TextFieldWidget(
+                            controller: phonecontroller,
+                            keyboardType: TextInputType.visiblePassword,
+                            hintText: 'email or phone',
+                            prefixIcon: Icon(
+                              Icons.lock_rounded,
+                              size: getProportionateScreenHeight(18),
+                              color: ColorManager.primaryLight,
+                            ),
+                            sufixIcon: IconButton(
+                              splashRadius: 1,
+                              onPressed: () => {},
+                              icon: Icon(
+                                viewModel.loginPassObscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                size: getProportionateScreenHeight(20),
+                                color: ColorManager.textGrey.withOpacity(0.6),
+                              ),
+                            ),
+                          ),
+                          buildVerticleSpace(20),
+                          TextFieldWidget(
+                            controller: oldpassword,
+                            keyboardType: TextInputType.visiblePassword,
+                            hintText: 'Old Password',
+                            prefixIcon: Icon(
+                              Icons.lock_rounded,
+                              size: getProportionateScreenHeight(18),
+                              color: ColorManager.primaryLight,
+                            ),
+                            sufixIcon: IconButton(
+                              splashRadius: 1,
+                              onPressed: () => {},
+                              icon: Icon(
+                                viewModel.loginPassObscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                size: getProportionateScreenHeight(20),
+                                color: ColorManager.textGrey.withOpacity(0.6),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'old Password is required';
+                              } else if (value.length < 8) {
+                                return 'Password should be 8 charators minimum';
+                              }
+                              return null;
+                            },
+                          ),
+                          buildVerticleSpace(20),
                           TextFieldWidget(
                             controller: newpasscontroller,
                             keyboardType: TextInputType.visiblePassword,
@@ -128,7 +182,8 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                                   : const CircularProgressIndicator(),
                               ontap: () async {
                                 if (newpasscontroller.text.isEmpty &&
-                                    confirmnewpasscontroller.text.isEmpty) {
+                                    confirmnewpasscontroller.text.isEmpty &&
+                                    phonecontroller.text.isEmpty) {
                                   Utils.flushBarErrorMessage(
                                       context, 'fields are empty');
                                 } else {
@@ -145,21 +200,10 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                                         isloading = true;
                                       });
 
-                                      var response = await updateUserPassword(
-                                          confirmnewpasscontroller.text,
-                                          appUser.email.toString().trim());
-                                      // ignore: use_build_context_synchronously
-                                      if (response != null) {
-                                        // ignore: use_build_context_synchronously
-                                        Utils.flushBarErrorMessage(context,
-                                            'Password Updated Successfully');
-                                        newpasscontroller.clear();
-                                        confirmnewpasscontroller.clear();
-                                      } else {
-                                        // ignore: use_build_context_synchronously
-                                        Utils.flushBarErrorMessage(
-                                            context, apierror);
-                                      }
+                                      await checkcredientials(
+                                          phonecontroller.text,
+                                          oldpassword.text,
+                                          newpasscontroller.text);
 
                                       setState(() {
                                         isloading = false;
@@ -184,10 +228,10 @@ class _ForgotPassViewState extends State<ForgotPassView> {
     );
   }
 
-  updateUserPassword(String newPassword, String email) async {
-    final prefs = await SharedPreferences.getInstance();
+  updateUserPassword(String newPassword, String email, String tokens) async {
+    var token = tokens;
+    // prefs.get('accessToken');
 
-    var token = prefs.get('accessToken');
     final uri = Uri.parse('http://3.133.0.29/api/user/update-password');
     final headers = {
       'accept': '*/*',
@@ -202,14 +246,45 @@ class _ForgotPassViewState extends State<ForgotPassView> {
         .post(uri, headers: headers, body: jsonBody, encoding: encoding)
         .timeout(const Duration(seconds: 10));
 
+    print(response.body);
+
     if (response.statusCode == 201) {
-      return response;
+      Utils.flushBarErrorMessage(context, "Password updated successfully");
     } else {
-      apierror = response.body;
+      Utils.flushBarErrorMessage(context, response.body);
 
       return null;
     }
   }
 
   String apierror = "";
+  checkcredientials(
+    email,
+    oldpassword,
+    newpassword,
+  ) async {
+    final uri = Uri.parse('http://3.133.0.29/api/auth/login');
+    final headers = {
+      'accept': '*/*',
+      'Content-Type': 'application/json',
+    };
+    Map body = {"username": email, "password": oldpassword};
+    String jsonBody = json.encode(body);
+    final encoding = Encoding.getByName('utf-8');
+
+    var response = await http
+        .post(uri, headers: headers, body: jsonBody, encoding: encoding)
+        .timeout(const Duration(seconds: 10));
+
+    if (response.statusCode == 201) {
+      final List<dynamic> list = [];
+      Map<String, dynamic>? datatest;
+      datatest = convert.jsonDecode(response.body);
+      list.add(datatest == null ? [] : datatest.values.toList());
+
+      await updateUserPassword(newpassword, email, list[0][0]);
+    } else {
+      Utils.flushBarErrorMessage(context, "Wrong old crediential");
+    }
+  }
 }

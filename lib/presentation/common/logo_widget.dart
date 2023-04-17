@@ -29,9 +29,9 @@ class LogoWidget extends StatelessWidget {
         ),
         // buildVerticleSpace(10),
         Text(
-          'Business Tag line',
+          'وَمِمَّا رَزَقْنَاهُمْ يُنْفِقُونَ',
           style: GoogleFonts.libreFranklin(
-            fontSize: getProportionateScreenHeight(14),
+            fontSize: getProportionateScreenHeight(18),
             // fontWeight: FontWeight.bold,
             // wordSpacing: getProportionateScreenWidth(3.5),
           ),

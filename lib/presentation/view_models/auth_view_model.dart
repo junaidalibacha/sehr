@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/utils/utils.dart';
 import 'package:sehr/presentation/views/drawer/custom_drawer.dart';
+import 'package:sehr/presentation/views/profile/varification_code_view.dart';
 // import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -156,17 +157,24 @@ class AuthViewModel extends ChangeNotifier {
         await Get.offAll(DrawerView(
           pageindex: 0,
         ));
-      }).onError((error, stackTrace) {
+      }).onError((error, stackTrace) async {
         if (error
             .toString()
             .toLowerCase()
             .trim()
-            .contains("Unauthorised request".toLowerCase())) {
-        } else {}
+            .contains("Not verified".toLowerCase())) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.remove("mobileNo");
+          prefs.setString("mobileNo", loginUserNameController.text);
+          Get.to(const VerificationCodeView());
+        } else {
+          print("error not found");
+        }
         setLoading(false);
 
         Utils.flushBarErrorMessage(context, error.toString());
       });
+      print("object mashwnai");
       print(response);
     }
   }

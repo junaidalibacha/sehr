@@ -305,26 +305,31 @@ class _SetLocationViewState extends State<SetLocationView> {
 
                                           buildVerticleSpace(12),
                                           DropDownWidget(
-                                            bgColor: ColorManager.lightGrey,
-                                            dropdownColor: ColorManager.white,
-                                            blurRadius:
-                                                getProportionateScreenHeight(3),
-                                            lableText: 'City',
-                                            hintText: 'Select Your City',
-                                            selectedOption:
-                                                viewModel.selectedCity,
-                                            dropdownMenuItems: filterlist
-                                                .map<DropdownMenuItem<String>>(
-                                                  (value) => DropdownMenuItem(
-                                                    value: value[1].toString(),
-                                                    child: kTextBentonSansReg(
-                                                        value[1]),
-                                                  ),
-                                                )
-                                                .toList(),
-                                            onChange: (value) =>
-                                                viewModel.setCity(value!),
-                                          ),
+                                              bgColor: ColorManager.lightGrey,
+                                              dropdownColor: ColorManager.white,
+                                              blurRadius:
+                                                  getProportionateScreenHeight(
+                                                      3),
+                                              lableText: 'City',
+                                              hintText: 'Select Your City',
+                                              selectedOption:
+                                                  viewModel.selectedCity,
+                                              dropdownMenuItems: filterlist
+                                                  .map<
+                                                      DropdownMenuItem<String>>(
+                                                    (value) => DropdownMenuItem(
+                                                      value: value["title"]
+                                                          .toString(),
+                                                      child: kTextBentonSansReg(
+                                                          value["title"]
+                                                              .toString()),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                              onChange: (value) {
+                                                print(value);
+                                                viewModel.setCity(value!);
+                                              }),
                                         ],
                                       ),
                                     ),
@@ -365,16 +370,15 @@ class _SetLocationViewState extends State<SetLocationView> {
   Future citycall(String id) async {
     filterlist.clear();
     var responseofdata =
-        await _orderApi.adressdetailsApi("http://3.133.0.29/api/cities/$id");
+        await _orderApi.adressdetailsApi("http://3.133.0.29/api/cities");
 
     datatest = convert.jsonDecode(responseofdata.body);
     _list.clear();
-    filterlist.clear();
-    print(_list);
     _list.add(datatest == null ? [] : datatest!.values.toList());
-
-    _list.forEach((element) {
-      filterlist.add(element);
+    _list[0][0].forEach((element) {
+      if (element["provienceId"].toString() == id) {
+        filterlist.add(element);
+      }
     });
 
     return datatest;

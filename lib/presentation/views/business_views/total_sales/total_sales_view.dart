@@ -1,7 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/common/app_button_widget.dart';
+import 'package:sehr/presentation/utils/utils.dart';
 import 'package:sehr/presentation/view_models/business_view_models/total_sales_view_model.dart';
+import 'package:sehr/presentation/views/business_views/payment/payment_view.dart';
 import 'package:sehr/presentation/views/business_views/requested_order/apicall.dart';
 import 'package:sehr/presentation/views/business_views/total_sales/fetchcomission.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,8 +24,10 @@ class _TotalSalesViewState extends State<TotalSalesView> {
 
   Map<String, dynamic>? datatest;
   final List<dynamic> _list = [];
+  String comissionAmount = "0";
   fetchorders(String datetimerange) async {
     await apicall(datetimerange);
+    comissionAmount = _list[0][2].toString();
     if (mounted) {
       setState(() {});
     }
@@ -32,20 +36,50 @@ class _TotalSalesViewState extends State<TotalSalesView> {
   bool nodata = false;
 
   Future apicall(String datetimerange) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
     var responseofdata = await reportscommissions(datetimerange);
     datatest = convert.jsonDecode(responseofdata.body) as dynamic;
     _list.add(datatest == null ? [] : datatest!.values.toList());
-
     return datatest;
   }
 
   String datetimerange = DateFormat("yyyy-MM-dd").format(DateTime.now());
 
+  //orderid
+  Map<String, dynamic>? datatestorders;
+  final List<dynamic> _listorders = [];
+  List<dynamic> filterlist = [];
+  Future orderscall() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var responseofdata = await _orderApi
+        .fetchorderrequest(prefs.getString("sehrcode").toString());
+    datatestorders = convert.jsonDecode(responseofdata.body) as dynamic;
+    _listorders
+        .add(datatestorders == null ? [] : datatestorders!.values.toList());
+    _listorders[0][0].forEach((element) {
+      if (element["status"].toString() == "accepted") {
+        filterlist.add(element);
+      }
+    });
+
+    return datatest;
+  }
+
+  List<int> commissionsids = [];
+  List<dynamic> filterlistofordersbydate = [];
+
+  fetchallorders() async {
+    await orderscall();
+    if (filterlist.isNotEmpty) {}
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     fetchorders(datetimerange);
+    fetchallorders();
     // TODO: implement initState
     super.initState();
   }
@@ -79,25 +113,28 @@ class _TotalSalesViewState extends State<TotalSalesView> {
                   onTap: (value) {
                     viewModel.changeDuration(value);
                     print(value);
-
-                    setState(() {
-                      if (value == 0) {
-                        _list.clear();
-                        datetimerange =
-                            DateFormat("yyyy-MM-dd").format(DateTime.now());
-                        fetchorders(datetimerange);
-                      } else if (value == 1) {
-                        _list.clear();
-                        datetimerange = DateFormat("yyyy-MM-dd").format(
-                            DateTime.now().subtract(const Duration(days: 30)));
-                        fetchorders(datetimerange);
-                      } else if (value == 2) {
-                        _list.clear();
-                        datetimerange = DateFormat("yyyy-MM-dd").format(
-                            DateTime.now().subtract(const Duration(days: 365)));
-                        fetchorders(datetimerange);
-                      }
-                    });
+                    if (mounted) {
+                      setState(() {
+                        if (value == 0) {
+                          _list.clear();
+                          datetimerange =
+                              DateFormat("yyyy-MM-dd").format(DateTime.now());
+                          fetchorders(datetimerange);
+                        } else if (value == 1) {
+                          _list.clear();
+                          datetimerange = DateFormat("yyyy-MM-dd").format(
+                              DateTime.now()
+                                  .subtract(const Duration(days: 30)));
+                          fetchorders(datetimerange);
+                        } else if (value == 2) {
+                          _list.clear();
+                          datetimerange = DateFormat("yyyy-MM-dd").format(
+                              DateTime.now()
+                                  .subtract(const Duration(days: 365)));
+                          fetchorders(datetimerange);
+                        }
+                      });
+                    }
                   },
                 ),
               ),
@@ -128,74 +165,18 @@ class _TotalSalesViewState extends State<TotalSalesView> {
                             _buildDetailCard('Total Commision\nTo be Paid',
                                 'PKR: ${_list[0][2].toString()}/-'),
                             buildVerticleSpace(36),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(15),
-                              ),
-                              child: Row(
-                                children: [
-                                  kTextBentonSansBold(
-                                    "commission:",
-                                    fontSize: getProportionateScreenHeight(16),
-                                  ),
-                                  const Spacer(),
-                                  TextFormField(
-                                    // controller: ,
-                                    keyboardType: TextInputType.number,
-                                    style: TextStyleManager.boldTextStyle(
-                                      fontSize:
-                                          getProportionateScreenHeight(14),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    decoration: InputDecoration(
-                                      constraints: BoxConstraints(
-                                        maxWidth:
-                                            getProportionateScreenWidth(194),
-                                        minHeight:
-                                            getProportionateScreenHeight(57),
-                                      ),
-                                      filled: true,
-                                      fillColor: ColorManager.lightGrey,
-                                      hintText: 'Enter Amount',
-                                      hintStyle: TextStyleManager.boldTextStyle(
-                                        fontSize:
-                                            getProportionateScreenHeight(14),
-                                        color: ColorManager.textGrey
-                                            .withOpacity(0.3),
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: ColorManager.lightGrey,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          getProportionateScreenHeight(15),
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: ColorManager.grey,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          getProportionateScreenHeight(15),
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: ColorManager.primary,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          getProportionateScreenHeight(15),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                             buildVerticleSpace(28),
                             AppButtonWidget(
                               ontap: () {
-                                Get.toNamed(Routes.paymentRoute);
+                                if (comissionAmount != "0") {
+                                  Get.to(() => PaymentView(
+                                        datetime: datetimerange,
+                                        amount: comissionAmount,
+                                      ));
+                                } else {
+                                  Utils.flushBarErrorMessage(context,
+                                      "No Amount Record Found for the time period");
+                                }
                               },
                               text: 'Pay Online',
                             ),

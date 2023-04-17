@@ -41,11 +41,32 @@ class _ShopDetailsViewState extends State<ShopDetailsView> {
                   children: [
                     Align(
                       alignment: Alignment.topCenter,
-                      child: Image.asset(
-                        AppImages.restourant,
-                        height: SizeConfig.screenHeight * 0.5,
-                        width: SizeConfig.screenWidth,
-                        fit: BoxFit.cover,
+                      child: Container(
+                        height: 350,
+                        width: double.infinity,
+                        child: Image.network(
+                          widget.businessModel.logo.toString(),
+                          errorBuilder: (context,
+                                  e,
+                                  // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
+                                  StackTrace) =>
+                              Image.asset(AppImages.menu),
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            }
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                     Align(
@@ -152,7 +173,7 @@ class _ShopDetailsViewState extends State<ShopDetailsView> {
                                   SizedBox(
                                     height: getProportionateScreenHeight(88),
                                     child: kTextBentonSansMed(
-                                      'Most whole Alaskan Red King Crabs get broken down into legs, claws, and lump meat. We offer all of these options as well in our online shop, but there is nothing like getting the whole nothing like getting the whole ',
+                                      widget.businessModel.about.toString(),
                                       height: 1.5,
                                       maxLines: 4,
                                       overFlow: TextOverflow.ellipsis,
@@ -258,7 +279,7 @@ contactusdialog(BuildContext context, String phone) {
               ButtonContact(
                   title: phone,
                   onPressed: () {
-                    UrlLauncher.launch("tel://+923092771719");
+                    UrlLauncher.launch("tel://$phone");
                   },
                   color: HexColor.fromHex('#15BE77')),
               Container(),

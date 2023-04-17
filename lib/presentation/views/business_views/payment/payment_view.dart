@@ -1,11 +1,18 @@
 import 'package:sehr/app/index.dart';
 import 'package:sehr/presentation/view_models/business_view_models/payment_view_model.dart';
+import 'package:sehr/presentation/views/payment/paymentpage.dart';
 
 import '../../../common/top_back_button_widget.dart';
 import '../../../src/index.dart';
 
 class PaymentView extends StatelessWidget {
-  const PaymentView({super.key});
+  PaymentView({
+    super.key,
+    required this.datetime,
+    required this.amount,
+  });
+  String datetime;
+  String amount;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +47,7 @@ class PaymentView extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        _buildPaymentCard(),
+                        _buildPaymentCard(datetime),
                       ],
                     ),
                   ),
@@ -53,7 +60,7 @@ class PaymentView extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentCard() {
+  Widget _buildPaymentCard(String datetime) {
     return Consumer<PayementViewModel>(
       builder: (context, viewModel, child) => ListView.separated(
         shrinkWrap: true,
@@ -63,12 +70,17 @@ class PaymentView extends StatelessWidget {
             onTap: () =>
                 viewModel.selecPayment(viewModel.paymentTypeList[index]),
             child: PaymentWidget(
-              value: viewModel.paymentTypeList[index],
-              groupValue: viewModel.paymentType,
-              label: viewModel.paymentImages[index],
-              text: viewModel.paymentNumber[index],
-              onChanged: (value) => viewModel.selecPayment(value!),
-            )),
+                value: viewModel.paymentTypeList[index],
+                groupValue: viewModel.paymentType,
+                label: viewModel.paymentImages[index],
+                text: viewModel.paymentNumber[index],
+                onChanged: (value) {
+                  viewModel.selecPayment(value!);
+                  Get.to(() => PaymentPage(
+                        datetime: datetime,
+                        amount: amount,
+                      ));
+                })),
       ),
     );
   }

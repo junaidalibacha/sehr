@@ -36,8 +36,8 @@ class _OrderPlacingViewState extends State<OrderPlacingView> {
           children: [
             Align(
               alignment: Alignment.topCenter,
-              child: Image.asset(
-                AppImages.restourant,
+              child: Image.network(
+                widget.datatest!["logo"].toString(),
                 height: SizeConfig.screenHeight * 0.5,
                 width: SizeConfig.screenWidth,
                 fit: BoxFit.cover,
