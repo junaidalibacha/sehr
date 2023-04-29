@@ -160,6 +160,16 @@ class _SetLocationViewState extends State<SetLocationView> {
                                       child: Column(
                                         children: [
                                           buildVerticleSpace(12),
+                                          TextFieldWidget(
+                                            controller:
+                                                viewModel.addressTextController,
+                                            hintText: 'Address',
+                                            fillColor: ColorManager.lightGrey,
+                                            blurRadius:
+                                                getProportionateScreenHeight(3),
+                                          ),
+
+                                          buildVerticleSpace(12),
                                           DropDownWidget(
                                               bgColor: ColorManager.lightGrey,
                                               dropdownColor: ColorManager.white,
@@ -181,7 +191,6 @@ class _SetLocationViewState extends State<SetLocationView> {
                                                   )
                                                   .toList(),
                                               onChange: (value) async {
-                                                filterlist.clear();
                                                 var listdistrictId = filterlist2
                                                     .where((element) =>
                                                         (element["title"]
@@ -194,23 +203,64 @@ class _SetLocationViewState extends State<SetLocationView> {
                                                                 .trim()))
                                                     .toList();
                                                 loadingshowdialog(context);
+                                                filterdristrict.clear();
                                                 filterlist.clear();
+                                                filtertehsil.clear();
 
                                                 await citycall(listdistrictId
                                                     .first["id"]
                                                     .toString());
+
                                                 viewModel.setProvince(value!);
                                                 Navigator.pop(context);
                                               }),
                                           buildVerticleSpace(12),
-                                          TextFieldWidget(
-                                            controller:
-                                                viewModel.addressTextController,
-                                            hintText: 'Address',
-                                            fillColor: ColorManager.lightGrey,
-                                            blurRadius:
-                                                getProportionateScreenHeight(3),
-                                          ),
+                                          DropDownWidget(
+                                              bgColor: ColorManager.lightGrey,
+                                              dropdownColor: ColorManager.white,
+                                              blurRadius:
+                                                  getProportionateScreenHeight(
+                                                      3),
+                                              lableText: 'Division',
+                                              hintText: 'Select Your Division',
+                                              selectedOption:
+                                                  viewModel.selectedCity,
+                                              dropdownMenuItems: filterlist
+                                                  .map<
+                                                      DropdownMenuItem<String>>(
+                                                    (value) => DropdownMenuItem(
+                                                      value: value["title"]
+                                                          .toString(),
+                                                      child: kTextBentonSansReg(
+                                                          value["title"]
+                                                              .toString()),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                              onChange: (value) async {
+                                                var listdistrictId = filterlist
+                                                    .where((element) =>
+                                                        (element["title"]
+                                                                .toString()
+                                                                .toLowerCase()
+                                                                .trim() ==
+                                                            value
+                                                                .toString()
+                                                                .toLowerCase()
+                                                                .trim()))
+                                                    .toList();
+                                                loadingshowdialog(context);
+                                                filterdristrict.clear();
+                                                filtertehsil.clear();
+
+                                                await districtsdata(
+                                                    listdistrictId.first["id"]
+                                                        .toString());
+
+                                                viewModel.setCity(value!);
+                                                Navigator.pop(context);
+                                                //
+                                              }),
                                           buildVerticleSpace(12),
 
                                           DropDownWidget(
@@ -235,7 +285,6 @@ class _SetLocationViewState extends State<SetLocationView> {
                                                   )
                                                   .toList(),
                                               onChange: (value) async {
-                                                filtertehsil.clear();
                                                 var listdistrictId = filterdristrict
                                                     .where((element) =>
                                                         (element["title"]
@@ -248,12 +297,11 @@ class _SetLocationViewState extends State<SetLocationView> {
                                                                 .trim()))
                                                     .toList();
                                                 loadingshowdialog(context);
-                                                print(
-                                                    listdistrictId.first["id"]);
-
+                                                filtertehsil.clear();
                                                 await tehsildata(listdistrictId
                                                     .first["id"]
                                                     .toString());
+
                                                 viewModel.setDistrict(value!);
                                                 Navigator.pop(context);
                                               }),
@@ -312,8 +360,7 @@ class _SetLocationViewState extends State<SetLocationView> {
                                                       3),
                                               lableText: 'City',
                                               hintText: 'Select Your City',
-                                              selectedOption:
-                                                  viewModel.selectedCity,
+                                              selectedOption: cities,
                                               dropdownMenuItems: filterlist
                                                   .map<
                                                       DropdownMenuItem<String>>(
@@ -326,10 +373,13 @@ class _SetLocationViewState extends State<SetLocationView> {
                                                     ),
                                                   )
                                                   .toList(),
-                                              onChange: (value) {
-                                                print(value);
-                                                viewModel.setCity(value!);
+                                              onChange: (value) async {
+                                                setState(() {
+                                                  cities = value.toString();
+                                                });
+                                                //
                                               }),
+                                          buildVerticleSpace(12),
                                         ],
                                       ),
                                     ),
@@ -367,39 +417,26 @@ class _SetLocationViewState extends State<SetLocationView> {
           );
   }
 
+  String? cities;
+
   Future citycall(String id) async {
     filterlist.clear();
-    var responseofdata =
-        await _orderApi.adressdetailsApi("http://3.133.0.29/api/cities");
+    var responseofdata = await _orderApi
+        .adressdetailsApi("http://3.133.0.29/api/divisions?provinceId=$id");
 
     datatest = convert.jsonDecode(responseofdata.body);
     _list.clear();
     _list.add(datatest == null ? [] : datatest!.values.toList());
     _list[0][0].forEach((element) {
-      if (element["provienceId"].toString() == id) {
-        filterlist.add(element);
-      }
+      filterlist.add(element);
     });
 
     return datatest;
   }
 
-  Future districtsdata() async {
-    var responseofdata =
-        await _orderApi.adressdetailsApi("http://3.133.0.29/api/districts");
-    districtTest = convert.jsonDecode(responseofdata.body);
-    _districtlist
-        .add(districtTest == null ? [] : districtTest!.values.toList());
-    _districtlist[0][0].forEach((element) {
-      filterdristrict.add(element);
-    });
-
-    return districtTest;
-  }
-
   fetchorders() async {
     await proviencecall();
-    await districtsdata();
+
     dataloading = true;
     setState(() {});
   }
@@ -423,16 +460,31 @@ class _SetLocationViewState extends State<SetLocationView> {
     return provincetest;
   }
 
-  Future tehsildata(String id) async {
-    var responseofdata = await _orderApi
-        .adressdetailsApi("http://3.133.0.29/api/districts/$id/tehsils");
-    print(responseofdata.body);
+  Future tehsildata(String districtid) async {
+    var responseofdata = await _orderApi.adressdetailsApi(
+        "http://3.133.0.29/api/divisions/$districtid/district/$districtid/tehsils");
+
     tehsiltest = convert.jsonDecode(responseofdata.body);
+    _tehsillist.clear();
     _tehsillist.add(tehsiltest == null ? [] : tehsiltest!.values.toList());
     _tehsillist[0][0].forEach((element) {
       filtertehsil.add(element);
     });
 
     return tehsiltest;
+  }
+
+  Future districtsdata(String divisionid) async {
+    var responseofdata = await _orderApi.adressdetailsApi(
+        "http://3.133.0.29/api/divisions/$divisionid/district");
+    districtTest = convert.jsonDecode(responseofdata.body);
+    _districtlist.clear();
+    _districtlist
+        .add(districtTest == null ? [] : districtTest!.values.toList());
+    _districtlist[0][0].forEach((element) {
+      filterdristrict.add(element);
+    });
+
+    return districtTest;
   }
 }
